@@ -1,0 +1,512 @@
+﻿[
+    {
+        "category":  "character_group",
+        "owner":  "group",
+        "note":  "三只初始小猫总览图",
+        "sourceDoc":  "04 - 游戏角色设定.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\characters\\_group\\concept\\group_initial_three_cats_overview.jpeg",
+        "width":  1672,
+        "height":  941,
+        "bytes":  1959414
+    },
+    {
+        "category":  "character_concept",
+        "owner":  "塞班 / 圣剑士",
+        "note":  "塞班角色设定图",
+        "sourceDoc":  "04 - 游戏角色设定.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\characters\\ch01_saiban_swordsaint\\concept\\saiban_concept_01.png",
+        "width":  1586,
+        "height":  992,
+        "bytes":  1954947
+    },
+    {
+        "category":  "character_reference",
+        "owner":  "塞班 / 圣剑士",
+        "note":  "塞班参考/补充图",
+        "sourceDoc":  "04 - 游戏角色设定.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\characters\\ch01_saiban_swordsaint\\references\\saiban_reference_02.png",
+        "width":  1086,
+        "height":  1448,
+        "bytes":  2602122
+    },
+    {
+        "category":  "character_animation",
+        "owner":  "塞班 / 圣剑士",
+        "note":  "塞班帧/动作设计相关图",
+        "sourceDoc":  "04 - 游戏角色设定.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\characters\\ch01_saiban_swordsaint\\animation\\saiban_animation_design_03.png",
+        "width":  1692,
+        "height":  930,
+        "bytes":  1809899
+    },
+    {
+        "category":  "character_concept",
+        "owner":  "奈芙蒂斯 / 月沙特工",
+        "note":  "奈芙蒂斯角色设定图",
+        "sourceDoc":  "04 - 游戏角色设定.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\characters\\ch02_nephthys_moonsand_agent\\concept\\nephthys_concept_01.png",
+        "width":  1536,
+        "height":  1024,
+        "bytes":  2392012
+    },
+    {
+        "category":  "character_animation",
+        "owner":  "奈芙蒂斯 / 月沙特工",
+        "note":  "奈芙蒂斯帧/动作设计图",
+        "sourceDoc":  "04 - 游戏角色设定.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\characters\\ch02_nephthys_moonsand_agent\\animation\\nephthys_animation_design_02.png",
+        "width":  1774,
+        "height":  887,
+        "bytes":  1624846
+    },
+    {
+        "category":  "character_concept",
+        "owner":  "铃音 / 安眠巫女",
+        "note":  "铃音角色设定图",
+        "sourceDoc":  "04 - 游戏角色设定.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\characters\\ch03_suzune_sleep_shrine_maiden\\concept\\suzune_concept_01.png",
+        "width":  1531,
+        "height":  1027,
+        "bytes":  2168722
+    },
+    {
+        "category":  "character_animation",
+        "owner":  "铃音 / 安眠巫女",
+        "note":  "铃音帧/动作设计图",
+        "sourceDoc":  "04 - 游戏角色设定.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\characters\\ch03_suzune_sleep_shrine_maiden\\animation\\suzune_animation_design_02.png",
+        "width":  1774,
+        "height":  887,
+        "bytes":  1687488
+    },
+    {
+        "category":  "character_concept",
+        "owner":  "影丸 / 逐影者",
+        "note":  "影丸角色设定图",
+        "sourceDoc":  "04 - 游戏角色设定.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\characters\\ch04_kagemaru_shadowstalker\\concept\\kagemaru_concept_01.png",
+        "width":  1536,
+        "height":  1024,
+        "bytes":  2573645
+    },
+    {
+        "category":  "character_animation",
+        "owner":  "影丸 / 逐影者",
+        "note":  "影丸帧动画设计图",
+        "sourceDoc":  "04 - 游戏角色设定.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\characters\\ch04_kagemaru_shadowstalker\\animation\\kagemaru_animation_design_02.png",
+        "width":  1699,
+        "height":  926,
+        "bytes":  1947968
+    },
+    {
+        "category":  "character_concept",
+        "owner":  "棉花 / 梦织女",
+        "note":  "棉花角色设定图",
+        "sourceDoc":  "04 - 游戏角色设定.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\characters\\ch05_mianhua_dreamweaver\\concept\\mianhua_concept_01.jpeg",
+        "width":  3072,
+        "height":  2048,
+        "bytes":  3441448
+    },
+    {
+        "category":  "character_animation",
+        "owner":  "棉花 / 梦织女",
+        "note":  "棉花帧动画设计图",
+        "sourceDoc":  "04 - 游戏角色设定.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\characters\\ch05_mianhua_dreamweaver\\animation\\mianhua_animation_design_02.png",
+        "width":  1774,
+        "height":  887,
+        "bytes":  1837126
+    },
+    {
+        "category":  "character_concept",
+        "owner":  "玉衡 / 阴阳令",
+        "note":  "玉衡角色设定图",
+        "sourceDoc":  "04 - 游戏角色设定.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\characters\\ch06_yuheng_yinyang_order\\concept\\yuheng_concept_01.png",
+        "width":  1536,
+        "height":  1024,
+        "bytes":  2930157
+    },
+    {
+        "category":  "character_animation",
+        "owner":  "玉衡 / 阴阳令",
+        "note":  "玉衡帧动画设计图",
+        "sourceDoc":  "04 - 游戏角色设定.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\characters\\ch06_yuheng_yinyang_order\\animation\\yuheng_animation_design_02.png",
+        "width":  1774,
+        "height":  887,
+        "bytes":  1708580
+    },
+    {
+        "category":  "character_concept",
+        "owner":  "麦洛 / 正午游侠",
+        "note":  "麦洛角色设定图",
+        "sourceDoc":  "04 - 游戏角色设定.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\characters\\ch07_mailuo_noon_ranger\\concept\\mailuo_concept_01.png",
+        "width":  1536,
+        "height":  1024,
+        "bytes":  2540066
+    },
+    {
+        "category":  "character_animation",
+        "owner":  "麦洛 / 正午游侠",
+        "note":  "麦洛帧/动作设计图",
+        "sourceDoc":  "04 - 游戏角色设定.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\characters\\ch07_mailuo_noon_ranger\\animation\\mailuo_animation_design_02.png",
+        "width":  1774,
+        "height":  887,
+        "bytes":  1816988
+    },
+    {
+        "category":  "character_concept",
+        "owner":  "绛台 / 梨园伶猫",
+        "note":  "绛台角色设定图",
+        "sourceDoc":  "04 - 游戏角色设定.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\characters\\ch08_jiangtai_opera_cat\\concept\\jiangtai_concept_01.png",
+        "width":  1536,
+        "height":  1024,
+        "bytes":  2561395
+    },
+    {
+        "category":  "character_animation",
+        "owner":  "绛台 / 梨园伶猫",
+        "note":  "绛台帧/动作设计图",
+        "sourceDoc":  "04 - 游戏角色设定.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\characters\\ch08_jiangtai_opera_cat\\animation\\jiangtai_animation_design_02.png",
+        "width":  1692,
+        "height":  929,
+        "bytes":  1757139
+    },
+    {
+        "category":  "key_art",
+        "owner":  "project",
+        "note":  "P0定位段落后的项目视觉图",
+        "sourceDoc":  "02 - 《梦境支配者》P0 最小版本设计文档.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\key_art\\dream_dominator_key_visual.jpeg",
+        "width":  1672,
+        "height":  941,
+        "bytes":  1859453
+    },
+    {
+        "category":  "enemy_concept",
+        "owner":  "黑泥梦魇",
+        "note":  "黑泥梦魇原画设计图",
+        "sourceDoc":  "02 - 《梦境支配者》P0 最小版本设计文档.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\enemies\\en01_black_mud_nightmare\\concept\\black_mud_nightmare_concept.png",
+        "width":  1349,
+        "height":  1166,
+        "bytes":  1221457
+    },
+    {
+        "category":  "enemy_animation",
+        "owner":  "黑泥梦魇",
+        "note":  "黑泥梦魇帧动画设定图",
+        "sourceDoc":  "02 - 《梦境支配者》P0 最小版本设计文档.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\enemies\\en01_black_mud_nightmare\\animation\\black_mud_nightmare_animation.png",
+        "width":  1024,
+        "height":  1536,
+        "bytes":  1727684
+    },
+    {
+        "category":  "enemy_concept",
+        "owner":  "梦轨小火车",
+        "note":  "梦轨小火车原画设计图",
+        "sourceDoc":  "02 - 《梦境支配者》P0 最小版本设计文档.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\enemies\\en02_dream_rail_train\\concept\\dream_rail_train_concept.png",
+        "width":  1536,
+        "height":  1024,
+        "bytes":  2844223
+    },
+    {
+        "category":  "enemy_animation",
+        "owner":  "梦轨小火车",
+        "note":  "梦轨小火车帧动画设定图",
+        "sourceDoc":  "02 - 《梦境支配者》P0 最小版本设计文档.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\enemies\\en02_dream_rail_train\\animation\\dream_rail_train_animation.png",
+        "width":  1536,
+        "height":  1024,
+        "bytes":  2351894
+    },
+    {
+        "category":  "enemy_concept",
+        "owner":  "红眼闹铃",
+        "note":  "红眼闹铃原画设计图",
+        "sourceDoc":  "02 - 《梦境支配者》P0 最小版本设计文档.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\enemies\\en03_red_eye_alarm\\concept\\red_eye_alarm_concept.jpeg",
+        "width":  1536,
+        "height":  1024,
+        "bytes":  437171
+    },
+    {
+        "category":  "enemy_animation",
+        "owner":  "红眼闹铃",
+        "note":  "红眼闹铃帧动画设定图",
+        "sourceDoc":  "02 - 《梦境支配者》P0 最小版本设计文档.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\enemies\\en03_red_eye_alarm\\animation\\red_eye_alarm_animation.png",
+        "width":  1536,
+        "height":  1024,
+        "bytes":  1969191
+    },
+    {
+        "category":  "enemy_concept",
+        "owner":  "冷光灯影",
+        "note":  "冷光灯影原画设计图",
+        "sourceDoc":  "02 - 《梦境支配者》P0 最小版本设计文档.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\enemies\\en04_cold_light_shadow\\concept\\cold_light_shadow_concept.png",
+        "width":  1536,
+        "height":  1024,
+        "bytes":  2251191
+    },
+    {
+        "category":  "enemy_animation",
+        "owner":  "冷光灯影",
+        "note":  "冷光灯影帧动画设定图",
+        "sourceDoc":  "02 - 《梦境支配者》P0 最小版本设计文档.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\enemies\\en04_cold_light_shadow\\animation\\cold_light_shadow_animation.png",
+        "width":  1536,
+        "height":  1024,
+        "bytes":  2280923
+    },
+    {
+        "category":  "enemy_concept",
+        "owner":  "坠梦玩具熊",
+        "note":  "坠梦玩具熊原画设计图",
+        "sourceDoc":  "02 - 《梦境支配者》P0 最小版本设计文档.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\enemies\\en05_falling_dream_teddy\\concept\\falling_dream_teddy_concept.png",
+        "width":  1536,
+        "height":  1024,
+        "bytes":  2894966
+    },
+    {
+        "category":  "enemy_animation",
+        "owner":  "坠梦玩具熊",
+        "note":  "坠梦玩具熊帧动画设定图",
+        "sourceDoc":  "02 - 《梦境支配者》P0 最小版本设计文档.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\enemies\\en05_falling_dream_teddy\\animation\\falling_dream_teddy_animation.png",
+        "width":  1536,
+        "height":  1024,
+        "bytes":  2491438
+    },
+    {
+        "category":  "enemy_concept",
+        "owner":  "来电暴君",
+        "note":  "来电暴君原画设计图",
+        "sourceDoc":  "02 - 《梦境支配者》P0 最小版本设计文档.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\enemies\\en06_call_tyrant\\concept\\call_tyrant_concept.png",
+        "width":  1536,
+        "height":  1024,
+        "bytes":  2207069
+    },
+    {
+        "category":  "enemy_animation",
+        "owner":  "来电暴君",
+        "note":  "来电暴君帧动画设定图",
+        "sourceDoc":  "02 - 《梦境支配者》P0 最小版本设计文档.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\enemies\\en06_call_tyrant\\animation\\call_tyrant_animation.png",
+        "width":  1536,
+        "height":  1024,
+        "bytes":  2498925
+    },
+    {
+        "category":  "level_reference",
+        "owner":  "现代城市梦域",
+        "note":  "现代纽约/重庆梦域参考图",
+        "sourceDoc":  "02 - 《梦境支配者》P0 最小版本设计文档.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\levels\\future_modern_city_dream\\references\\modern_city_dream_reference.jpeg",
+        "width":  1536,
+        "height":  1024,
+        "bytes":  476886
+    },
+    {
+        "category":  "level_reference",
+        "owner":  "古巴比伦梦域",
+        "note":  "古巴比伦梦域参考图",
+        "sourceDoc":  "02 - 《梦境支配者》P0 最小版本设计文档.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\levels\\future_babylon_dream\\references\\babylon_dream_reference.jpeg",
+        "width":  1536,
+        "height":  1024,
+        "bytes":  461931
+    },
+    {
+        "category":  "level_concept",
+        "owner":  "第一关：主人卧室梦域",
+        "note":  "第一关地图原画",
+        "sourceDoc":  "02 - 《梦境支配者》P0 最小版本设计文档.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\levels\\lv01_bedroom_dream\\concept\\bedroom_dream_map_concept.png",
+        "width":  1672,
+        "height":  941,
+        "bytes":  2303789
+    },
+    {
+        "category":  "level_sprite",
+        "owner":  "第一关：主人卧室梦域",
+        "note":  "第一关前景精灵图",
+        "sourceDoc":  "02 - 《梦境支配者》P0 最小版本设计文档.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\levels\\lv01_bedroom_dream\\sprites\\bedroom_dream_foreground_sprites.png",
+        "width":  1672,
+        "height":  941,
+        "bytes":  2893095
+    },
+    {
+        "category":  "level_sprite",
+        "owner":  "第一关：主人卧室梦域",
+        "note":  "第一关后景中景精灵图",
+        "sourceDoc":  "02 - 《梦境支配者》P0 最小版本设计文档.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\levels\\lv01_bedroom_dream\\sprites\\bedroom_dream_mid_background_sprites.png",
+        "width":  1672,
+        "height":  941,
+        "bytes":  3106774
+    },
+    {
+        "category":  "level_concept",
+        "owner":  "第二关：黑夜云层梦境",
+        "note":  "第二关地图原画",
+        "sourceDoc":  "02 - 《梦境支配者》P0 最小版本设计文档.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\levels\\lv02_night_cloud_dream\\concept\\night_cloud_dream_map_concept.png",
+        "width":  1672,
+        "height":  941,
+        "bytes":  2390073
+    },
+    {
+        "category":  "level_sprite",
+        "owner":  "第二关：黑夜云层梦境",
+        "note":  "第二关前景精灵图",
+        "sourceDoc":  "02 - 《梦境支配者》P0 最小版本设计文档.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\levels\\lv02_night_cloud_dream\\sprites\\night_cloud_dream_foreground_sprites.png",
+        "width":  1672,
+        "height":  941,
+        "bytes":  3030514
+    },
+    {
+        "category":  "level_sprite",
+        "owner":  "第二关：黑夜云层梦境",
+        "note":  "第二关后景中景精灵图",
+        "sourceDoc":  "02 - 《梦境支配者》P0 最小版本设计文档.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\levels\\lv02_night_cloud_dream\\sprites\\night_cloud_dream_mid_background_sprites.png",
+        "width":  1536,
+        "height":  1024,
+        "bytes":  3211379
+    },
+    {
+        "category":  "level_concept",
+        "owner":  "第三关：埃及金字塔梦域",
+        "note":  "第三关地图原画",
+        "sourceDoc":  "02 - 《梦境支配者》P0 最小版本设计文档.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\levels\\lv03_egypt_pyramid_dream\\concept\\egypt_pyramid_dream_map_concept.png",
+        "width":  1536,
+        "height":  1024,
+        "bytes":  2803628
+    },
+    {
+        "category":  "level_sprite",
+        "owner":  "第三关：埃及金字塔梦域",
+        "note":  "第三关前景精灵图",
+        "sourceDoc":  "02 - 《梦境支配者》P0 最小版本设计文档.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\levels\\lv03_egypt_pyramid_dream\\sprites\\egypt_pyramid_dream_foreground_sprites.png",
+        "width":  1536,
+        "height":  1024,
+        "bytes":  3210858
+    },
+    {
+        "category":  "level_sprite",
+        "owner":  "第三关：埃及金字塔梦域",
+        "note":  "第三关后景中景精灵图",
+        "sourceDoc":  "02 - 《梦境支配者》P0 最小版本设计文档.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\levels\\lv03_egypt_pyramid_dream\\sprites\\egypt_pyramid_dream_mid_background_sprites.png",
+        "width":  1536,
+        "height":  1024,
+        "bytes":  3085638
+    },
+    {
+        "category":  "level_concept",
+        "owner":  "第三关：埃及金字塔梦域",
+        "note":  "第三关新版地图原画：大地图单通道路线",
+        "sourceDoc":  "02 - 《梦境支配者》P0 最小版本设计文档.docx",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\levels\\lv03_egypt_pyramid_dream\\concept\\egypt_pyramid_dream_single_lane_map_concept.png",
+        "width":  1536,
+        "height":  1024,
+        "bytes":  3210530
+    },
+    {
+        "category":  "character_turnaround",
+        "owner":  "塞班 / 圣剑士",
+        "note":  "八猫上色三视图云盘文件",
+        "sourceDoc":  "04 - 游戏角色设定.md linked file",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\characters\\ch01_saiban_swordsaint\\turnaround\\saiban_turnaround_colored_2026-06-03.png",
+        "width":  1686,
+        "height":  933,
+        "bytes":  2642138
+    },
+    {
+        "category":  "character_turnaround",
+        "owner":  "奈芙蒂斯 / 月沙特工",
+        "note":  "八猫上色三视图云盘文件",
+        "sourceDoc":  "04 - 游戏角色设定.md linked file",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\characters\\ch02_nephthys_moonsand_agent\\turnaround\\nephthys_turnaround_colored_2026-06-03.png",
+        "width":  1834,
+        "height":  858,
+        "bytes":  2568496
+    },
+    {
+        "category":  "character_turnaround",
+        "owner":  "铃音 / 安眠巫女",
+        "note":  "八猫上色三视图云盘文件",
+        "sourceDoc":  "04 - 游戏角色设定.md linked file",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\characters\\ch03_suzune_sleep_shrine_maiden\\turnaround\\suzune_turnaround_colored_2026-06-03.png",
+        "width":  1774,
+        "height":  887,
+        "bytes":  2684035
+    },
+    {
+        "category":  "character_turnaround",
+        "owner":  "影丸 / 逐影者",
+        "note":  "八猫上色三视图云盘文件",
+        "sourceDoc":  "04 - 游戏角色设定.md linked file",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\characters\\ch04_kagemaru_shadowstalker\\turnaround\\kagemaru_turnaround_colored_2026-06-03.png",
+        "width":  1681,
+        "height":  936,
+        "bytes":  2640969
+    },
+    {
+        "category":  "character_turnaround",
+        "owner":  "棉花 / 梦织女",
+        "note":  "八猫上色三视图云盘文件",
+        "sourceDoc":  "04 - 游戏角色设定.md linked file",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\characters\\ch05_mianhua_dreamweaver\\turnaround\\mianhua_turnaround_colored_2026-06-03.png",
+        "width":  1672,
+        "height":  941,
+        "bytes":  2458690
+    },
+    {
+        "category":  "character_turnaround",
+        "owner":  "玉衡 / 阴阳令",
+        "note":  "八猫上色三视图云盘文件",
+        "sourceDoc":  "04 - 游戏角色设定.md linked file",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\characters\\ch06_yuheng_yinyang_order\\turnaround\\yuheng_turnaround_colored_2026-06-03.png",
+        "width":  1673,
+        "height":  940,
+        "bytes":  2554477
+    },
+    {
+        "category":  "character_turnaround",
+        "owner":  "麦洛 / 正午游侠",
+        "note":  "八猫上色三视图云盘文件",
+        "sourceDoc":  "04 - 游戏角色设定.md linked file",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\characters\\ch07_mailuo_noon_ranger\\turnaround\\mailuo_turnaround_colored_2026-06-03.png",
+        "width":  1691,
+        "height":  930,
+        "bytes":  2630044
+    },
+    {
+        "category":  "character_turnaround",
+        "owner":  "绛台 / 梨园伶猫",
+        "note":  "八猫上色三视图云盘文件",
+        "sourceDoc":  "04 - 游戏角色设定.md linked file",
+        "file":  "D:\\Unity Workspace\\TheCat\\design\\梦境支配者核心玩法\\assets\\characters\\ch08_jiangtai_opera_cat\\turnaround\\jiangtai_turnaround_colored_2026-06-03.png",
+        "width":  1689,
+        "height":  931,
+        "bytes":  2416203
+    }
+]
