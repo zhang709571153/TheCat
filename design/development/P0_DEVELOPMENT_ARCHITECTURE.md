@@ -71,7 +71,7 @@ The existing implementation already proves a real P0.0 slice:
 - `design/development/unity_batchmode/P0_PLAYMODE_ACCEPTANCE_SMOKE_REPORT.md`
   reports the current normal Editor Play Mode smoke passed, screenshot
   evidence present, route completion through 10 layers, boss observation, and
-  defeat flow. The 2026-06-25 11:54 refresh has 11 validated capture files.
+  defeat flow. The 2026-06-25 21:22 I1 refresh has 11 validated capture files.
 - Build settings already include `P0MainMenu`, `P0CatRoom`, `P0RouteMap`, and
   `P0GrayboxBattle`.
 - Runtime and review asset gates currently report 118 review assets and 111
@@ -176,8 +176,21 @@ Editor Play Mode acceptance passed in
 no failures, `0` pending warnings, `8` passed checks, and 11 validated captures
 in `design/development/screenshots/p0-playmode-smoke`. G1 is evidence-smoke
 only: it does not approve candidate import, runtime binding, install rows, or
-final visual acceptance. Independent review keeps a P1 visual debt open for
-battle world label safe-area / overlay hierarchy.
+final visual acceptance. Independent review identified the battle world label
+safe-area / overlay hierarchy as a P1 follow-up; I1 below resolves that debt for
+the current baseline.
+
+2026-06-25 I1 update: the G1 battle-world label safe-area / overlay hierarchy
+debt is resolved for the current baseline. World-space diagnostic TextMesh
+labels are hidden in the normal collapsed battle HUD, warning rings/lines remain
+readable during active battle, and battle-result screenshots no longer retain
+active warning lines or labels behind the overlay. Focused Unity EditMode passed
+`19/19` in `Logs/p0_i1_world_label_overlay_final4_editmode_20260625.xml`;
+final normal Editor Play Mode acceptance passed in
+`Logs/P0PlayModeAcceptanceVisual_I1_final_20260625.log` with `8/8` evidence
+checks and 11 screenshots. This clears the G1 P1 visual debt but still does not
+approve Batch 87 candidate import, binding, install rows, or final art
+acceptance.
 
 ## Development Gates
 
@@ -187,7 +200,7 @@ battle world label safe-area / overlay hierarchy.
 | G1 Evidence refresh / screenshot parity | Current 11-capture Play Mode baseline is regenerated and reviewed as reports/screenshots only. No candidate import, install row, or final visual acceptance is implied. |
 | G2 Cat-room loop | Player can enter cat room, start a dream, resolve a run/battle path, and return to cat room. |
 | G3 Dream map split | Bedroom and Egypt are represented as distinct dream contexts without duplicating combat rules. |
-| G4 P0 UI coverage | Entry, main, character select, cat room, route, battle HUD, upgrade, pause/settings, and settlement are reviewable. D1 covers entry/character-select; D2 covers pause/settings and skill-selection acceptance; E1 covers battle readability at code/readiness level; H1 covers loading/start and full settings hooks; G1 refreshed the baseline screenshots but battle-world label hierarchy and settlement polish remain next. |
+| G4 P0 UI coverage | Entry, main, character select, cat room, route, battle HUD, upgrade, pause/settings, and settlement are reviewable. D1 covers entry/character-select; D2 covers pause/settings and skill-selection acceptance; E1 covers battle readability at code/readiness level; H1 covers loading/start and full settings hooks; G1 refreshed baseline screenshots; I1 resolved the battle-world label/result overlay debt. Settlement and batch-specific candidate parity remain next. |
 | G5 Asset install review | F1 docs-only order exists for Batch 83-88. H1 makes Batch 83 and Batch 85 hook-ready, but non-cat UI/art candidate rows remain unapproved until Unity import, binding, screenshot, and Console checks pass. |
 | G6 Demo release gate | Compile, focused tests, Play Mode smoke, screenshot matrix, Console review, and independent review are clean or explicitly deferred. |
 

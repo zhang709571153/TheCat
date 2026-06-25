@@ -18,7 +18,7 @@ instead of repeating old assumptions.
 
 | Id | Debt | Evidence | Required action |
 |-|-|-|-|
-| V-001 | Battle world label safe-area and overlay hierarchy | G1 screenshots `04-battle-hud-layer1.png`, `08-battle-world-visuals.png`, `09-call-tyrant-warning-vfx.png`, and `10-battle-result-layer1.png` show yellow world-space labels overlapping the bed, actors, world objects, and result overlay; top warning text can also clip at the screen edge | Hide, fade, clamp, or safe-area route world-space labels before final Batch 87 battle-HUD or battle-world visual acceptance |
+| None | No current P0/P1 battle-world label debt after I1 | I1 refreshed `04-battle-hud-layer1.png`, `08-battle-world-visuals.png`, `09-call-tyrant-warning-vfx.png`, and `10-battle-result-layer1.png` at `2026-06-25 21:22 +08:00`; independent screenshot review found no P0/P1 blocker | Continue batch-specific visual parity and import-review evidence; do not treat I1 as candidate import approval |
 
 ## Retired Or Superseded Guidance
 
@@ -84,6 +84,7 @@ instead of repeating old assumptions.
 | F1 as Batch 83-90 single import gate | 2026-06-25 F1 review split the scope: Batch 83-88 now have a docs-only import-order gate, while Batch 89 skill-selection and Batch 90 cat-room remain in the broader Unity-evidence queue for later UI passes | Current F1 gate is `design/development/asset_review/F1_UI_CANDIDATE_IMPORT_ORDER_GATE_2026-06-25.md`; no candidate art is imported or accepted by this gate |
 | Batch83 lacks loading/start runtime hook | 2026-06-25 H1 adds `P0LoadingStartPresenter`, loading/start coverage, readiness integration, and screenshot-smoke hook validation; review-fix EditMode passed `33/33` in `Logs/p0_h1_loading_settings_reviewfix_editmode_20260625.xml` | Batch 83 is hook-ready only. Unity-rendered loading/start screenshots, import settings, binding proof, and clean Console remain required before import review |
 | Batch85 lacks full settings-screen hook | 2026-06-25 H1 adds `P0FullSettingsSurface`, semantic full-settings option rows, deep Batch 85 candidate-token scanning, and readiness coverage; review-fix EditMode passed `33/33` | Batch 85 is hook-ready only. Unity-rendered full settings screenshots, import settings, binding proof, and clean Console remain required before import review |
+| Battle world label safe-area and overlay hierarchy | 2026-06-25 I1 gates world diagnostic labels behind diagnostics HUD and in-progress battle state, preserves warning shapes, hides warning visuals after battle result, fixes EditMode material-instancing warnings, adds `P0GrayboxBattleWorldDiagnosticsTests`, passes focused EditMode `19/19`, and passes Play Mode acceptance with `8/8` checks and 11 screenshots | V-001 is retired for the current baseline. Batch 87 still needs batch-specific screenshot parity, import settings, binding proof, and Console evidence before any candidate install decision |
 
 ## Current Authoritative Entry Points
 

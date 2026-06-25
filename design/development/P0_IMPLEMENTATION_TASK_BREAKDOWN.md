@@ -15,9 +15,9 @@ systems while adding the missing live-source scope.
 
 The next code should continue structural seams first:
 
-1. Asset review gates for UI candidates that already have local preflight packs.
-2. Runtime evidence capture toward the P0 demo gate, including fresh Play Mode
-   screenshots after UI readability changes.
+1. Batch 87 battle-HUD candidate screenshot parity and import-review evidence
+   against the cleaned I1 baseline.
+2. Asset review gates for UI candidates that already have local preflight packs.
 3. Starter-cat asset evidence cleanup without unlocking body-art replacement.
 
 ## Milestones
@@ -50,6 +50,50 @@ The next code should continue structural seams first:
 | F1 | Review Batch 83-88 UI candidate packs in install order | Complete as docs-only gate | Tesla/asset audit/E1 | docs/checklists only | Asset gate review |
 | H1 | Add loading/start and full settings screenshot hooks | Complete at code/readiness level | F1 runtime-surface mapping | presenters/tools/tests only | UI code review |
 | G1 | Refresh 11-capture Play Mode evidence and screenshot parity baseline | Complete for 2026-06-25 refresh | E1/F1/H1 | reports/screenshots/logs only | QA + design review |
+| I1 | Fix battle-world label safe-area and result overlay hierarchy | Complete | G1 | battle view gates, smoke runners, tests, reports/screenshots | Screenshot + code boundary review |
+
+## I1 Battle World Label And Overlay Fix
+
+Goal: resolve the G1 P1 visual debt where yellow world-space diagnostic labels
+overlapped the bed, cats, warning VFX, and result overlay in normal battle
+screenshots.
+
+Status: completed on 2026-06-25 as a battle readability and validation fix. No
+candidate assets were imported or approved.
+
+Implemented evidence:
+
+- `GrayboxBattleController` now gates active-cat, bed, enemy, and enemy-status
+  world diagnostic labels behind diagnostics HUD plus in-progress battle state.
+- `GrayboxEnemyView` and `P0EnemyWarningIndicatorView` preserve warning
+  rings/lines during active battle while hiding only warning text labels in the
+  default collapsed HUD.
+- Warning visuals are hidden after battle outcome before the result overlay is
+  captured.
+- `P0StatusIndicatorView`, `P0EnemyWarningIndicatorView`, graybox markers, and
+  enemy fallback renderers no longer use `renderer.material` in EditMode paths.
+- `P0PlayModeScreenshotSmoke` and `P0PlayModeRouteFlowSmoke` batch fixed smoke
+  simulation ticks per frame, preserving the same drive order, delta, and max
+  tick budgets while avoiding evidence-runner timeouts.
+- Added `P0GrayboxBattleWorldDiagnosticsTests`.
+- Focused Unity EditMode passed `19/19`:
+  `Logs/p0_i1_world_label_overlay_final4_editmode_20260625.xml`.
+- Final normal Editor Play Mode acceptance passed:
+  `Logs/P0PlayModeAcceptanceVisual_I1_final_20260625.log`.
+- Current Play Mode report is `passed`, `Smoke state: Passed`, `8/8` evidence
+  checks, and `11/11` screenshots refreshed at `2026-06-25 21:22 +08:00`.
+
+Independent review:
+
+- Nietzsche: no P0/P1 screenshot finding; I1 visual debt is resolved.
+- Sartre: no P0 code-boundary finding; follow-up test/material lifecycle risks
+  were addressed before final validation.
+
+Boundary:
+
+- This does not approve Batch 87 candidate import or final art acceptance.
+- Batch 87 may now proceed to batch-specific screenshot parity, import-settings,
+  binding proof, and Console evidence.
 
 ## First Code Slice: B1
 

@@ -44,12 +44,17 @@ passes for current validation claims.
 - Focused Unity EditMode coverage for H1 loading/start and full settings hooks
   passed `33/33`.
 - Focused screenshot/evidence coverage for the G1 refresh passed `18/18`.
+- Focused Unity EditMode coverage for I1 battle-world label / overlay hierarchy
+  passed `19/19` in `Logs/p0_i1_world_label_overlay_final4_editmode_20260625.xml`.
 - Normal Editor Play Mode acceptance passed with `8/8` evidence checks after
-  the G1 retry. The current report has no failures and `0` pending warnings.
+  the I1 final run in `Logs/P0PlayModeAcceptanceVisual_I1_final_20260625.log`.
+  The current report has no failures and `0` pending warnings.
 - The current screenshot smoke validates 11 screenshots, including
   `02-cat-room.png`, and verifies the main menu -> cat room -> route path.
-  These screenshots are baseline smoke evidence, not candidate import or final
-  art acceptance.
+  The 2026-06-25 21:22 refresh also verifies that default battle-world
+  diagnostic labels no longer overlap the normal battle HUD or battle-result
+  overlay. These screenshots are baseline smoke evidence, not candidate import
+  or final art acceptance.
 - Full offline acceptance is not green: `P0_OFFLINE_ACCEPTANCE_REPORT.md`
   currently fails asset gates tied to starter-cat source-lock/turnaround/
   strict-candidate evidence. This is an asset evidence blocker, not a cat-room
@@ -5721,3 +5726,42 @@ refresh. It validates expected capture files and smoke flows, but it does not
 approve candidate import, runtime binding, install rows, or final visual polish.
 The next visual task should address battle world label safe-area / overlay
 hierarchy before final Batch 87 battle-HUD or battle-world acceptance.
+
+209. P0 I1 battle-world label safe-area and overlay hierarchy:
+   - code scope:
+     - `GrayboxBattleController` gates active-cat, bed, enemy, and enemy-status
+       world diagnostic labels behind diagnostics HUD plus in-progress battle
+       state
+     - `GrayboxEnemyView` and `P0EnemyWarningIndicatorView` preserve active
+       warning rings/lines while allowing warning text labels to be hidden in
+       the default collapsed HUD
+     - warning visuals are hidden after battle outcome before result capture
+     - status indicators, warning indicators, graybox markers, and enemy
+       fallback renderers avoid EditMode `renderer.material` instantiation
+       warnings
+     - screenshot and route-flow smoke runners batch fixed simulation ticks per
+       frame while preserving the same drive order, delta, and max tick budgets
+   - focused Unity EditMode:
+     - result: `19/19` passed
+     - XML: `Logs/p0_i1_world_label_overlay_final4_editmode_20260625.xml`
+   - Play Mode acceptance:
+     - log: `Logs/P0PlayModeAcceptanceVisual_I1_final_20260625.log`
+     - result: passed
+     - evidence: `8/8` checks passed, `0` pending warnings, 11/11 expected
+       screenshot files validated
+     - screenshots refreshed at `2026-06-25 21:22 +08:00`
+   - independent review:
+     - Nietzsche: no P0/P1 screenshot finding; world-space yellow labels are
+       gone from the normal battle HUD and result overlay
+     - Sartre: no P0 code-boundary finding; direct controller coverage and
+       warning material lifecycle risks were addressed before final validation
+   - boundary:
+     - no candidate PNGs imported into `Assets`
+     - no candidate `.meta` files generated
+     - no Sprite import settings, binding proof, formal install row, Console
+       acceptance, or final candidate visual acceptance claimed
+
+Updated validation: I1 retires the G1 battle-world label / result-overlay P1
+visual debt for the current baseline. Batch 87 can proceed to batch-specific
+screenshot parity, import-settings, binding, and Console evidence, but no
+candidate import is approved by this pass.

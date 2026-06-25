@@ -3,6 +3,79 @@
 Project: `D:\Unity Workspace\TheCat`
 Game: `猫眠所 / 梦境支配者`
 
+## 2026-06-25 - I1 Battle World Label And Overlay Hierarchy Fix
+
+Status: I1 is complete for the G1 battle-world label safe-area / overlay
+hierarchy debt. The default collapsed battle HUD now hides world-space
+diagnostic TextMesh labels while keeping active warning rings/lines readable,
+and the battle-result screenshot no longer has active warning lines or labels
+behind it. This is battle readability/validation work only; no candidate art
+was imported or approved.
+
+### Work Completed
+
+- Gated enemy diagnostic labels, enemy status badges, active-cat status badges,
+  and bed status badges behind the existing diagnostics-HUD state and
+  in-progress battle outcome.
+- Preserved warning VFX geometry during active battle by separating
+  diagnostic text labels from warning ring/line visibility.
+- Hid warning visuals after battle outcome so the result overlay is not
+  polluted by active telegraph lines.
+- Fixed EditMode material-instancing warnings on status indicators, warning
+  indicators, graybox markers, and enemy fallback coloring by using owned
+  shared materials or `MaterialPropertyBlock` instead of `renderer.material`.
+- Added `P0GrayboxBattleWorldDiagnosticsTests` to directly lock the controller
+  integration path: diagnostics open shows world text, collapsed HUD hides that
+  text, warning shapes remain active, and HUD status/enemy data is preserved.
+- Accelerated Play Mode screenshot/route smoke simulation by batching fixed
+  smoke ticks per rendered frame while preserving the same player-drive order,
+  delta, and max tick budgets. This prevents evidence runner timeouts without
+  changing gameplay rules.
+
+### Validation Results
+
+- Runtime MSBuild passed:
+  `TheCat.Runtime -> Temp/Bin/Debug/TheCat.Runtime/TheCat.Runtime.dll`.
+- EditModeTests MSBuild passed:
+  `TheCat.EditModeTests -> Temp/Bin/Debug/TheCat.EditModeTests/TheCat.EditModeTests.dll`.
+- Focused Unity EditMode passed `19/19`:
+  `Logs/p0_i1_world_label_overlay_final4_editmode_20260625.xml`.
+- Final normal Editor Play Mode acceptance passed:
+  `Logs/P0PlayModeAcceptanceVisual_I1_final_20260625.log`.
+- Current Play Mode report: `Result: passed`, `Smoke state: Passed`, no
+  failures, `0` pending warnings, and `8` passed evidence checks.
+- Refreshed 11 screenshots at `2026-06-25 21:22 +08:00` in
+  `design/development/screenshots/p0-playmode-smoke`, including clean
+  `04-battle-hud-layer1.png`, `08-battle-world-visuals.png`,
+  `09-call-tyrant-warning-vfx.png`, and `10-battle-result-layer1.png`.
+
+### Independent Review
+
+- Nietzsche reviewed the refreshed screenshots and found no P0/P1 visual
+  blocker. The world-space yellow labels are gone from the normal battle HUD,
+  warning VFX remains readable during active battle, and the result screenshot
+  does not show active warning lines or labels behind the overlay.
+- Sartre reviewed code scope and validation evidence and found no P0 scope
+  violation. Follow-up risks around direct controller coverage and warning
+  material lifecycle were addressed in this pass.
+
+### Boundary
+
+- No candidate PNGs were imported into `Assets/`.
+- No candidate `.meta` files were generated.
+- No Sprite import settings, binding proof, install row, or final candidate
+  visual acceptance was claimed.
+- `P0_FULL_ACCEPTANCE_REPORT.md` remains explicitly not evaluated by the Play
+  Mode smoke runner; full offline acceptance is still blocked by asset evidence
+  gates.
+
+### Next Evidence
+
+- Batch 87 battle HUD can move to batch-specific screenshot parity,
+  import-settings, binding, and Console evidence against the cleaned baseline.
+- Batch 88, 86, 84, 85, and 83 remain queued for their own Unity evidence
+  before any candidate import decision.
+
 ## 2026-06-25 - G1 11-Capture Play Mode Evidence Refresh
 
 Status: G1 is complete for the current Play Mode evidence refresh. The normal

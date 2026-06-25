@@ -56,7 +56,8 @@ Current Unity evidence state: Unity MCP approval may still be unavailable, but
 normal Editor Play Mode acceptance has current passing baseline evidence. Treat
 MCP connection notes as tooling status, not as a reason to discard the current
 Play Mode reports. This baseline is smoke/screenshot evidence only; it is not
-candidate import approval or final art acceptance.
+candidate import approval or final art acceptance. I1 has resolved the battle
+world label safe-area / result-overlay debt in the current baseline.
 
 Next code slice:
 
@@ -71,9 +72,9 @@ Next code slice:
   import settings, binding proof, and Console evidence are still required
   before full import review.
 - Treat E1 as code/readiness complete and G1 as screenshot-baseline refreshed,
-  but do not claim final visual acceptance for the battle view until the
-  battle-world label safe-area / overlay hierarchy debt is fixed or explicitly
-  accepted.
+  with I1 resolving the battle-world label safe-area / overlay hierarchy debt.
+  Do not claim Batch 87 candidate visual acceptance until batch-specific
+  screenshot parity, import settings, binding proof, and Console evidence pass.
 - Keep the player main path centered on cat room -> bedroom dream while Egypt
   remains a visible P0 placeholder target.
 - Keep the new 11-capture Play Mode screenshot plan current as UI surfaces
