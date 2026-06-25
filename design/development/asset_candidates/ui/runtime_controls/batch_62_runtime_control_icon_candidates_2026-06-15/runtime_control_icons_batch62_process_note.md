@@ -1,0 +1,14 @@
+# P0 Batch 62 Runtime Control Icon Candidate Process Note
+
+- Generated deterministic transparent PNG candidates with `build_runtime_control_icon_candidates.py`.
+- Source references: Batch 08 UI shell, runtime settings presenter, and keyboard input map.
+- Candidate-only batch. No Unity `.meta` files were created and no runtime catalog count changed.
+
+## Outputs
+
+- `design/development/asset_candidates/ui/runtime_controls/batch_62_runtime_control_icon_candidates_2026-06-15/thecat_ui_runtime_pause_icon_128_candidate_v001.png` sha256 `ee84a30c80b724cb192175cb3a924707bbb47a4fa2008ef33e9db71028c3de92`
+- `design/development/asset_candidates/ui/runtime_controls/batch_62_runtime_control_icon_candidates_2026-06-15/thecat_ui_runtime_resume_icon_128_candidate_v001.png` sha256 `37be2366585670143a2887a2b0f49b077a899f3e595426759e3cf927cc18a191`
+- `design/development/asset_candidates/ui/runtime_controls/batch_62_runtime_control_icon_candidates_2026-06-15/thecat_ui_runtime_speed_half_icon_128_candidate_v001.png` sha256 `274935b9660679004079e80e0dbd3f4735deb55fd39119b19f99978f78a56c79`
+- `design/development/asset_candidates/ui/runtime_controls/batch_62_runtime_control_icon_candidates_2026-06-15/thecat_ui_runtime_speed_normal_icon_128_candidate_v001.png` sha256 `f0ebc4a44c1f9224971e20a3666947fabe34e5c511bb67b283eacfd63a87f9bd`
+- `design/development/asset_candidates/ui/runtime_controls/batch_62_runtime_control_icon_candidates_2026-06-15/thecat_ui_runtime_speed_fast_icon_128_candidate_v001.png` sha256 `a63bf11ab356c0a579333bed2312916d805d68cfa9297d896113208b59af1387`
+- `design/development/asset_candidates/ui/runtime_controls/batch_62_runtime_control_icon_candidates_2026-06-15/thecat_ui_runtime_restart_icon_128_candidate_v001.png` sha256 `1dcdfada308973eeb2da414e78540ad33645682e1a5c36e9a454489b8ee0aead`

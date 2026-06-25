@@ -1,0 +1,96 @@
+using NUnit.Framework;
+using TheCat.Combat;
+using TheCat.Data;
+
+namespace TheCat.Tests
+{
+    public sealed class StatusEffectCollectionTests
+    {
+        [Test]
+        public void Apply_RefreshesDurationAndExpires()
+        {
+            StatusEffectCollection statuses = new StatusEffectCollection();
+            StatusTagDefinition slow = new StatusTagDefinition(
+                StatusTagIds.Slow,
+                "Slow",
+                StatusTargetType.Enemy,
+                2f,
+                0.25f,
+                StatusStackPolicy.RefreshDuration,
+                "moon_sand");
+
+            statuses.Apply(slow);
+            statuses.Tick(1.5f);
+            statuses.Apply(slow, 0.4f);
+
+            Assert.IsTrue(statuses.TryGet(StatusTagIds.Slow, out StatusEffectState active));
+            Assert.AreEqual(0.4f, active.Magnitude, 0.001f);
+            Assert.AreEqual(2f, active.RemainingSeconds, 0.001f);
+
+            statuses.Tick(2.1f);
+
+            Assert.IsFalse(statuses.Has(StatusTagIds.Slow));
+        }
+
+        [Test]
+        public void AbsorbDamage_ConsumesShieldMagnitude()
+        {
+            StatusEffectCollection statuses = new StatusEffectCollection();
+            StatusTagDefinition shield = new StatusTagDefinition(
+                StatusTagIds.Shield,
+                "Shield",
+                StatusTargetType.Cat,
+                6f,
+                35f,
+                StatusStackPolicy.HighestMagnitude,
+                "oath_edge");
+
+            statuses.Apply(shield);
+
+            Assert.AreEqual(0f, statuses.AbsorbDamage(StatusTagIds.Shield, 20f), 0.001f);
+            Assert.IsTrue(statuses.TryGet(StatusTagIds.Shield, out StatusEffectState active));
+            Assert.AreEqual(15f, active.Magnitude, 0.001f);
+            Assert.AreEqual(5f, statuses.AbsorbDamage(StatusTagIds.Shield, 20f), 0.001f);
+            Assert.IsFalse(statuses.Has(StatusTagIds.Shield));
+        }
+
+        [Test]
+        public void StatusDisplayFormatter_UsesDisplayNameVisualTokenMagnitudeAndTime()
+        {
+            StatusEffectCollection statuses = new StatusEffectCollection();
+            StatusTagDefinition mark = new StatusTagDefinition(
+                StatusTagIds.Mark,
+                "标记",
+                StatusTargetType.Enemy,
+                5f,
+                0.25f,
+                StatusStackPolicy.RefreshDuration,
+                "royal_eye");
+
+            statuses.Apply(mark);
+
+            string display = StatusDisplayFormatter.FormatCollection(statuses);
+
+            Assert.AreEqual("标记 强度 0.25 5.0s", display);
+        }
+
+        [Test]
+        public void StatusDisplayFormatter_CoversP0StatusLabels()
+        {
+            StatusEffectCollection statuses = new StatusEffectCollection();
+            statuses.Apply(new StatusTagDefinition(StatusTagIds.SleepStable, "安眠", StatusTargetType.BedZone, 8f, 1f, StatusStackPolicy.RefreshDuration, "soft_blue_note"));
+            statuses.Apply(new StatusTagDefinition(StatusTagIds.Slow, "缓速", StatusTargetType.Enemy, 4f, 0.35f, StatusStackPolicy.HighestMagnitude, "moon_sand"));
+            statuses.Apply(new StatusTagDefinition(StatusTagIds.Knockback, "击退", StatusTargetType.Enemy, 0.25f, 1f, StatusStackPolicy.RefreshDuration, "silver_impact"));
+            statuses.Apply(new StatusTagDefinition(StatusTagIds.Mark, "标记", StatusTargetType.Enemy, 5f, 0.25f, StatusStackPolicy.RefreshDuration, "royal_eye"));
+            statuses.Apply(new StatusTagDefinition(StatusTagIds.Shield, "护盾", StatusTargetType.Cat, 6f, 35f, StatusStackPolicy.HighestMagnitude, "oath_edge"));
+
+            string display = StatusDisplayFormatter.FormatCollection(statuses);
+
+            StringAssert.Contains("安眠 强度", display);
+            StringAssert.Contains("缓速 强度", display);
+            StringAssert.Contains("击退 强度", display);
+            StringAssert.Contains("标记 强度", display);
+            StringAssert.Contains("护盾 强度", display);
+        }
+    }
+}

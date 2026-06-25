@@ -53,3 +53,15 @@ Desktop.ini
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+replay_pid*.log
+
+# Local auth/export scratch files
+lark_auth_*.png
+tmp/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Local Unity AI Assistant settings
+ProjectSettings/AI.Assistant/

@@ -6,6 +6,18 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/TheCat/Scenes/P0MainMenu.unity
+    guid: 787203d8da5206642abc7e1c5378afb0
+  - enabled: 1
+    path: Assets/TheCat/Scenes/P0CatRoom.unity
+    guid: a09ff65f762003b41a1f486b0d4e86ef
+  - enabled: 1
+    path: Assets/TheCat/Scenes/P0RouteMap.unity
+    guid: ccfa173bd7da4921b1dc5986f50520c0
+  - enabled: 1
+    path: Assets/TheCat/Scenes/P0GrayboxBattle.unity
+    guid: 54b8011b499e9c848b7df85f765db12d
+  - enabled: 1
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
   m_configObjects:

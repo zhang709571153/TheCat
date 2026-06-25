@@ -1,0 +1,53 @@
+{
+  "batch_slug": "batch_47_starter_cat_strict_generation_spec_pack_2026-06-15",
+  "cat_id": "nephthys",
+  "display_name": "Nephthys / Moon-Sand Agent",
+  "source_lock_id": "nephthys_turnaround_colored",
+  "source_turnaround_path": "design/梦境支配者核心玩法/assets/characters/ch02_nephthys_moonsand_agent/turnaround/nephthys_turnaround_colored_2026-06-03.png",
+  "unity_sprite_path": "Assets/TheCat/Art/Characters/Sprites/thecat_cat_nephthys_combat_sprite_512_v001.png",
+  "latest_cutout_preview_path": "design/development/asset_candidates/starter_cats/nephthys/batch_37_nephthys_cutout_candidate_2026-06-15/thecat_cat_nephthys_cutout_alpha_512_preview_v001.png",
+  "active_screenshot": "06-active-cat-nephthys.png",
+  "palette_hex": [
+    "#374050",
+    "#2b2e34",
+    "#5c4a33",
+    "#99703f",
+    "#bb9769",
+    "#e1d9cb",
+    "#716045"
+  ],
+  "visible_bbox_source": [
+    0,
+    0,
+    1834,
+    858
+  ],
+  "authority": "gold-brown hooded moon-sand control cat",
+  "body_rule": "non-human cat body with compact paws, feline face, visible ears inside hood, whiskers, and small tail silhouette",
+  "composition_rule": "single clean combat sprite, three-quarter front-facing stance, hood and floating pyramid/obelisk prop must read at game scale",
+  "must_keep": [
+    "gold-brown tabby fur and mask-like face markings",
+    "deep navy hooded cloak with sand-gold trim",
+    "floating pyramid or obelisk prop",
+    "blue gem accents, ankh or dream-script symbols",
+    "mystic controller silhouette without human posture"
+  ],
+  "reject": [
+    "human Cleopatra body",
+    "ordinary Egyptian costume on a person",
+    "missing hood",
+    "missing pyramid or obelisk prop",
+    "palette drift away from navy, gold, brown, and blue"
+  ],
+  "positive_prompt": "faithful P0 battle sprite for Nephthys, a non-human hooded gold-brown tabby moon-sand agent cat controlling dreams with a floating pyramid prop; non-human cat body with compact paws, feline face, visible ears inside hood, whiskers, and small tail silhouette; single clean combat sprite, three-quarter front-facing stance, hood and floating pyramid/obelisk prop must read at game scale; hand-painted dream defense roguelite game sprite; transparent background; soft ink outline; compact readable silhouette; preserve exact costume, props, palette, and role identity from the source turnaround.",
+  "negative_prompt": "human, humanoid, Cleopatra, human priestess, long human arms, long human legs, hands, fingers, ordinary costume, dog, mascot redesign, missing hood, missing pyramid, missing blue gems",
+  "recommendation": "strict_generation_spec_only_do_not_import",
+  "unity_validation_required": [
+    "active-cat screenshot comparison",
+    "Console clean",
+    "AssetDatabase refresh",
+    "Sprite import settings",
+    "prefab/scene binding",
+    "HUD readability"
+  ]
+}

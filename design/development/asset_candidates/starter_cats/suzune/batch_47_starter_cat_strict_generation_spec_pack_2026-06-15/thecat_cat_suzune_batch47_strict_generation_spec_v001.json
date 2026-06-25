@@ -1,0 +1,54 @@
+{
+  "batch_slug": "batch_47_starter_cat_strict_generation_spec_pack_2026-06-15",
+  "cat_id": "suzune",
+  "display_name": "Suzune / Sleep Shrine Healer",
+  "source_lock_id": "suzune_turnaround_colored",
+  "source_turnaround_path": "design/梦境支配者核心玩法/assets/characters/ch03_suzune_sleep_shrine_maiden/turnaround/suzune_turnaround_colored_2026-06-03.png",
+  "unity_sprite_path": "Assets/TheCat/Art/Characters/Sprites/thecat_cat_suzune_combat_sprite_512_v001.png",
+  "latest_cutout_preview_path": "design/development/asset_candidates/starter_cats/suzune/batch_35_suzune_cutout_candidate_2026-06-15/thecat_cat_suzune_cutout_alpha_512_preview_v001.png",
+  "active_screenshot": "07-active-cat-suzune.png",
+  "palette_hex": [
+    "#cec4bb",
+    "#ebe4de",
+    "#f6f0ea",
+    "#8d7d72",
+    "#8c3e2c",
+    "#49352d",
+    "#c0926d"
+  ],
+  "visible_bbox_source": [
+    0,
+    0,
+    1774,
+    887
+  ],
+  "authority": "calico sleep shrine healer cat",
+  "body_rule": "non-human cat body with compact paws, round feline face, triangular ears, whiskers, and calico tail",
+  "composition_rule": "single clean combat sprite, three-quarter front-facing stance, shrine healer props and bell ornaments must remain readable",
+  "must_keep": [
+    "calico orange, black, and white markings from the turnaround",
+    "warm white and vermilion shrine outfit",
+    "moon-blue accents",
+    "bell ornaments",
+    "wand or branch healer prop"
+  ],
+  "reject": [
+    "human shrine maiden body",
+    "generic white healer kitten",
+    "missing calico markings",
+    "missing bell ornaments",
+    "missing wand or branch healer prop",
+    "palette drift away from vermilion, warm white, moon-blue, and calico fur"
+  ],
+  "positive_prompt": "faithful P0 battle sprite for Suzune, a non-human calico sleep shrine healer cat with bells, shrine outfit, and a small healer wand; non-human cat body with compact paws, round feline face, triangular ears, whiskers, and calico tail; single clean combat sprite, three-quarter front-facing stance, shrine healer props and bell ornaments must remain readable; hand-painted dream defense roguelite game sprite; transparent background; soft ink outline; compact readable silhouette; preserve exact costume, props, palette, and role identity from the source turnaround.",
+  "negative_prompt": "human, humanoid, shrine maiden girl, long human arms, long human legs, hands, fingers, generic healer mascot, dog, missing calico patches, missing bells, missing wand, palette drift",
+  "recommendation": "strict_generation_spec_only_do_not_import",
+  "unity_validation_required": [
+    "active-cat screenshot comparison",
+    "Console clean",
+    "AssetDatabase refresh",
+    "Sprite import settings",
+    "prefab/scene binding",
+    "HUD readability"
+  ]
+}

@@ -1,8 +1,8 @@
-﻿# 游戏角色设定
+# 游戏角色设定
 
 ## 6. 三只初始小猫
 
-![](https://internal-api-drive-stream.feishu.cn/space/api/box/stream/download/authcode/?code=ZWNlYTU0NTZmNDY2YTlkZjg4NzZlY2Q0M2RkNDU5M2RfYmZiMTFkNmNhN2I4YTQzYjgzOWQyYmUyNmI3ZTBjY2FfSUQ6NzY0NjY4NjQ0MzkwMTEyNzY0NF8xNzgxMjgwMDAwOjE3ODEyODM2MDBfVjM)
+![](FEISHU_IMAGE_LINK_REDACTED)
 
 
 
@@ -34,14 +34,14 @@
 
 <grid>
 <column width-ratio="0.678809">
-![](https://internal-api-drive-stream.feishu.cn/space/api/box/stream/download/authcode/?code=MzZjZjc4OTg3ZGQ0YWE2MzU0MDFlODY0OGYwYmQ3NGJfZjJhOTM4NTA5Y2M1NDkxZGQ3ZjFhOWQ2ZDBhMTIyYzdfSUQ6NzY0NjY4NjQ0MjQ0MTcwNjQ0NF8xNzgxMjgwMDAwOjE3ODEyODM2MDBfVjM)
+![](FEISHU_IMAGE_LINK_REDACTED)
 </column>
 <column width-ratio="0.321191">
-![](https://internal-api-drive-stream.feishu.cn/space/api/box/stream/download/authcode/?code=OTI3YmFlZjcxNzZkNTVkM2Y1Yzc3N2MxZGZiYTg1ZjJfZmRhZDdiOWRiNzUyMjBiMmNjNmIxOGRjMjM5MTNkOGNfSUQ6NzY0NjY4NjQ0MzE0NjU0NjEzN18xNzgxMjgwMDAwOjE3ODEyODM2MDBfVjM)
+![](FEISHU_IMAGE_LINK_REDACTED)
 </column>
 </grid>
 
-![](https://internal-api-drive-stream.feishu.cn/space/api/box/stream/download/authcode/?code=OTlhMzI1MmQzYzBlYjFkNWUyZGNjMjg4ZjAzMmJiZGFfZmUxNTc0M2IyMmE4NmQ5ZDJkMmEwNzY2OWJjNzNlMTJfSUQ6NzY0NjcxNTI3MjQ0MDA1Njc5OV8xNzgxMjgwMDAwOjE3ODEyODM2MDBfVjM)
+![](FEISHU_IMAGE_LINK_REDACTED)
 
 
 
@@ -91,9 +91,9 @@
 | 大招一 | **王庭沙尘暴** | 召唤覆盖全屏的沙尘暴，造成全屏减速和大量沙尘伤害；所有飞行单位被击落，落地后短暂禁锢。 |
 | 大招二 | **沙海龙卷** | 在指定圆形范围内掀起沙漠龙卷风，持续一段时间，对范围内敌人造成持续沙尘伤害。 |
 
-![](https://internal-api-drive-stream.feishu.cn/space/api/box/stream/download/authcode/?code=ZWM4OTZiNGFlOTg4YWY5NzRlNDc2NzViZTM1NDQwZjVfYzgyNmIyNWVmNDhlOTM1ODZlNDBkNTllNjRkMjBmNjBfSUQ6NzY0NjY4NjQ0MzU1NzUzOTAyMF8xNzgxMjgwMDAwOjE3ODEyODM2MDBfVjM)
+![](FEISHU_IMAGE_LINK_REDACTED)
 
-![](https://internal-api-drive-stream.feishu.cn/space/api/box/stream/download/authcode/?code=NWUwYTk2NzBiNjlkN2I1OGU3MzE2ZTI5MjQ5YmZiNWNfODFlNWUzYjk0MWM0ZGMzYTM5ZDNlNjQyMWVhOWMwZTlfSUQ6NzY0NjcyMDc4MzkyNjEzNTk5NF8xNzgxMjgwMDAwOjE3ODEyODM2MDBfVjM)
+![](FEISHU_IMAGE_LINK_REDACTED)
 
 
 
@@ -142,9 +142,9 @@
 | 大招一 | **冰月鸟居** | 场地持续 / 治疗 | 召唤鸟居，鸟居会周期性对范围内敌人造成冰属性伤害和减速效果，并回复场上角色生命值。 |
 | 大招二 | **月铃祈愈** | 全队急救 / 冰附魔 | 恢复所有角色大量生命值；铃音获得一段时间冰附魔，普攻或技能造成额外冰属性伤害。 |
 
-![](https://internal-api-drive-stream.feishu.cn/space/api/box/stream/download/authcode/?code=OGViNzA5ZjI3NGI3YjFlYTFkYzM4MDJkYTVjYjhiYWZfYTFiZDY4YmFhNmVjYWM2YWQ5ZDgyNWI2NjIyM2U0YTVfSUQ6NzY0NjY4NjQ0MzU5OTQ4MjA4MV8xNzgxMjgwMDAwOjE3ODEyODM2MDBfVjM)
+![](FEISHU_IMAGE_LINK_REDACTED)
 
-![](https://internal-api-drive-stream.feishu.cn/space/api/box/stream/download/authcode/?code=MWEzNDMwMjQwZTcxYzk1OGYzZTg4ZmVkMTk4YTFhY2JfMzY5MjIwYjZjN2VjYjM3YjI5MTM3YjUyNTA3MWVjMDVfSUQ6NzY0NjcyMDkwOTEyNjUxOTc3OF8xNzgxMjgwMDAwOjE3ODEyODM2MDBfVjM)
+![](FEISHU_IMAGE_LINK_REDACTED)
 
 
 
@@ -195,11 +195,11 @@
 
 
 
-![](https://internal-api-drive-stream.feishu.cn/space/api/box/stream/download/authcode/?code=ZGFiZDZmYmZmMjNmMGMzODY3MjczYjY1OWU1YjhlOWNfZWRlMzczYzc4ZmJmMmFjM2IzYjE5MmE4OWYzNTM4NWNfSUQ6NzY0NjY4NjQ0MTY0NTI2NDA3Ml8xNzgxMjgwMDAwOjE3ODEyODM2MDBfVjM)
+![](FEISHU_IMAGE_LINK_REDACTED)
 
 影丸帧动画设计图
 
-![](https://internal-api-drive-stream.feishu.cn/space/api/box/stream/download/authcode/?code=ZWVlOWQ2OGNjNDMzZTA5Mzk2ZjAwZGU5MTA0MzU0NjNfZTkwM2M3MmJmMmIxNjllOGU5N2FhZTQzOTNkYmMyM2JfSUQ6NzY0NjcyODgwMjI5ODY3ODUwOV8xNzgxMjgwMDAwOjE3ODEyODM2MDBfVjM)
+![](FEISHU_IMAGE_LINK_REDACTED)
 
 
 
@@ -243,13 +243,13 @@
 
 
 
-![](https://internal-api-drive-stream.feishu.cn/space/api/box/stream/download/authcode/?code=M2ZlY2NhY2QzNWIzNjllNmJmODQ1ZDE0MTNmODM4MzdfOWYzYjc4MzMyNzQ0MWU1MWE2OTNkYjEyNTI4MDhlMjhfSUQ6NzY0NjcwOTI1MTQxNDkzNjc3NV8xNzgxMjgwMDAwOjE3ODEyODM2MDBfVjM)
+![](FEISHU_IMAGE_LINK_REDACTED)
 
 
 
 棉花帧动画设计图
 
-![](https://internal-api-drive-stream.feishu.cn/space/api/box/stream/download/authcode/?code=MDcwYTlhN2Q5ZWFlZmMwNzRmYTA4ODMzZTU2MWE2M2VfMThkMGQ3ODlhNTI3MWNmMTUzNmU1NjNkYWFhMDA4N2ZfSUQ6NzY0NjczMDgxNDg5Nzg4NDM1NF8xNzgxMjgwMDAwOjE3ODEyODM2MDBfVjM)
+![](FEISHU_IMAGE_LINK_REDACTED)
 
 #### 角色台词
 
@@ -291,11 +291,11 @@
 
 
 
-![](https://internal-api-drive-stream.feishu.cn/space/api/box/stream/download/authcode/?code=NzU5MWYxZjFiMGE2ZDdhMmQ4MTU2Mjg4YjljZjAzMzlfYjUxZGE5OTE1ZjM3ZjEzMWQ0OTI3MjY3YzZkMzgzMTBfSUQ6NzY0NjY4NjQ0MzkwMTQ1NTMxOF8xNzgxMjgwMDAwOjE3ODEyODM2MDBfVjM)
+![](FEISHU_IMAGE_LINK_REDACTED)
 
 玉衡帧动画设计图
 
-![](https://internal-api-drive-stream.feishu.cn/space/api/box/stream/download/authcode/?code=MGQ1YzAzYTA0OGY3NTcyNjdmYmQxNWY2NDEzNTcxZGVfOGIzYzFiNDY3NjI1MjNjMmIyYjZjNWQ4MmQ1ODNjYzhfSUQ6NzY0NjcyMTE5MTk1NjYzMDc0OV8xNzgxMjgwMDAwOjE3ODEyODM2MDBfVjM)
+![](FEISHU_IMAGE_LINK_REDACTED)
 
 
 
@@ -356,9 +356,9 @@
 | 受击 | “帽子歪了。你最好跑快点。” | 帽子歪掉又立刻扶正，表情不服输。 |
 | 胜利 | “顺手清干净了，别谢。” | 背身收枪，尾巴轻甩，带一点小得意。 |
 
-![](https://internal-api-drive-stream.feishu.cn/space/api/box/stream/download/authcode/?code=YWRkOGJhZDI2ZDc1YmE5ZmI0MmI5MTk3YzdkYjRhMjdfMDUzMzA2MmYxMjY0NTU4ZjU2NGFiMmI4MTY0ODc3MmNfSUQ6NzY0Njk5NDg5MjQ5Nzk0Nzg0NV8xNzgxMjgwMDAwOjE3ODEyODM2MDBfVjM)
+![](FEISHU_IMAGE_LINK_REDACTED)
 
-![](https://internal-api-drive-stream.feishu.cn/space/api/box/stream/download/authcode/?code=NGU5ZGU3MGM2N2ZhNjE5Y2IyOWFmYmZhMTFhZjA3NGFfOWQ1ZDM5YWNmMjQ5MjQ3NDIzZDA1ODRiNGVmMDU2MzJfSUQ6NzY0Njk5NDk5MDk4MDI1NDkyN18xNzgxMjgwMDAwOjE3ODEyODM2MDBfVjM)
+![](FEISHU_IMAGE_LINK_REDACTED)
 
 ### 6.8 戏曲猫：绛台 / 梨园伶猫（8级解锁建议）
 
@@ -405,9 +405,9 @@
 | 变相一折 | 折扇完全打开，扇面出现短暂脸谱光纹；角色猫脸保持露出，表情自信。 |
 | 梨园压轴 | 宫灯光落下，脚下形成圆形戏台，甩袖、转扇、亮相三段清晰分帧，最后定格为小名伶姿态。 |
 
-![](https://internal-api-drive-stream.feishu.cn/space/api/box/stream/download/authcode/?code=OGVmMTc0OTc2OTE0OGYyYTVjZDY0Nzk0ODdiOTM3YjhfYTFjM2E3NjUzMjc2ZWQ5MGUwYmU5NWUxMWViZThiZDlfSUQ6NzY0NzAzMDMyNjgyODk0NDU5NV8xNzgxMjgwMDAwOjE3ODEyODM2MDBfVjM)
+![](FEISHU_IMAGE_LINK_REDACTED)
 
-![](https://internal-api-drive-stream.feishu.cn/space/api/box/stream/download/authcode/?code=Y2Q3MmQwNDkyMGE0YmFkMWM0YWExZDkwNDVjZWQ1OWZfNmQxNTQ0YjU3MWE4MGFjNzQyMTQwMjgzOWE0YjU0YjNfSUQ6NzY0NzAzMDQwMjk2MzU5MDM1OF8xNzgxMjgwMDAwOjE3ODEyODM2MDBfVjM)
+![](FEISHU_IMAGE_LINK_REDACTED)
 
 ## 2026-06-03｜八猫上色三视图
 
