@@ -1147,7 +1147,10 @@ namespace TheCat.Gameplay
             Renderer renderer = marker.GetComponent<Renderer>();
             if (renderer != null)
             {
-                renderer.material.color = color;
+                MaterialPropertyBlock propertyBlock = new MaterialPropertyBlock();
+                propertyBlock.SetColor("_Color", color);
+                propertyBlock.SetColor("_BaseColor", color);
+                renderer.SetPropertyBlock(propertyBlock);
             }
 
             return marker.transform;

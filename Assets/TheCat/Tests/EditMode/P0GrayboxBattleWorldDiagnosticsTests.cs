@@ -1,3 +1,4 @@
+using System.Reflection;
 using NUnit.Framework;
 using TheCat.Gameplay;
 using TheCat.Inputs;
@@ -16,6 +17,7 @@ namespace TheCat.Tests
             try
             {
                 GrayboxBattleController controller = root.AddComponent<GrayboxBattleController>();
+                InvokeAwake(controller);
                 controller.BeginBattle();
                 controller.ExecuteInputCommand(P0InputCommand.ToggleDiagnosticsHud);
 
@@ -57,6 +59,15 @@ namespace TheCat.Tests
             }
 
             return false;
+        }
+
+        private static void InvokeAwake(GrayboxBattleController controller)
+        {
+            MethodInfo awake = typeof(GrayboxBattleController).GetMethod(
+                "Awake",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.IsNotNull(awake);
+            awake.Invoke(controller, null);
         }
     }
 }
