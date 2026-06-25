@@ -3362,12 +3362,16 @@ namespace TheCat.Gameplay
 
         private void UpdateRuntimeStatusIndicators()
         {
+            bool showDiagnosticWorldLabels = ShouldShowWorldDiagnosticLabels();
+
             if (activeCatStatusIndicatorView != null)
             {
                 P0StatusIndicatorState catState = battle == null || ActiveCat == null
                     ? default(P0StatusIndicatorState)
                     : P0StatusIndicatorPresenter.Build(ActiveCat.Statuses, ActiveCat.Definition.DisplayName);
-                activeCatStatusIndicatorView.Sync(catState);
+                activeCatStatusIndicatorView.Sync(showDiagnosticWorldLabels
+                    ? catState
+                    : default(P0StatusIndicatorState));
             }
 
             if (bedStatusIndicatorView != null)
@@ -3375,7 +3379,9 @@ namespace TheCat.Gameplay
                 P0StatusIndicatorState bedState = battle == null
                     ? default(P0StatusIndicatorState)
                     : P0StatusIndicatorPresenter.Build(battle.BedStatuses, "床");
-                bedStatusIndicatorView.Sync(bedState);
+                bedStatusIndicatorView.Sync(showDiagnosticWorldLabels
+                    ? bedState
+                    : default(P0StatusIndicatorState));
             }
         }
 

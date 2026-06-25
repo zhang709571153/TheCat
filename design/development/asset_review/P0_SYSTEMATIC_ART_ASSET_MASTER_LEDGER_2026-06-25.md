@@ -1,7 +1,7 @@
 # P0 Systematic Art Asset Master Ledger
 
 Project: `D:\Unity Workspace\TheCat`
-Updated: 2026-06-25 09:36 +08:00
+Updated: 2026-06-25 21:03 +08:00
 
 This file is the 2026-06-25 control ledger for systematic P0 art production.
 It separates four states that must not be mixed:
@@ -53,6 +53,7 @@ It separates four states that must not be mixed:
 | Cat room interaction states | Batch 92 uses built-in Codex `imagegen` to produce a narrow textless interaction-state sprite pack under `design/development/asset_candidates/ui/cat_room_interaction_states/batch_92_cat_room_interaction_states_imagegen_2026-06-25/`. It includes source/alpha sheets, 12 semantic sprites, cooldown v002/v003 rework traceability, final contact sheet v003, semantic manifest, process note, and agent review note. Final review result is `PASS_WITH_P2`; cooldown v003 closes the original P1 grey-overlay issue. | Run Unity import/binding review for hover, ready, selected, blocked, sleep/feed/litter markers, dream button frame, attention marker, cooldown v003, locator badge, and reticle. Curate ring semantics and classify locator before promotion. |
 | Cat room map decals/trim | Batch 93 uses built-in Codex `imagegen` to produce a narrow cat-room floor/wall decal and trim kit under `design/development/asset_candidates/map/cat_room_decals/batch_93_cat_room_map_decals_imagegen_2026-06-25/`. It includes source/alpha sheets, 12 semantic sprites, contact sheet, semantic manifest, final review CSV, process note, and agent review note. Final review result is `PASS_WITH_P2`; no P1/FAIL rework item remains. | Run Unity import/binding review for floor patch, soft shadow, rug edge, mat/pad, baseboard straight/corner, paw scuff, window light, dream crack, threshold, dust sparkle, and boundary corner. Validate sorting layer, pivot/baseline, floor contrast, no-collider policy, and scene readability before promotion. |
 | Cat room dream portal animation | Batch 94 uses built-in Codex `imagegen` plus a stable Batch91-derived shell to produce a 12-frame dream entrance idle-loop package under `design/development/asset_candidates/map/cat_room_dream_portal_animation/batch_94_cat_room_dream_portal_animation_imagegen_2026-06-25/`. It includes the original source sheet, stable base, interior mask, 12 v004 transparent 512x512 frames, contact sheet v004, loop preview GIF v004, semantic manifest, final review CSV, process note, and agent review note. Final review result is `PASS_WITH_P2`; v001/v002/v003 are isolated under `superseded/`. | Run Unity import/binding review for loop jitter, scale, pivot, sorting layer, and static dream entrance hitbox reuse before runtime promotion. |
+| Role / scene UI tokens | Batch 95 uses built-in Codex `imagegen` to produce a static no-animation 9-sprite token pack under `design/development/asset_candidates/ui/role_scene_ui_tokens/batch_95_role_scene_ui_tokens_imagegen_2026-06-25/`. It includes the chroma-key source sheet, alpha sheet, 9 semantic sprites, asset table, manifest, contact sheet, final review CSV, process note, and agent review note. Final review result is `PASS_WITH_P2`; it contains role symbols, scene tokens, and UI card frames only, with no cat body/portrait/framesheet content. | Run Unity import/binding review for 64px readability, selected-vs-ready/locked states, import settings, no recursive import from `superseded/`, and Console before runtime promotion. |
 
 ## Master Asset Families
 
@@ -60,6 +61,7 @@ It separates four states that must not be mixed:
 | --- | --- | --- | --- |
 | UI screens | Entry/loading, main menu, cat room, character select, skill selection, dream entry/route, battle HUD, pause, settings, victory, defeat, result, settlement | Many primitives and banners exist; Batch 83 adds local loading/start preflight mockups and textless loading sprites; Batch 84 adds local result/settlement preflight mockups and textless result/settlement sprites; Batch 85 adds local settings/pause preflight mockups and textless settings/pause sprites; Batch 86 adds local dream-entry/route-map preflight mockups and textless dream-route sprites; Batch 88 adds local character-select mockups and textless character-select sprites; Batch 87 adds local battle HUD preflight mockups and textless battle HUD sprites; Batch 89 adds local skill-selection mockups and textless skill-selection sprites; Batch 90 adds local cat-room mockups and textless cat-room interaction sprites; Batch 92 adds a focused built-in imagegen cat-room interaction-state sprite pack and cooldown v003 fix. Play Mode smoke captures main menu, cat room, route, battle HUD, active cats, battle world, Call Tyrant warning, battle result, and settlement. All candidate screen packets still need per-batch Unity review before promotion. | Run Unity screen composition screenshots across target resolutions for the candidate packets, then promote only the packets that pass text, click-target, import, binding, and Console gates. |
 | UI components | Buttons, selected/disabled states, panels, dialogs, tabs, cards, list rows, locks, warnings | Component inventory complete for this pass: 17 rows, 8 installed pending Unity evidence, 9 candidate-only/import-test rows, 0 missing design-needed rows; Batch 82 adds 25 derivative candidate sprites | Screen-priority review, then Unity click-target/readability screenshots, import settings, binding, and Console checks. |
+| Role / scene UI tokens | Starter role badges, static scene tokens, ready/selected/locked card frames | Batch 95 adds 9 static transparent sprites for Saiban/Nephthys/Suzune role badges, bedroom/cat-room/dream-route scene tokens, and UI card states; candidate-only review is PASS_WITH_P2 | Unity 64px readability, card-state screenshot proof, import settings, binding, and Console checks. |
 | Typography/numbers | Chinese font, cooldown digits, damage/reward numbers, gauge labels | Batch 75 validation packet and 20 local scale mockups exist; no local P0 visual blocker after independent review | 5 surfaces x 4 resolutions Unity screenshot matrix plus Console notes. |
 | Starter cat bodies | Saiban, Nephthys, Suzune runtime sprites | Installed source-locked combat sprites exist; active-cat screenshots are registered 3/3, but formal replacement remains blocked | Explicit colored-turnaround comparison approval notes are required before import. |
 | Starter cat framesheets | Idle, walk, attack, small skill, ultimate per cat | Missing as promoted production lanes | Source-lock first, then reference-only candidate batch. |
@@ -109,6 +111,8 @@ It separates four states that must not be mixed:
 | P0 | Produce Batch92 cat-room interaction-state imagegen pack and integrate independent review findings, including cooldown v003 P1 fix. | [x] |
 | P0 | Produce Batch93 cat-room map decal/trim imagegen pack and integrate independent review findings. | [x] |
 | P0 | Produce Batch94 cat-room dream portal animation sequence and integrate v004 PASS_WITH_P2 review findings. | [x] |
+| P0 | Produce Batch95 static role/scene/UI token pack with no animation and no character body/portrait/framesheet content. | [x] |
+| P0 | Run Unity import/settings/binding review for Batch95 role/scene/UI tokens, including 64px readability and no recursive import from `superseded/`. | [ ] |
 | P0 | Build and validate UI common component inventory. | [x] |
 | P0 | Integrate UI common component inventory review agents and fix reproducibility findings. | [x] |
 | P0 | Produce Batch 82 derivative candidate sprites for prior missing common UI state families. | [x] |
@@ -178,13 +182,13 @@ symbolic starter VFX, settings/system UI, owner sleep frames, Chinese UI
 scale evidence, UI common component inventory, Batch 82 derivative common UI states, Batch 83 loading/start preflight, Batch 84 result/settlement preflight, Batch 85 settings/pause preflight, Batch 86 dream-route preflight, Batch 87 battle HUD preflight, Batch 88 character-select preflight, Batch 89 skill-selection preflight, and Batch 90 cat-room preflight have now passed local validator coverage, but remain blocked
 from formal promotion by Unity runtime evidence.
 
-The latest visible imagegen production follow-up is Batch 94
-`cat_room_dream_portal_animation_imagegen`: a narrow built-in Codex imagegen
-cat-room dream portal animation packet with source sheet, stable Batch91-derived
-base, interior mask, 12 v004 transparent frames, contact sheet, loop preview GIF,
-semantic manifest, final review CSV, process note, and agent review. It stays
-under `design/development/asset_candidates/...` and still requires Unity runtime
-evidence before promotion.
+The latest visible imagegen production follow-up is Batch 95
+`role_scene_ui_tokens_imagegen`: a narrow built-in Codex imagegen static packet
+with source sheet, alpha sheet, 9 transparent role/scene/card-frame sprites,
+asset table, semantic manifest, contact sheet, final review CSV, process note,
+and agent review. It stays under `design/development/asset_candidates/...` and
+still requires Unity import, 64px readability, binding, and Console evidence
+before promotion.
 
 Next recommended action when Unity editor/MCP access is available:
 run `P0_ASSET_UNITY_VALIDATION_CHECKLIST.md` against Batch 83-90, with first

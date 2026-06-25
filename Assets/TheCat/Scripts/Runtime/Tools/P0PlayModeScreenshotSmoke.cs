@@ -262,6 +262,7 @@ namespace TheCat.Tools
         private const float ScreenshotTimeoutSeconds = 5f;
         private const int MaxBattleResultTicks = 1600;
         private const float BattleResultTickDeltaSeconds = 0.25f;
+        private const int BattleResultTicksPerFrame = 16;
         private const int StarterCatCount = 3;
         private const int P0SkillSlotCount = 3;
 
@@ -765,9 +766,17 @@ namespace TheCat.Tools
             int ticks = 0;
             while (battleController.Battle.Outcome == BattleOutcome.InProgress && ticks < MaxBattleResultTicks)
             {
-                DriveBattlePlayer(battleController, ticks);
-                battleController.AdvanceGraybox(BattleResultTickDeltaSeconds);
-                ticks++;
+                for (int frameTick = 0;
+                     frameTick < BattleResultTicksPerFrame
+                     && battleController.Battle.Outcome == BattleOutcome.InProgress
+                     && ticks < MaxBattleResultTicks;
+                     frameTick++)
+                {
+                    DriveBattlePlayer(battleController, ticks);
+                    battleController.AdvanceGraybox(BattleResultTickDeltaSeconds);
+                    ticks++;
+                }
+
                 yield return null;
             }
 

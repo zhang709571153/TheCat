@@ -1,7 +1,7 @@
 # P0 Systematic Art Production Total Design
 
 Project: `D:\Unity Workspace\TheCat`
-Updated: 2026-06-25 09:36 +08:00
+Updated: 2026-06-25 21:03 +08:00
 
 This document is the current control surface for P0 art production. It starts with the required asset table, then defines production order, archive rules, image generation policy, review gates, and TODO state.
 
@@ -36,6 +36,7 @@ Legend: `Done` means Codex-side packet/file/check exists. `Unity` means runtime 
 | UI-10 | Victory/defeat/settlement | Battle victory, battle defeat, run clear/fail, reward scan | Batch 84 local preflight complete | Unity screenshots, text/number replacement, low-height crowding | [x] | [ ] |
 | UI-11 | Common components | Buttons, panels, cards, tabs, list rows, lock/warning/focus/danger states | Inventory complete; Batch 82 derivatives complete | Screen-priority Unity validation | [x] | [ ] |
 | UI-12 | Typography/numbers | Chinese font, damage/reward numbers, cooldown digits, gauge labels | Batch 75 local scale mockups complete | 5 surfaces x 4 resolutions Unity screenshot matrix | [x] | [ ] |
+| UI-13 | Role / scene tokens | Static starter role badges, scene entry tokens, ready/selected/locked card frames | Batch 95 built-in imagegen pack complete with 9 transparent sprites, manifest, contact sheet, process note, final review CSV, and three-agent review result PASS_WITH_P2 | Unity import/settings/binding, 64px readability for Suzune badge and scene tokens, selected-vs-ready/locked card state proof, no recursive import from `superseded/`, Console | [x] | [ ] |
 | CAT-01 | Saiban body | Runtime sprite, idle/move/attack/skills/ult/hit/death | Source-locked runtime sprite exists; replacement blocked | Active screenshot vs colored turnaround approval only | [x] | [ ] |
 | CAT-02 | Nephthys body | Runtime sprite, idle/move/attack/skills/ult/hit/death | Source-locked runtime sprite exists; replacement blocked | Active screenshot vs colored turnaround approval only | [x] | [ ] |
 | CAT-03 | Suzune body | Runtime sprite, idle/move/attack/skills/ult/hit/death | Source-locked runtime sprite exists; replacement blocked | Active screenshot vs colored turnaround approval only | [x] | [ ] |
@@ -125,7 +126,9 @@ Legend: `Done` means Codex-side packet/file/check exists. `Unity` means runtime 
 | P0 | Integrate Batch92 visual, production QA, and cooldown v003 P1-fix reviews; keep package candidate-only. | [x] |
 | P0 | Produce narrow Batch93 cat-room map decal/trim imagegen pack and integrate PASS_WITH_P2 review findings; keep package candidate-only. | [x] |
 | P0 | Produce Batch94 cat-room dream portal 12-frame animation sequence, close visual/production P1 findings, and keep package candidate-only. | [x] |
-| P0 | Pick the next safe imagegen batch only after Unity evidence for current screen packets, unless a newly unblocked source changes priority. | [ ] |
+| P0 | Pick the next safe non-animation imagegen batch under the updated goal and keep it static/candidate-only. | [x] |
+| P0 | Produce Batch95 static role/scene/UI token pack with built-in imagegen, chroma-key cutouts, final review CSV, and independent source-lock/visual/production QA review. | [x] |
+| P0 | Run Unity import/settings/binding review for Batch95 role/scene/UI tokens, including 64px readability and no recursive import from `superseded/`. | [ ] |
 | P0 | Keep starter-cat body/framesheet generation blocked until active-cat screenshots pass. | [x] |
 | P0 | Run remaining candidate-specific Unity screen matrices for UI batches 83-90 and Batch 75 scale matrix. | [ ] |
 | P0 | Run active enemy animation screenshots, prefab binding, Console, pivot/hitbox/color review. | [ ] |

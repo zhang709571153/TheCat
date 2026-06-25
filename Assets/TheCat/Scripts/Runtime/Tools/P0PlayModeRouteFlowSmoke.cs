@@ -81,6 +81,7 @@ namespace TheCat.Tools
         private const int RouteGuard = 24;
         private const int MaxBattleTicks = 1600;
         private const float BattleTickDeltaSeconds = 0.25f;
+        private const int BattleTicksPerFrame = 16;
         private const int StarterCatCount = 3;
         private const int P0SkillSlotCount = 3;
         private const int MaxPendingCatUpgradeSelections = 8;
@@ -269,9 +270,17 @@ namespace TheCat.Tools
             int ticks = 0;
             while (battleController.Battle.Outcome == BattleOutcome.InProgress && ticks < MaxBattleTicks)
             {
-                DriveBattlePlayer(battleController, ticks);
-                battleController.AdvanceGraybox(BattleTickDeltaSeconds);
-                ticks++;
+                for (int frameTick = 0;
+                     frameTick < BattleTicksPerFrame
+                     && battleController.Battle.Outcome == BattleOutcome.InProgress
+                     && ticks < MaxBattleTicks;
+                     frameTick++)
+                {
+                    DriveBattlePlayer(battleController, ticks);
+                    battleController.AdvanceGraybox(BattleTickDeltaSeconds);
+                    ticks++;
+                }
+
                 yield return null;
             }
 

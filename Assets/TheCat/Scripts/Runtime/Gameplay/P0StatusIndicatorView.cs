@@ -31,8 +31,27 @@ namespace TheCat.Gameplay
             label.color = state.AccentColor;
             if (badgeRenderer != null)
             {
-                badgeRenderer.material.color = state.AccentColor;
+                badgeRenderer.sharedMaterial.color = state.AccentColor;
             }
+        }
+
+        private void OnDestroy()
+        {
+            if (badgeMaterial == null)
+            {
+                return;
+            }
+
+            if (Application.isPlaying)
+            {
+                Destroy(badgeMaterial);
+            }
+            else
+            {
+                DestroyImmediate(badgeMaterial);
+            }
+
+            badgeMaterial = null;
         }
 
         private void EnsureVisuals()
@@ -66,7 +85,7 @@ namespace TheCat.Gameplay
                 badgeRenderer = badgeObject.GetComponent<Renderer>();
                 if (badgeRenderer != null)
                 {
-                    badgeRenderer.material = badgeMaterial;
+                    badgeRenderer.sharedMaterial = badgeMaterial;
                 }
             }
 

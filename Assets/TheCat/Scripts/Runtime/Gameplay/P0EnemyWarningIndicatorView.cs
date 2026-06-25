@@ -84,6 +84,14 @@ namespace TheCat.Gameplay
             return renderer;
         }
 
+        private void OnDestroy()
+        {
+            DestroyRendererMaterial(ring);
+            DestroyRendererMaterial(line);
+            DestroyOwnedMaterial(lineMaterial);
+            lineMaterial = null;
+        }
+
         private Material CreateMaterial()
         {
             Shader shader = Shader.Find("Sprites/Default");
@@ -209,6 +217,34 @@ namespace TheCat.Gameplay
             if (renderer != null && renderer.gameObject.activeSelf != active)
             {
                 renderer.gameObject.SetActive(active);
+            }
+        }
+
+        private static void DestroyRendererMaterial(LineRenderer renderer)
+        {
+            if (renderer == null)
+            {
+                return;
+            }
+
+            DestroyOwnedMaterial(renderer.sharedMaterial);
+            renderer.sharedMaterial = null;
+        }
+
+        private static void DestroyOwnedMaterial(Material material)
+        {
+            if (material == null)
+            {
+                return;
+            }
+
+            if (Application.isPlaying)
+            {
+                Destroy(material);
+            }
+            else
+            {
+                DestroyImmediate(material);
             }
         }
 

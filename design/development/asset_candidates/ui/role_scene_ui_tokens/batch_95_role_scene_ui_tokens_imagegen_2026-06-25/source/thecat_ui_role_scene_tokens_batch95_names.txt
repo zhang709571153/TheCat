@@ -1,0 +1,9 @@
+saiban_oath_sun_shield_role_badge
+nephthys_moonsand_obelisk_role_badge
+suzune_moon_bell_torii_role_badge
+bedroom_dream_scene_token
+cat_room_hub_scene_token
+dream_route_scene_token
+ready_card_frame
+selected_card_frame
+locked_card_frame
