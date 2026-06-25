@@ -63,7 +63,10 @@ namespace TheCat.Gameplay
             cachedRenderer = GetComponent<Renderer>();
             if (cachedRenderer != null)
             {
-                cachedRenderer.material.color = color;
+                MaterialPropertyBlock propertyBlock = new MaterialPropertyBlock();
+                propertyBlock.SetColor("_Color", color);
+                propertyBlock.SetColor("_BaseColor", color);
+                cachedRenderer.SetPropertyBlock(propertyBlock);
             }
 
             bool hasSprite = SyncVisualAsset(visualAsset, color);

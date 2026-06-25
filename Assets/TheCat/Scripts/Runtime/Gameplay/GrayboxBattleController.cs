@@ -1107,7 +1107,10 @@ namespace TheCat.Gameplay
             Renderer renderer = activeCatMarker.GetComponent<Renderer>();
             if (renderer != null)
             {
-                renderer.material.color = fallbackColor;
+                MaterialPropertyBlock propertyBlock = new MaterialPropertyBlock();
+                propertyBlock.SetColor("_Color", fallbackColor);
+                propertyBlock.SetColor("_BaseColor", fallbackColor);
+                renderer.SetPropertyBlock(propertyBlock);
             }
 
             EnsureWorldVisualAssetViews();
