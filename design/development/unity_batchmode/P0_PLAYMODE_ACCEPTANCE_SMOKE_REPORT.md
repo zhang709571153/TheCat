@@ -10,7 +10,7 @@
 ```text
 Started P0 Play Mode acceptance smoke sequence.
 Screenshot smoke passed: P0 play mode screenshot smoke passed with 11 screenshot(s) in D:\Unity Workspace\TheCat\design\development\screenshots\p0-playmode-smoke.
-Route-flow smoke passed: P0 play mode route flow smoke passed: nodes 10/10, battles 5, boss observed, fish 7, shards 9, 行动 切换 289/315 猫咪虚弱未能切换 26 自动锁定目标 105/176 技能锁定目标 91/206 技能 166/903 冷却中 622 没有目标 115 技能暂不可用 0 交互 40/86 距离太远 46.
+Route-flow smoke passed: P0 play mode route flow smoke passed: nodes 10/10, battles 5, boss observed, fish 7, shards 9, 行动 切换 286/311 猫咪虚弱未能切换 25 自动锁定目标 102/174 技能锁定目标 90/204 技能 166/893 冷却中 613 没有目标 114 技能暂不可用 0 交互 40/85 距离太远 45.
 Defeat-flow smoke passed: P0 play mode defeat flow smoke passed: 路线失败 路线 1/10 战斗 0胜/1负 小鱼干 0 梦屑 0 猫 3 祝福 0 等级 0.
 Evidence gate summary: P0 Play Mode evidence has no failures, 0 pending warning(s), and 8 passed check(s).
 P0 play mode acceptance smoke passed: 8 evidence check(s), 0 warning(s).
@@ -19,7 +19,7 @@ P0 play mode acceptance smoke passed: 8 evidence check(s), 0 warning(s).
 ## Screenshot Smoke
 
 ```text
-Cleared 9 existing screenshot PNG(s).
+Cleared 11 existing screenshot PNG(s).
 Screenshot output: D:\Unity Workspace\TheCat\design\development\screenshots\p0-playmode-smoke
 Captured main menu: D:\Unity Workspace\TheCat\design\development\screenshots\p0-playmode-smoke\01-main-menu.png
 Main menu start surface verified: 主菜单界面：初始猫 3 已选 3 路线 10 首领层 1 操作 5 可用 5 uiShell 6 | starters 3 selected 3 route 10 actions 5 uiShell 6
@@ -55,23 +55,23 @@ Started default route from P0MainMenu.
 Battle layer_01_defense -> Victory ticks 156 route 1/10.
 Battle result surface verified: 战斗结果：胜利 指标 6 核心 3 路线 6 操作 3.
 Reward layer_02_dream_event resolved route 2/10.
-Battle layer_03_elite -> Victory ticks 140 route 3/10.
+Battle layer_03_elite -> Victory ticks 122 route 3/10.
 Battle result surface verified: 战斗结果：胜利 指标 6 核心 3 路线 6 操作 3.
 Resolved pending cat upgrade before reward node layer_04_partner: 塞班 获得 被动《床线守誓》.
 Reward layer_04_partner resolved route 4/10.
 Reward layer_05_shop resolved route 5/10.
-Battle layer_06_defense -> Victory ticks 201 route 6/10.
+Battle layer_06_defense -> Victory ticks 200 route 6/10.
 Battle result surface verified: 战斗结果：胜利 指标 6 核心 3 路线 6 操作 3.
 Reward layer_07_blessing resolved route 7/10.
 Reward layer_08_rest_nest resolved route 8/10.
 Battle layer_09_elite -> Victory ticks 179 route 9/10.
 Battle result surface verified: 战斗结果：胜利 指标 6 核心 3 路线 6 操作 3.
 Resolved pending cat upgrade before battle node layer_10_boss_call_tyrant: 塞班 获得 小技能《床线拦截》.
-Battle layer_10_boss_call_tyrant -> Victory ticks 227 route 10/10.
+Battle layer_10_boss_call_tyrant -> Victory ticks 236 route 10/10.
 Battle result surface verified: 战斗结果：胜利 指标 6 核心 3 路线 6 操作 3.
 Settlement rows verified: 路线通关 路线 10/10 战斗 5胜/0负 小鱼干 7 梦屑 9 猫 4 祝福 1 等级 1.
-Settlement action telemetry verified: 行动 切换 289/315 猫咪虚弱未能切换 26 自动锁定目标 105/176 技能锁定目标 91/206 技能 166/903 冷却中 622 没有目标 115 技能暂不可用 0 交互 40/86 距离太远 46.
-P0 play mode route flow smoke passed: nodes 10/10, battles 5, boss observed, fish 7, shards 9, 行动 切换 289/315 猫咪虚弱未能切换 26 自动锁定目标 105/176 技能锁定目标 91/206 技能 166/903 冷却中 622 没有目标 115 技能暂不可用 0 交互 40/86 距离太远 46.
+Settlement action telemetry verified: 行动 切换 286/311 猫咪虚弱未能切换 25 自动锁定目标 102/174 技能锁定目标 90/204 技能 166/893 冷却中 613 没有目标 114 技能暂不可用 0 交互 40/85 距离太远 45.
+P0 play mode route flow smoke passed: nodes 10/10, battles 5, boss observed, fish 7, shards 9, 行动 切换 286/311 猫咪虚弱未能切换 25 自动锁定目标 102/174 技能锁定目标 90/204 技能 166/893 冷却中 613 没有目标 114 技能暂不可用 0 交互 40/85 距离太远 45.
 ```
 
 ## Defeat Flow Smoke
@@ -93,7 +93,7 @@ P0 Play Mode evidence has no failures, 0 pending warning(s), and 8 passed check(
 [Passed] Screenshot File Evidence: Passed - P0 Play Mode screenshot file evidence complete for 11/11 expected validated capture(s).
 [Passed] Unity Runtime Validation Plan: Passed - P0 Unity runtime validation plan ready for 18 step(s), 11 screenshot(s), and 20 Chinese UI scale capture row(s).
 [Passed] Screenshot Smoke: Passed - P0 play mode screenshot smoke passed with 11 screenshot(s) in D:\Unity Workspace\TheCat\design\development\screenshots\p0-playmode-smoke.
-[Passed] Route Flow Smoke: Passed - P0 play mode route flow smoke passed: nodes 10/10, battles 5, boss observed, fish 7, shards 9, 行动 切换 289/315 猫咪虚弱未能切换 26 自动锁定目标 105/176 技能锁定目标 91/206 技能 166/903 冷却中 622 没有目标 115 技能暂不可用 0 交互 40/86 距离太远 46.
+[Passed] Route Flow Smoke: Passed - P0 play mode route flow smoke passed: nodes 10/10, battles 5, boss observed, fish 7, shards 9, 行动 切换 286/311 猫咪虚弱未能切换 25 自动锁定目标 102/174 技能锁定目标 90/204 技能 166/893 冷却中 613 没有目标 114 技能暂不可用 0 交互 40/85 距离太远 45.
 [Passed] Defeat Flow Smoke: Passed - P0 play mode defeat flow smoke passed: 路线失败 路线 1/10 战斗 0胜/1负 小鱼干 0 梦屑 0 猫 3 祝福 0 等级 0.
 ```
 
