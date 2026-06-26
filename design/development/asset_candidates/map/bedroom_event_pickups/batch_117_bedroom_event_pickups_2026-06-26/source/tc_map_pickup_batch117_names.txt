@@ -1,0 +1,9 @@
+fish_treat_pickup
+dream_thread_spool_pickup
+memory_shard_cluster_pickup
+moon_ticket_pass_pickup
+blessing_lantern_pickup
+story_page_clue_pickup
+star_button_key_pickup
+soft_light_orb_pickup
+reroll_dice_charm_pickup

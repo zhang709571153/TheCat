@@ -25,6 +25,21 @@ namespace TheCat.Data.Catalogs
             return rows.AsReadOnly();
         }
 
+        public static IReadOnlyList<string> BuildPlayerFocusRows(P0RunSettlementSummary summary)
+        {
+            List<string> rows = new List<string>
+            {
+                "结算：" + summary.ResultLabel,
+                "路线：" + summary.CompletedNodes + "/" + summary.TotalLayers + " 节点",
+                "战斗：" + summary.BattleSuccesses + "胜 / " + summary.BattleFailures + "负  用时 " + summary.DurationSeconds.ToString("0.0") + "s",
+                "路线状态：梦屑 " + summary.DreamShards + " 小鱼干 " + summary.FishTreats + " 猫 " + summary.RosterCount + " 祝福 " + summary.BlessingCount + " 等级 " + summary.BlessingTotalLevel,
+                "最终核心：" + P0CoreValuePresenter.BuildSettlementCoreSummary(summary),
+                "最终猫咪生命：记录 " + summary.CatVitalCount + " 虚弱 " + summary.WeakCatCount + " 最低 " + (summary.LowestCatHpRatio * 100f).ToString("0") + "%"
+            };
+
+            return rows.AsReadOnly();
+        }
+
         public static string BuildActionTelemetrySummary(P0RunSettlementSummary summary)
         {
             return "行动 切换 "

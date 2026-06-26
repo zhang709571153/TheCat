@@ -1,0 +1,9 @@
+bed_zone_focus_control
+feeder_zone_focus_control
+litter_zone_focus_control
+dream_gate_focus_control
+needs_attention_filter_toggle
+resource_need_filter_toggle
+interaction_range_overlay_toggle
+comfort_zone_overlay_toggle
+return_to_default_view_control

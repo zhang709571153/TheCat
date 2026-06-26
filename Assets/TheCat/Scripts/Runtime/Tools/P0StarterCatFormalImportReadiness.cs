@@ -151,7 +151,6 @@ namespace TheCat.Tools
         public const int ExpectedStarterCatCount = 3;
         public const int ExpectedCoveredCheckCount = 5;
         public const string FormalImportBlockPhrase = "formal starter-cat import remains blocked pending active-cat screenshot comparison approval";
-        public const string LegacyMissingActiveCatScreenshotBlockPhrase = "active-cat Play Mode screenshots are still missing";
 
         public static readonly string[] ActiveCatScreenshotFileNames =
         {
@@ -277,8 +276,7 @@ namespace TheCat.Tools
         private static bool IsExplicitBlockNote(string text)
         {
             return ContainsText(text, "do not import into Unity yet")
-                && (ContainsText(text, FormalImportBlockPhrase)
-                    || ContainsText(text, LegacyMissingActiveCatScreenshotBlockPhrase))
+                && ContainsText(text, FormalImportBlockPhrase)
                 && ContainsText(text, "colored turnaround contact sheet");
         }
 

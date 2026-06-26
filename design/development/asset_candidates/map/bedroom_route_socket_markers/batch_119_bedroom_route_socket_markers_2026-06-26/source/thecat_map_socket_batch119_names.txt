@@ -1,0 +1,9 @@
+bed_defense_socket_frame
+north_entry_socket_marker
+east_entry_socket_marker
+south_entry_socket_marker
+west_entry_socket_marker
+safe_rest_socket_marker
+hazard_noise_socket_marker
+reward_pickup_socket_marker
+locked_unknown_socket_marker

@@ -1,0 +1,9 @@
+bedroom_bed_defense_anchor
+bedroom_enemy_entry_north_gate
+bedroom_enemy_entry_east_gate
+bedroom_enemy_entry_south_gate
+bedroom_enemy_entry_west_gate
+bedroom_safe_zone_boundary_ring
+bedroom_path_arrow_marker
+bedroom_obstacle_blocker_marker
+bedroom_spawn_warning_marker

@@ -46,6 +46,11 @@ namespace TheCat.Tests
             Assert.AreEqual("已加入猫队", surface.StarterCards[0].SelectionStateLabel);
             Assert.AreEqual("已准备", surface.StarterCards[0].ReadyBadgeLabel);
             Assert.AreEqual(P0VisualAssetCatalog.SaibanHudAvatarId, surface.StarterCards[0].HudAvatar.AssetId);
+            Assert.IsFalse(string.IsNullOrWhiteSpace(surface.StarterCards[0].DisplayName));
+            Assert.IsFalse(string.IsNullOrWhiteSpace(surface.StarterCards[0].RoleLabel));
+            Assert.IsFalse(string.IsNullOrWhiteSpace(surface.StarterCards[0].RoleHint));
+            Assert.IsFalse(string.IsNullOrWhiteSpace(surface.StarterCards[0].AuthorityLabel));
+            Assert.IsFalse(string.IsNullOrWhiteSpace(surface.StarterCards[0].AttributeLabel));
             Assert.IsFalse(surface.StarterCards[0].BuildSelectionLabel().Contains("silver_oath_sun_sword"));
             Assert.IsFalse(surface.StarterCards[0].BuildCharacterSelectSummary().Contains("silver_oath_sun_sword"));
             StringAssert.Contains("silver_oath_sun_sword", surface.StarterCards[0].BuildDesignPreview());

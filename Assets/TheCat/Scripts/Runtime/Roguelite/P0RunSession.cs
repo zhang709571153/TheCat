@@ -77,6 +77,30 @@ namespace TheCat.Roguelite
             return CurrentRun;
         }
 
+        public static RunRouteState EnsureBedroomDreamRun()
+        {
+            return EnsureDreamRun(P0DreamMapCatalog.GetBedroomDreamMap());
+        }
+
+        public static RunRouteState EnsureEgyptDreamRun()
+        {
+            return EnsureDreamRun(P0DreamMapCatalog.GetEgyptDreamMap());
+        }
+
+        public static RunRouteState EnsureDreamRun(DreamMapDefinition dreamMap)
+        {
+            DreamMapDefinition targetMap = dreamMap ?? P0DreamMapCatalog.GetBedroomDreamMap();
+            if (HasActiveRun && CurrentRun.DreamMap.Id == targetMap.Id)
+            {
+                return CurrentRoute;
+            }
+
+            IReadOnlyList<string> starterCatIds = CurrentRun == null
+                ? CreateDefaultStarterCatIds()
+                : CurrentRun.Roster.CatIds;
+            return StartNewRun(starterCatIds, targetMap);
+        }
+
         public static RunNodeCompletionReport CompleteCurrentNode(NodeResult result)
         {
             RunProgressionState run = EnsureProgression();

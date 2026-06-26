@@ -39,16 +39,17 @@ namespace TheCat.Tests
         }
 
         [Test]
-        public void Evaluate_LegacyBlockedNotesStillBlockImport()
+        public void Evaluate_LegacyBlockedNotesNoLongerCreateValidGate()
         {
             P0StarterCatFormalImportReadinessReport report = EvaluateWith(
                 ScreenshotEvidenceWithActiveCats(true),
                 LegacyBlockedNoteReader);
 
-            Assert.IsTrue(report.IsGateValid, report.BuildDetailedSummary());
+            Assert.IsFalse(report.IsGateValid, report.BuildDetailedSummary());
             Assert.IsFalse(report.IsImportAllowed, report.BuildDetailedSummary());
-            Assert.AreEqual(P0StarterCatFormalImportState.Blocked, report.State);
-            Assert.AreEqual(P0StarterCatFormalImportReadiness.ExpectedStarterCatCount, report.ExplicitBlockNoteCount);
+            Assert.AreEqual(P0StarterCatFormalImportState.Invalid, report.State);
+            Assert.AreEqual(0, report.ExplicitBlockNoteCount);
+            StringAssert.Contains("review notes must be consistently blocked or approved", report.BuildDetailedSummary());
         }
 
         [Test]
@@ -136,7 +137,7 @@ namespace TheCat.Tests
         private static bool LegacyBlockedNoteReader(string path, out string text, out string error)
         {
             text = "Recommendation: candidate review only; do not import into Unity yet.\n"
-                + "Reason: " + P0StarterCatFormalImportReadiness.LegacyMissingActiveCatScreenshotBlockPhrase + ".\n"
+                + "Reason: active-cat Play Mode screenshots are still missing.\n"
                 + "Import gate: compare against the colored turnaround contact sheet.";
             error = string.Empty;
             return true;

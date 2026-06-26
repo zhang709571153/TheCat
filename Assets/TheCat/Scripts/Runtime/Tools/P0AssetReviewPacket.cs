@@ -669,7 +669,7 @@ namespace TheCat.Tools
             builder.AppendLine("## Starter Cat Derivative Candidate Evidence");
             builder.AppendLine();
             builder.AppendLine("- Review ready: " + (evidence.IsReviewReady ? "yes" : "no"));
-            builder.AppendLine("- Import status: blocked until active-cat Play Mode screenshots exist and pass source-lock review");
+            builder.AppendLine("- Import status: registered active-cat screenshots exist, but import remains blocked pending explicit colored-turnaround comparison approval");
             builder.AppendLine("- Batch directory: `" + Escape(evidence.BatchDirectory) + "`");
             builder.AppendLine("- Existing evidence files: " + evidence.ExistingFileCount + "/" + evidence.ExpectedFileCount);
             builder.AppendLine("- Candidate PNG files: " + evidence.CandidatePngCount + "/" + P0StarterCatDerivativeCandidateEvidence.ExpectedCandidatePngCount);
@@ -694,7 +694,7 @@ namespace TheCat.Tools
             builder.AppendLine("## Starter Cat Strict Candidate Evidence");
             builder.AppendLine();
             builder.AppendLine("- Ready: " + (evidence.IsReady ? "yes" : "no"));
-            builder.AppendLine("- Import status: candidate review only; do not import into Unity until active-cat screenshot review approves it");
+            builder.AppendLine("- Import status: candidate review only; do not import into Unity until registered active-cat screenshots receive explicit colored-turnaround comparison approval");
             builder.AppendLine("- Candidates: " + evidence.CandidateCount + "/" + P0StarterCatStrictCandidateEvidence.ExpectedStarterCatCount);
             builder.AppendLine("- Manifests: " + evidence.ManifestCount);
             builder.AppendLine("- Alpha candidates: " + evidence.AlphaCandidateCount);
@@ -757,8 +757,8 @@ namespace TheCat.Tools
             builder.AppendLine("- Unity-blocked items: " + coverage.UnityBlockedCount);
             builder.AppendLine("- Existing prompts: " + coverage.ExistingPromptCount);
             builder.AppendLine();
-            builder.AppendLine("| priority | queue | phase | state | prompt | next action |");
-            builder.AppendLine("| --- | --- | --- | --- | --- | --- |");
+            builder.AppendLine("| priority | queue | phase | state | prompt | candidate directory | related batches | required evidence | next action |");
+            builder.AppendLine("| --- | --- | --- | --- | --- | --- | --- | --- | --- |");
 
             for (int i = 0; i < queue.Count; i++)
             {
@@ -773,6 +773,12 @@ namespace TheCat.Tools
                 builder.Append(entry.State);
                 builder.Append(" | ");
                 builder.Append(Escape(entry.ExecutionPromptPath));
+                builder.Append(" | ");
+                builder.Append(Escape(entry.CandidateDirectory));
+                builder.Append(" | ");
+                builder.Append(Escape(Join(entry.RelatedBatchSlugs)));
+                builder.Append(" | ");
+                builder.Append(Escape(Join(entry.RequiredEvidence)));
                 builder.Append(" | ");
                 builder.Append(Escape(entry.NextAction));
                 builder.AppendLine(" |");
@@ -1053,7 +1059,7 @@ namespace TheCat.Tools
             Require(report, StarterCatReferencePlateReady(starterCatReferencePlates), "Starter cat source-turnaround reference plates provide front, side, and back hard visual inputs for future Codex image generation.", "Starter cat source-turnaround reference plates are incomplete or stale.");
             Require(report, StarterCatUnityReferenceInstallReady(starterCatUnityReferenceInstall), "Starter cat Unity reference atlases are installed as source-derived debug references without replacing runtime combat art.", "Starter cat Unity reference installs are incomplete or unsafe.");
             Require(report, StarterCatRuntimeCombatSpriteAuditReady(starterCatRuntimeCombatSpriteAudit), "Starter cat runtime combat sprite audit binds current runtime sprites to source locks, Batch 70 front plates, and runtime binding ids.", "Starter cat runtime combat sprite audit is incomplete or stale.");
-            Require(report, StarterCatStrictCandidateReady(starterCatStrictCandidates), "Starter cat strict candidate evidence records Batch 49/50/51 candidates and keeps Unity import blocked until active-cat screenshots pass.", "Starter cat strict candidate evidence is incomplete or stale.");
+            Require(report, StarterCatStrictCandidateReady(starterCatStrictCandidates), "Starter cat strict candidate evidence records Batch 49/50/51 candidates and keeps Unity import blocked until registered active-cat screenshots receive explicit colored-turnaround comparison approval.", "Starter cat strict candidate evidence is incomplete or stale.");
             Require(report, StarterCatFormalImportReady(starterCatFormalImport), "Starter cat formal import gate has an explicit blocked-or-approved decision tied to review notes and active screenshots.", "Starter cat formal import gate is invalid or missing.");
             Require(report, AssetProductionQueueReady(assetProductionQueue), "Asset production queue separates Codex candidate production from Unity validation and formal install work.", "Asset production queue is incomplete or stale.");
             Require(report, RuntimeBindingReviewReady(report.Entries, runtimeBindings), "Every runtime visual binding is represented in the asset review packet.", "Runtime visual bindings are not fully represented in the asset review packet.");
@@ -1308,7 +1314,8 @@ namespace TheCat.Tools
             IReadOnlyList<P0AssetReviewPacketEntry> entries,
             IReadOnlyList<P0VisualAssetBinding> runtimeBindings)
         {
-            if (runtimeBindings == null || runtimeBindings.Count == 0)
+            if (runtimeBindings == null
+                || runtimeBindings.Count != P0VisualAssetCatalog.P0RuntimeVisualBindingCount)
             {
                 return false;
             }

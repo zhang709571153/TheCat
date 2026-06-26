@@ -1,0 +1,9 @@
+skill_target_valid_ring
+skill_target_invalid_cross
+skill_aoe_circle_field
+skill_aoe_cone_field
+skill_line_target_strip
+skill_chain_link_path
+skill_shield_zone_floor
+skill_heal_zone_floor
+skill_summon_slot_rune

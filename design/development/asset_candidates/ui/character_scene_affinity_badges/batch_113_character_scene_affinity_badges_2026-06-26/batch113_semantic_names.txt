@@ -1,0 +1,9 @@
+saiban_bedroom_guard_badge
+nephthys_dream_route_badge
+suzune_cat_room_support_badge
+kagemaru_shadow_entry_badge
+cotton_safe_room_badge
+yuheng_reward_shop_badge
+locked_role_scene_badge
+unknown_role_scene_badge
+team_ready_scene_badge

@@ -7,13 +7,14 @@ namespace TheCat.Tests
     public sealed class P0ArchitectureCompletionAuditTests
     {
         [Test]
-        public void EvaluateCurrentProject_ReportsArchitectureReadyForSystematicAssetProduction()
+        public void EvaluateCurrentProject_ReportsDemoReadyWhileFinalRuntimeRemainsPending()
         {
             P0ArchitectureCompletionAuditReport report = P0ArchitectureCompletionAudit.EvaluateCurrentProject();
 
             Assert.IsFalse(report.HasBlockingFailures, report.BuildDetailedSummary());
             Assert.IsTrue(report.HasPlayableArchitecture, report.BuildDetailedSummary());
             Assert.IsTrue(report.IsReadyForSystematicAssetProduction, report.BuildDetailedSummary());
+            Assert.IsTrue(report.IsP0DemoReleaseReady, report.BuildDetailedSummary());
             Assert.IsFalse(report.IsFinalP0PlayableComplete, report.BuildDetailedSummary());
             Assert.IsTrue(report.RequiresUnityRuntimeValidation, report.BuildDetailedSummary());
             Assert.Greater(report.PendingUnityValidationGateCount, 0, report.BuildDetailedSummary());
@@ -21,9 +22,28 @@ namespace TheCat.Tests
             Assert.IsTrue(report.ChineseUiScaleValidation.IsReady, report.BuildDetailedSummary());
             Assert.IsTrue(report.TryGetGate(P0ArchitectureCompletionAudit.ChineseUiScaleValidationGateId, out P0ArchitectureCompletionAuditGate uiScaleGate));
             Assert.AreEqual(P0ArchitectureCompletionAuditGateState.Passed, uiScaleGate.State);
+            Assert.IsTrue(report.TryGetGate(P0ArchitectureCompletionAudit.PlayModeEvidenceGateId, out P0ArchitectureCompletionAuditGate playModeGate));
+            Assert.AreEqual(P0ArchitectureCompletionAuditGateState.Passed, playModeGate.State);
+            StringAssert.Contains("report file evidence complete", playModeGate.Message);
+            Assert.IsTrue(report.TryGetGate(P0ArchitectureCompletionAudit.FinalP0RuntimeGateId, out P0ArchitectureCompletionAuditGate runtimeGate));
+            Assert.AreEqual(P0ArchitectureCompletionAuditGateState.PendingUnityValidation, runtimeGate.State);
             Assert.AreEqual(10, report.TotalRouteLayers);
             Assert.AreEqual(10, report.CompletedRouteLayers);
             Assert.AreEqual(5, report.BattleCount);
+        }
+
+        [Test]
+        public void EvaluateCurrentProject_DemoReadyDoesNotRequireStarterCatFormalImportApproval()
+        {
+            P0ArchitectureCompletionAuditReport report = P0ArchitectureCompletionAudit.EvaluateCurrentProject();
+
+            Assert.IsTrue(report.IsP0DemoReleaseReady, report.BuildDetailedSummary());
+            Assert.IsTrue(report.TryGetGate(P0ArchitectureCompletionAudit.StarterCatFormalImportGateId, out P0ArchitectureCompletionAuditGate starterCatGate));
+            Assert.AreEqual(P0ArchitectureCompletionAuditGateState.PendingUnityValidation, starterCatGate.State);
+            Assert.IsNotNull(report.StarterCatFormalImport);
+            Assert.IsTrue(report.StarterCatFormalImport.IsGateValid, report.BuildDetailedSummary());
+            Assert.IsFalse(report.StarterCatFormalImport.IsImportAllowed, report.BuildDetailedSummary());
+            Assert.IsFalse(report.IsFinalP0PlayableComplete, report.BuildDetailedSummary());
         }
 
         [Test]
@@ -50,7 +70,7 @@ namespace TheCat.Tests
             Assert.IsNotNull(report.StarterCatFormalImport);
             Assert.IsTrue(report.StarterCatFormalImport.IsGateValid, report.BuildDetailedSummary());
             Assert.IsFalse(report.StarterCatFormalImport.IsImportAllowed, report.BuildDetailedSummary());
-            Assert.AreEqual(0, report.StarterCatFormalImport.ActiveCatScreenshotCount);
+            Assert.AreEqual(P0StarterCatFormalImportReadiness.ExpectedStarterCatCount, report.StarterCatFormalImport.ActiveCatScreenshotCount);
         }
 
         [Test]
@@ -61,9 +81,11 @@ namespace TheCat.Tests
             string markdown = report.BuildMarkdown();
 
             StringAssert.Contains("Ready for systematic Codex-side asset production: yes", markdown);
+            StringAssert.Contains("Current P0 demo release/readiness: yes", markdown);
             StringAssert.Contains("Final P0 Unity runtime complete: no", markdown);
             StringAssert.Contains("Codex owns candidate production", markdown);
             StringAssert.Contains("Unity owns formal install", markdown);
+            StringAssert.Contains("Play Mode report file evidence complete", markdown);
             StringAssert.Contains("Chinese UI scale validation", markdown);
             StringAssert.Contains("locked colored three-view turnarounds", markdown);
         }

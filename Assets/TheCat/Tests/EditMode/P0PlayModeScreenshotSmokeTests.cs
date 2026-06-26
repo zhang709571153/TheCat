@@ -53,5 +53,22 @@ namespace TheCat.Tests
             Assert.AreEqual("01-main-menu.png", P0PlayModeScreenshotSmoke.ExpectedCaptureFileNames[0]);
             StringAssert.Contains("35%", surface.BuildStatusLine());
         }
+
+        [Test]
+        public void EgyptEntrySmoke_UsesDedicatedFiveScreenshotEvidencePlan()
+        {
+            Assert.IsTrue(P0PlayModeEgyptEntrySmoke.HasEgyptEntryCapturePlan());
+            Assert.AreEqual(5, P0PlayModeEgyptEntrySmoke.ExpectedCaptureCount);
+            Assert.AreEqual(5, P0PlayModeEgyptEntrySmoke.ExpectedCaptureFileNames.Count);
+            Assert.AreEqual("design/development/screenshots/p0-egypt-entry-smoke", P0PlayModeEgyptEntrySmoke.DefaultScreenshotDirectory);
+            Assert.AreEqual("01-cat-room-egypt-entry.png", P0PlayModeEgyptEntrySmoke.ExpectedCaptureFileNames[0]);
+            Assert.AreEqual("02-egypt-route-map-layer1.png", P0PlayModeEgyptEntrySmoke.ExpectedCaptureFileNames[1]);
+            Assert.AreEqual("03-egypt-battle-hud-layer1.png", P0PlayModeEgyptEntrySmoke.ExpectedCaptureFileNames[2]);
+            Assert.AreEqual("04-egypt-battle-result-layer1.png", P0PlayModeEgyptEntrySmoke.ExpectedCaptureFileNames[3]);
+            Assert.AreEqual("05-egypt-route-map-after-layer1.png", P0PlayModeEgyptEntrySmoke.ExpectedCaptureFileNames[4]);
+            CollectionAssert.DoesNotContain(
+                P0PlayModeScreenshotSmoke.ExpectedCaptureFileNames,
+                P0PlayModeEgyptEntrySmoke.RouteMapCaptureFileName);
+        }
     }
 }

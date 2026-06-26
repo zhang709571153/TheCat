@@ -4,6 +4,7 @@ using TheCat.Combat;
 using TheCat.Data;
 using TheCat.Data.Catalogs;
 using TheCat.Gameplay;
+using TheCat.Inputs;
 using TheCat.Roguelite;
 
 namespace TheCat.Tools
@@ -97,7 +98,7 @@ namespace TheCat.Tools
 
     public static class P0BattleResultCoverage
     {
-        public const int ExpectedCoveredCheckCount = 5;
+        public const int ExpectedCoveredCheckCount = 7;
 
         public static P0BattleResultCoverageReport EvaluatePrototypeSurface()
         {
@@ -108,6 +109,8 @@ namespace TheCat.Tools
             EvaluateOutcomeBannerSurface(report);
             EvaluateInProgressSurface(report);
             EvaluateCompactSummary(report);
+            EvaluatePlayerFocusRows(report);
+            EvaluateActionShortcutLabels(report);
 
             return report;
         }
@@ -124,8 +127,11 @@ namespace TheCat.Tools
                 report,
                 P0BattleResultPresenter.HasP0BattleResultSurface(surface)
                 && surface.Outcome == BattleOutcome.Victory
+                && surface.Title == "胜利"
+                && surface.ResultLabel == "胜利"
                 && Contains(surface.RouteRows, "奖励：")
                 && Contains(surface.RouteRows, "下一节点：")
+                && Contains(surface.RouteRows, "路线进度：1/10")
                 && Contains(surface.RouteRows, "总等级")
                 && Contains(surface.MetricRows, "用时：")
                 && Contains(surface.CoreRows, "主人睡眠度")
@@ -150,7 +156,10 @@ namespace TheCat.Tools
                 report,
                 P0BattleResultPresenter.HasP0BattleResultSurface(surface)
                 && surface.Outcome == BattleOutcome.Defeat
+                && surface.Title == "失败"
+                && surface.ResultLabel == "失败"
                 && Contains(surface.RouteRows, "路线状态：失败")
+                && !Contains(surface.RouteRows, "奖励：")
                 && Contains(surface.RouteRows, "总等级")
                 && surface.PromptText.Contains("失败结算")
                 && surface.TryGetAction(P0BattleResultActionIds.ContinueRoute, out P0BattleResultAction continueRoute)
@@ -231,6 +240,79 @@ namespace TheCat.Tools
                 && summary.Contains("操作 3"),
                 "Battle result compact summary reports outcome, metrics, core rows, route rows, and action count.",
                 "Battle result compact summary is missing required totals.");
+        }
+
+        private static void EvaluatePlayerFocusRows(P0BattleResultCoverageReport report)
+        {
+            BattleSimulation victoryBattle = CreateLayerOneBattle();
+            ResolveVictory(victoryBattle);
+            RunProgressionState victoryRun = CreateRun();
+            P0BattleResultSurface victorySurface = P0BattleResultPresenter.Build(
+                victoryBattle,
+                victoryRun,
+                CompleteCurrentNode(victoryRun, NodeResult.Success));
+            IReadOnlyList<string> victoryRows = P0BattleResultPresenter.BuildPlayerFocusRows(victorySurface);
+
+            BattleSimulation defeatBattle = CreateLayerOneBattle();
+            defeatBattle.DebugDamageOwnerSleep(999f);
+            RunProgressionState defeatRun = CreateRun();
+            P0BattleResultSurface defeatSurface = P0BattleResultPresenter.Build(
+                defeatBattle,
+                defeatRun,
+                CompleteCurrentNode(defeatRun, NodeResult.Failure));
+            IReadOnlyList<string> defeatRows = P0BattleResultPresenter.BuildPlayerFocusRows(defeatSurface);
+
+            Require(
+                report,
+                victoryRows.Count >= 5
+                && Contains(victoryRows, "路线结果：")
+                && Contains(victoryRows, "奖励：")
+                && Contains(victoryRows, "下一节点：")
+                && Contains(victoryRows, "路线进度：1/10")
+                && Contains(victoryRows, "主人睡眠度")
+                && defeatRows.Count >= 4
+                && Contains(defeatRows, "路线结果：")
+                && Contains(defeatRows, "路线状态：失败")
+                && Contains(defeatRows, "路线进度：1/10")
+                && Contains(defeatRows, "主人睡眠度")
+                && !Contains(defeatRows, "奖励：")
+                && HasNoPlayerFacingDeveloperTokens(victoryRows)
+                && HasNoPlayerFacingDeveloperTokens(defeatRows),
+                "Player-facing result focus rows expose reward, next node, failed-route state, route progress, and core sleep without developer tokens.",
+                "Player-facing result focus rows are missing a primary outcome detail.");
+        }
+
+        private static void EvaluateActionShortcutLabels(P0BattleResultCoverageReport report)
+        {
+            BattleSimulation battle = CreateLayerOneBattle();
+            ResolveVictory(battle);
+            RunProgressionState run = CreateRun();
+            P0BattleResultSurface surface = P0BattleResultPresenter.Build(
+                battle,
+                run,
+                CompleteCurrentNode(run, NodeResult.Success));
+
+            bool hasContinueBinding = P0KeyboardInputMap.TryGetBinding(P0InputCommand.ContinueRoute, out P0InputBinding continueBinding);
+            bool hasRestartBinding = P0KeyboardInputMap.TryGetBinding(P0InputCommand.RestartRun, out P0InputBinding restartBinding);
+
+            Require(
+                report,
+                hasContinueBinding
+                && hasRestartBinding
+                && surface.TryGetAction(P0BattleResultActionIds.ContinueRoute, out P0BattleResultAction continueRoute)
+                && continueRoute.ShortcutLabel == continueBinding.PrimaryKeyLabel
+                && continueRoute.BuildButtonLabel().Contains("[" + continueBinding.PrimaryKeyLabel + "]")
+                && surface.TryGetAction(P0BattleResultActionIds.ReturnCatRoom, out P0BattleResultAction returnCatRoom)
+                && string.IsNullOrWhiteSpace(returnCatRoom.ShortcutLabel)
+                && !returnCatRoom.BuildButtonLabel().Contains("[C]")
+                && surface.TryGetAction(P0BattleResultActionIds.RestartRun, out P0BattleResultAction restart)
+                && restart.ShortcutLabel == restartBinding.PrimaryKeyLabel
+                && restart.BuildButtonLabel().Contains("[" + restartBinding.PrimaryKeyLabel + "]")
+                && !restart.BuildButtonLabel().Contains("[R]")
+                && restart.Command == P0InputCommand.RestartRun
+                && restart.TargetSceneName == P0SceneFlow.GrayboxBattleSceneName,
+                "Result action shortcut labels match the keyboard input map and avoid fake cat-room shortcuts.",
+                "Result action shortcut labels drifted from the keyboard input map.");
         }
 
         private static BattleSimulation CreateLayerOneBattle()

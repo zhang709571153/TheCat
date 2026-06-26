@@ -72,7 +72,7 @@ namespace TheCat.Data.Catalogs
                         "Assets/TheCat/Prefabs",
                         "Assets/TheCat/Scenes"
                     },
-                    "Capture active-cat screenshots and compare Batch 49/50/51 against locked colored turnarounds before any starter-cat install."),
+                    "Use registered active-cat screenshots to compare Batch 49/50/51 against locked colored turnarounds and write explicit approval or continued-block notes before any starter-cat install."),
                 new P0AssetProductionQueueEntry(
                     CoreEnemyActiveValidationQueueId,
                     20,
@@ -261,7 +261,8 @@ namespace TheCat.Data.Catalogs
                         "validate_ui_cat_room_preflight_candidates.ps1 passes",
                         "6 transparent cat-room sprites and 4 cat-room mockups stay outside Assets",
                         "candidate PNGs stay outside Assets and have no Unity meta files",
-                        "Unity cat-room screenshots, bed/feeder/litter/dream entrance interaction proof, hover/disabled/range state readability, click targets, import settings, binding, and Console validation remain pending"
+                        "BATCH90_CAT_ROOM_UNITY_PREFLIGHT_REPORT_2026-06-26.md records runtime evidence 6/8, 0 formal runtime binding leaks, and hardened screenshot/runtime-log evidence gates",
+                        "Batch 90 runtime evidence report confirms four candidate-backed Unity screenshots, 6/6 candidate frame draws with fallback=0, bed/feeder/litter/dream entrance interaction states, hover/disabled/range readability, text density, click targets, and prop scale"
                     },
                     new[]
                     {
@@ -269,7 +270,7 @@ namespace TheCat.Data.Catalogs
                         "Assets/TheCat/Prefabs",
                         "Assets/TheCat/Scenes"
                     },
-                    "Batch 90 cat-room preflight is complete; keep it review-only until Unity-rendered cat-room screenshots, bed/feeder/litter/dream entrance interactions, hover/disabled/range states, click targets, import settings, binding, and Console checks approve a formal install."),
+                    "Batch 90 cat-room is candidate-backed runtime evidence 6/8 with candidate imports under Assets/TheCat/Art/UI/CatRoom; keep it review-only until scene/presenter binding, clean Console checks, explicit human approval, and formal runtime binding decision approve a formal install."),
                 new P0AssetProductionQueueEntry(
                     CharacterSelectPreflightCandidateQueueId,
                     52,
@@ -303,7 +304,8 @@ namespace TheCat.Data.Catalogs
                         "validate_ui_character_select_preflight_candidates.ps1 passes",
                         "6 transparent character-select sprites and 4 character-select mockups stay outside Assets",
                         "candidate PNGs stay outside Assets and have no Unity meta files",
-                        "Unity character-select screenshots, source-lock avatar consistency, text replacement, selected/idle state readability, click targets, import settings, binding, and Console validation remain pending"
+                        "BATCH88_CHARACTER_SELECT_UNITY_PREFLIGHT_REPORT_2026-06-25.md records runtime evidence 6/8, 0 formal runtime binding leaks, and hardened screenshot/runtime-log evidence gates",
+                        "Batch 88 runtime evidence report confirms four candidate-backed Unity screenshots, 6/6 candidate frame draws with fallback=0, source-lock avatar consistency, selected/idle states, Chinese text density, and card/start click targets"
                     },
                     new[]
                     {
@@ -311,7 +313,7 @@ namespace TheCat.Data.Catalogs
                         "Assets/TheCat/Prefabs",
                         "Assets/TheCat/Scenes"
                     },
-                    "Batch 88 character-select preflight is complete; keep it review-only until Unity-rendered character-select screenshots, source-lock avatar consistency, text and number replacement, selected/idle states, click targets, import settings, binding, and Console checks approve a formal install."),
+                    "Batch 88 character-select is candidate-backed runtime evidence 6/8 with candidate imports under Assets/TheCat/Art/UI/CharacterSelect; keep it review-only until scene/presenter binding, clean Console checks, explicit human approval, and formal runtime binding decision approve a formal install."),
                 new P0AssetProductionQueueEntry(
                     BattleHudPreflightCandidateQueueId,
                     55,
@@ -351,9 +353,10 @@ namespace TheCat.Data.Catalogs
                         "thecat_ui_battle_hud_batch87_review_sheet_v001.png",
                         "thecat_ui_battle_hud_batch87_candidate_review.md",
                         "validate_ui_battle_hud_preflight_candidates.ps1 passes",
-                        "6 transparent battle HUD sprites and 4 battle HUD mockups stay outside Assets",
-                        "candidate PNGs stay outside Assets and have no Unity meta files",
-                        "Unity battle HUD screenshots, gauge/text replacement, skill state readability, 1024x768 four-gauge proof, enemy/telegraph occlusion, import settings, click targets, binding, and Console validation remain pending"
+                        "6 transparent battle HUD source sprites and 4 battle HUD mockups stay under design candidate review",
+                        "6 Batch 87 Unity preflight imports exist under Assets/TheCat/Art/UI/BattleHUD with candidate-only binding coverage",
+                        "BATCH87_BATTLE_HUD_UNITY_PREFLIGHT_REPORT_2026-06-25.md records runtime evidence 6/8, 0 formal runtime binding leaks, and hardened screenshot/runtime-log evidence gates",
+                        "Batch 87 runtime evidence report confirms four candidate-backed Unity screenshots, 6/6 candidate frame draws with fallback=0, gauge/text replacement, skill-state readability, 1024x768 four-gauge proof, enemy/telegraph occlusion, and click targets"
                     },
                     new[]
                     {
@@ -361,7 +364,7 @@ namespace TheCat.Data.Catalogs
                         "Assets/TheCat/Prefabs",
                         "Assets/TheCat/Scenes"
                     },
-                    "Batch 87 battle HUD preflight is complete; keep it review-only until Unity-rendered battle HUD screenshots, four-gauge proof, text and number replacement, skill states, click targets, import settings, binding, and Console checks approve a formal install."),
+                    "Batch 87 battle HUD is candidate-backed runtime evidence 6/8 with candidate imports under Assets/TheCat/Art/UI/BattleHUD; keep it review-only until clean Console checks, explicit human approval, and formal runtime binding decision approve a formal install."),
                 new P0AssetProductionQueueEntry(
                     SkillSelectionPreflightCandidateQueueId,
                     56,
@@ -397,7 +400,8 @@ namespace TheCat.Data.Catalogs
                         "validate_ui_skill_selection_preflight_candidates.ps1 passes",
                         "8 transparent skill-selection sprites and 4 skill-selection mockups stay outside Assets",
                         "candidate PNGs stay outside Assets and have no Unity meta files",
-                        "Unity skill-selection screenshots, selected/ready/disabled/locked states, cooldown/low-resource/no-target semantics, text replacement, click targets, import settings, binding, and Console validation remain pending"
+                        "BATCH89_SKILL_SELECTION_UNITY_PREFLIGHT_REPORT_2026-06-26.md records runtime evidence 6/8, 0 formal runtime binding leaks, and hardened screenshot/runtime-log evidence gates",
+                        "Batch 89 runtime evidence report confirms four candidate-backed Unity screenshots, 8/8 candidate frame draws with fallback=0, selected/ready/disabled/locked states, cooldown/low-resource/no-target semantics, text density, and click targets"
                     },
                     new[]
                     {
@@ -405,7 +409,7 @@ namespace TheCat.Data.Catalogs
                         "Assets/TheCat/Prefabs",
                         "Assets/TheCat/Scenes"
                     },
-                    "Batch 89 skill-selection preflight is complete; keep it review-only until Unity-rendered skill-selection screenshots, selected/ready/disabled/locked states, cooldown and low-resource semantics, text and number replacement, click targets, import settings, binding, and Console checks approve a formal install."),
+                    "Batch 89 skill-selection is candidate-backed runtime evidence 6/8 with candidate imports under Assets/TheCat/Art/UI/SkillSelection; keep it review-only until scene/presenter binding, clean Console checks, explicit human approval, and formal runtime binding decision approve a formal install."),
                 new P0AssetProductionQueueEntry(
                     RuntimeControlIconCandidateQueueId,
                     60,
@@ -633,7 +637,9 @@ namespace TheCat.Data.Catalogs
                         "validate_ui_loading_start_preflight_candidates.ps1 passes",
                         "4 transparent loading/start sprites and 4 resolution mockups stay outside Assets",
                         "candidate PNGs stay outside Assets and have no Unity meta files",
-                        "Unity loading/start screenshots, spinner interpretation, placeholder state replacement, 1024x768 crowding, import settings, binding, and Console validation remain pending"
+                        "BATCH83_LOADING_START_UNITY_PREFLIGHT_REPORT_2026-06-26.md records runtime evidence 6/8, 0 formal runtime binding leaks, and hardened screenshot/runtime-log evidence gates",
+                        "Batch 83 runtime evidence report confirms four candidate-backed Unity screenshots, 4/4 candidate frame draws with fallback=0, spinner/placeholder state visibility, progress readability, and start/continue click targets",
+                        "Formal install remains blocked until scene/presenter binding, clean Console, explicit human approval, and formal runtime binding decision pass"
                     },
                     new[]
                     {
@@ -641,7 +647,7 @@ namespace TheCat.Data.Catalogs
                         "Assets/TheCat/Prefabs",
                         "Assets/TheCat/Scenes"
                     },
-                    "Batch 83 loading/start preflight is complete; keep it review-only until Unity-rendered loading/start screenshots, import settings, binding, placeholder-state replacement, and Console checks approve a formal install."),
+                    "Batch 83 loading/start has Unity-rendered candidate-backed runtime evidence 6/8 with candidate imports under Assets/TheCat/Art/UI/LoadingStart; keep it review-only until scene/presenter binding, clean Console checks, explicit human approval, and formal runtime binding decision approve a formal install."),
                 new P0AssetProductionQueueEntry(
                     ResultSettlementPreflightCandidateQueueId,
                     89,
@@ -669,9 +675,9 @@ namespace TheCat.Data.Catalogs
                         "thecat_ui_result_settlement_batch84_review_sheet_v001.png",
                         "thecat_ui_result_settlement_batch84_candidate_review.md",
                         "validate_ui_result_settlement_preflight_candidates.ps1 passes",
-                        "7 transparent result/settlement sprites and 4 result/settlement mockups stay outside Assets",
-                        "candidate PNGs stay outside Assets and have no Unity meta files",
-                        "Unity victory/defeat/settlement screenshots, text replacement, 1024x768 crowding, import settings, binding, and Console validation remain pending"
+                        "BATCH84_RESULT_SETTLEMENT_UNITY_PREFLIGHT_REPORT_2026-06-26.md records 7 candidate-only Unity preflight imports",
+                        "Batch 84 runtime evidence report confirms four candidate-backed Unity screenshots, 7/7 candidate frame draws with fallback=0, battle/result states, reward/stat readability, and click targets",
+                        "Formal install remains blocked until scene/presenter binding, clean Console, explicit human approval, and formal runtime binding decision pass"
                     },
                     new[]
                     {
@@ -679,7 +685,7 @@ namespace TheCat.Data.Catalogs
                         "Assets/TheCat/Prefabs",
                         "Assets/TheCat/Scenes"
                     },
-                    "Batch 84 result/settlement preflight is complete; keep it review-only until Unity-rendered victory, defeat, run-cleared, and run-failed screenshots, text replacement, 1024x768 crowding, import settings, binding, and Console checks approve a formal install."),
+                    "Batch 84 result/settlement has Unity-rendered candidate-backed runtime evidence 6/8 with candidate imports under Assets/TheCat/Art/UI/ResultSettlement; keep it review-only until scene/presenter binding, clean Console checks, explicit human approval, and formal runtime binding decision approve a formal install."),
                 new P0AssetProductionQueueEntry(
                     SettingsPausePreflightCandidateQueueId,
                     90,
@@ -711,9 +717,10 @@ namespace TheCat.Data.Catalogs
                         "thecat_ui_settings_pause_batch85_review_sheet_v001.png",
                         "thecat_ui_settings_pause_batch85_candidate_review.md",
                         "validate_ui_settings_pause_preflight_candidates.ps1 passes",
-                        "6 transparent settings/pause sprites and 4 settings/pause mockups stay outside Assets",
-                        "candidate PNGs stay outside Assets and have no Unity meta files",
-                        "Unity settings/pause screenshots, text replacement, 1024x768 key-hint semantics, import settings, click targets, binding, and Console validation remain pending"
+                        "BATCH85_SETTINGS_PAUSE_UNITY_PREFLIGHT_REPORT_2026-06-26.md records runtime evidence 6/8, 0 formal runtime binding leaks, and hardened screenshot/runtime-log evidence gates",
+                        "6/6 P0 Sprite import settings validated under Assets/TheCat/Art/UI/SettingsPause",
+                        "Batch 85 runtime evidence report confirms four candidate-backed Unity screenshots, 6/6 candidate frame draws with fallback=0, settings main/audio states, pause overlay state, key-hint readability, and settings/pause click targets",
+                        "Formal install remains blocked until scene/presenter binding, clean Console, explicit human approval, and formal runtime binding decision pass"
                     },
                     new[]
                     {
@@ -721,7 +728,7 @@ namespace TheCat.Data.Catalogs
                         "Assets/TheCat/Prefabs",
                         "Assets/TheCat/Scenes"
                     },
-                    "Batch 85 settings/pause preflight is complete; keep it review-only until Unity-rendered settings and pause screenshots, text replacement, 1024x768 key-hint semantics, import settings, click targets, binding, and Console checks approve a formal install."),
+                    "Batch 85 settings/pause has Unity-rendered candidate-backed runtime evidence 6/8 with candidate imports under Assets/TheCat/Art/UI/SettingsPause; keep it review-only until scene/presenter binding, clean Console checks, explicit human approval, and formal runtime binding decision approve a formal install."),
                 new P0AssetProductionQueueEntry(
                     DreamRoutePreflightCandidateQueueId,
                     91,
@@ -753,9 +760,11 @@ namespace TheCat.Data.Catalogs
                         "thecat_ui_dream_route_batch86_review_sheet_v001.png",
                         "thecat_ui_dream_route_batch86_candidate_review.md",
                         "validate_ui_dream_route_preflight_candidates.ps1 passes",
-                        "6 transparent dream-route sprites and 4 dream-route mockups stay outside Assets",
-                        "candidate PNGs stay outside Assets and have no Unity meta files",
-                        "Unity dream-entry/route-map screenshots, text replacement, node/path semantics, 1024x768 route-card crowding, boss gate dominance, import settings, click targets, binding, and Console validation remain pending"
+                        "6 transparent dream-route sprites imported only for Unity preflight under Assets/TheCat/Art/UI/DreamRoute",
+                        "candidate source PNGs stay under design asset candidates without Unity meta files",
+                        "BATCH86_DREAM_ROUTE_UNITY_PREFLIGHT_REPORT_2026-06-26.md records runtime evidence 6/8, 0 formal runtime binding leaks, and hardened screenshot/runtime-log evidence gates",
+                        "Batch 86 runtime evidence report confirms four candidate-backed Unity screenshots, 6/6 candidate frame draws with fallback=0, route-state semantics, boss gate scale, Chinese route labels/rewards, and click targets",
+                        "Formal install remains blocked until scene/presenter binding, clean Console, explicit human approval, and formal runtime binding decision pass"
                     },
                     new[]
                     {
@@ -763,7 +772,7 @@ namespace TheCat.Data.Catalogs
                         "Assets/TheCat/Prefabs",
                         "Assets/TheCat/Scenes"
                     },
-                    "Batch 86 dream-route preflight is complete; keep it review-only until Unity-rendered dream-entry and route-map screenshots, text replacement, node/path semantics, route-card click targets, import settings, binding, and Console checks approve a formal install."),
+                    "Batch 86 dream-route is candidate-backed runtime evidence 6/8 with candidate imports under Assets/TheCat/Art/UI/DreamRoute; keep it review-only until scene/presenter binding, clean Console checks, explicit human approval, and formal runtime binding decision approve a formal install."),
                 new P0AssetProductionQueueEntry(
                     FormalInstallDecisionQueueId,
                     100,

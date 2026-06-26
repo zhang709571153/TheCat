@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using TheCat.Data.Catalogs;
 using TheCat.Data.Definitions;
@@ -16,7 +17,8 @@ namespace TheCat.Tools
             P0ChineseUiScaleEvidencePacketReport chineseUiScaleEvidence,
             P0PlayModeScreenshotFileEvidenceReport screenshotFileEvidence,
             P0PlayModeEvidenceReport playModeEvidence,
-            P0StarterCatFormalImportReadinessReport starterCatFormalImport)
+            P0StarterCatFormalImportReadinessReport starterCatFormalImport,
+            P0PlayModeReportFileEvidenceReport playModeReportFileEvidence = null)
         {
             PlayableReadiness = playableReadiness;
             AssetProductionReadiness = assetProductionReadiness;
@@ -26,6 +28,7 @@ namespace TheCat.Tools
             ScreenshotFileEvidence = screenshotFileEvidence;
             PlayModeEvidence = playModeEvidence;
             StarterCatFormalImport = starterCatFormalImport;
+            PlayModeReportFileEvidence = playModeReportFileEvidence;
         }
 
         public P0PlayableReadinessReport PlayableReadiness { get; }
@@ -43,6 +46,20 @@ namespace TheCat.Tools
         public P0PlayModeEvidenceReport PlayModeEvidence { get; }
 
         public P0StarterCatFormalImportReadinessReport StarterCatFormalImport { get; }
+
+        public P0PlayModeReportFileEvidenceReport PlayModeReportFileEvidence { get; }
+
+        public bool HasCompletePlayModeEvidence =>
+            PlayModeEvidence != null && PlayModeEvidence.IsComplete
+            || PlayModeReportFileEvidence != null && PlayModeReportFileEvidence.IsComplete;
+
+        public bool IsP0DemoVisualEvidenceReady =>
+            IsArchitectureReadyForSystematicAssetProduction
+            && ScreenshotFileEvidence != null
+            && ScreenshotFileEvidence.IsComplete
+            && HasCompletePlayModeEvidence
+            && StarterCatFormalImport != null
+            && StarterCatFormalImport.IsGateValid;
 
         public bool IsArchitectureReadyForSystematicAssetProduction =>
             PlayableReadiness != null
@@ -62,8 +79,7 @@ namespace TheCat.Tools
             IsArchitectureReadyForSystematicAssetProduction
             && ScreenshotFileEvidence != null
             && ScreenshotFileEvidence.IsComplete
-            && PlayModeEvidence != null
-            && PlayModeEvidence.IsComplete
+            && HasCompletePlayModeEvidence
             && StarterCatFormalImport != null
             && StarterCatFormalImport.IsImportAllowed;
 
@@ -77,6 +93,11 @@ namespace TheCat.Tools
             if (IsFinalP0VisualAcceptanceReady)
             {
                 return "P0 visual acceptance is ready for final review and systematic asset integration.";
+            }
+
+            if (IsP0DemoVisualEvidenceReady)
+            {
+                return "P0 demo visual evidence is ready for the current baseline, but final visual acceptance remains blocked by formal install, Console, human review, or starter-cat import gates.";
             }
 
             if (IsArchitectureReadyForSystematicAssetProduction)
@@ -95,6 +116,7 @@ namespace TheCat.Tools
             builder.AppendLine("## Summary");
             builder.AppendLine();
             builder.AppendLine("- Architecture ready for systematic asset production: " + YesNo(IsArchitectureReadyForSystematicAssetProduction));
+            builder.AppendLine("- Current P0 demo visual evidence ready: " + YesNo(IsP0DemoVisualEvidenceReady));
             builder.AppendLine("- Final P0 visual acceptance ready: " + YesNo(IsFinalP0VisualAcceptanceReady));
             builder.AppendLine("- Starter cat formal import allowed: " + YesNo(StarterCatFormalImport != null && StarterCatFormalImport.IsImportAllowed));
             builder.AppendLine("- Starter cat formal import state: " + (StarterCatFormalImport == null ? "missing" : StarterCatFormalImport.State.ToString()));
@@ -103,6 +125,7 @@ namespace TheCat.Tools
             builder.AppendLine("- Chinese UI scale evidence packet: " + ChineseUiScaleEvidenceCount());
             builder.AppendLine("- Chinese UI scale evidence directory: " + (ChineseUiScaleEvidence == null ? "missing" : Escape(ChineseUiScaleEvidence.BatchDirectory)));
             builder.AppendLine("- Screenshot file evidence: " + ScreenshotEvidenceCount());
+            builder.AppendLine("- Play Mode report file evidence: " + (PlayModeReportFileEvidence == null ? "missing" : Escape(PlayModeReportFileEvidence.BuildSummary())));
             builder.AppendLine();
             builder.AppendLine(BuildSummary());
 
@@ -142,10 +165,10 @@ namespace TheCat.Tools
                 AppendInlineFileList(builder, "Unexpected screenshots", ScreenshotFileEvidence.UnexpectedPngFiles);
             }
 
-            if (PlayModeEvidence != null && !PlayModeEvidence.IsComplete)
+            if (!HasCompletePlayModeEvidence)
             {
                 hasAny = true;
-                builder.AppendLine("- Complete Play Mode evidence checks before final P0 visual acceptance.");
+                builder.AppendLine("- Complete Play Mode evidence checks or refresh the project-owned Play Mode acceptance report before final P0 visual acceptance.");
             }
 
             if (IsStarterCatFormalImportBlocked)
@@ -172,6 +195,7 @@ namespace TheCat.Tools
             AppendGateSummary(builder, "Chinese UI Scale Evidence Packet", ChineseUiScaleEvidence == null ? "missing" : ChineseUiScaleEvidence.BuildSummary());
             AppendGateSummary(builder, "Screenshot File Evidence", ScreenshotFileEvidence == null ? "missing" : ScreenshotFileEvidence.BuildSummary());
             AppendGateSummary(builder, "Play Mode Evidence", PlayModeEvidence == null ? "missing" : PlayModeEvidence.BuildSummary());
+            AppendGateSummary(builder, "Play Mode Report File Evidence", PlayModeReportFileEvidence == null ? "missing" : PlayModeReportFileEvidence.BuildSummary());
             AppendGateSummary(builder, "Starter Cat Formal Import", StarterCatFormalImport == null ? "missing" : StarterCatFormalImport.BuildSummary());
         }
 
@@ -290,6 +314,197 @@ namespace TheCat.Tools
         }
     }
 
+    public sealed class P0PlayModeReportFileEvidenceReport
+    {
+        public string ReportPath { get; private set; } = string.Empty;
+
+        public bool ReportExists { get; private set; }
+
+        public bool ResultPassed { get; private set; }
+
+        public bool SmokeStatePassed { get; private set; }
+
+        public bool EvidenceSummaryPassed { get; private set; }
+
+        public bool ScreenshotSmokePassed { get; private set; }
+
+        public bool RouteFlowPassed { get; private set; }
+
+        public bool DefeatFlowPassed { get; private set; }
+
+        public bool ScreenshotFileEvidencePassed { get; private set; }
+
+        public bool ScreenshotDirectoryMatches { get; private set; }
+
+        public bool ActiveCatCapturesListed { get; private set; }
+
+        public bool IsComplete =>
+            ReportExists
+            && ResultPassed
+            && SmokeStatePassed
+            && EvidenceSummaryPassed
+            && ScreenshotSmokePassed
+            && RouteFlowPassed
+            && DefeatFlowPassed
+            && ScreenshotFileEvidencePassed
+            && ScreenshotDirectoryMatches
+            && ActiveCatCapturesListed;
+
+        public void SetResult(
+            string reportPath,
+            bool reportExists,
+            bool resultPassed,
+            bool smokeStatePassed,
+            bool evidenceSummaryPassed,
+            bool screenshotSmokePassed,
+            bool routeFlowPassed,
+            bool defeatFlowPassed,
+            bool screenshotFileEvidencePassed,
+            bool screenshotDirectoryMatches,
+            bool activeCatCapturesListed)
+        {
+            ReportPath = reportPath ?? string.Empty;
+            ReportExists = reportExists;
+            ResultPassed = resultPassed;
+            SmokeStatePassed = smokeStatePassed;
+            EvidenceSummaryPassed = evidenceSummaryPassed;
+            ScreenshotSmokePassed = screenshotSmokePassed;
+            RouteFlowPassed = routeFlowPassed;
+            DefeatFlowPassed = defeatFlowPassed;
+            ScreenshotFileEvidencePassed = screenshotFileEvidencePassed;
+            ScreenshotDirectoryMatches = screenshotDirectoryMatches;
+            ActiveCatCapturesListed = activeCatCapturesListed;
+        }
+
+        public string BuildSummary()
+        {
+            return IsComplete
+                ? "P0 Play Mode acceptance report file evidence complete for current 11-capture route/defeat smoke."
+                : "P0 Play Mode acceptance report file evidence incomplete at `" + ReportPath + "`.";
+        }
+
+        public string BuildDetailedSummary()
+        {
+            List<string> lines = new List<string>
+            {
+                BuildSummary(),
+                "Report path: " + ReportPath,
+                "Report exists: " + YesNo(ReportExists),
+                "Result passed: " + YesNo(ResultPassed),
+                "Smoke state passed: " + YesNo(SmokeStatePassed),
+                "Evidence summary passed: " + YesNo(EvidenceSummaryPassed),
+                "Screenshot smoke passed: " + YesNo(ScreenshotSmokePassed),
+                "Route flow passed: " + YesNo(RouteFlowPassed),
+                "Defeat flow passed: " + YesNo(DefeatFlowPassed),
+                "Screenshot file evidence passed: " + YesNo(ScreenshotFileEvidencePassed),
+                "Screenshot directory matches: " + YesNo(ScreenshotDirectoryMatches),
+                "Active cat captures listed: " + YesNo(ActiveCatCapturesListed)
+            };
+
+            return string.Join(Environment.NewLine, lines);
+        }
+
+        private static string YesNo(bool value)
+        {
+            return value ? "yes" : "no";
+        }
+    }
+
+    public static class P0PlayModeReportFileEvidence
+    {
+        public const string DefaultReportPath = "design/development/unity_batchmode/P0_PLAYMODE_ACCEPTANCE_SMOKE_REPORT.md";
+
+        public static P0PlayModeReportFileEvidenceReport EvaluateCurrentReport()
+        {
+            return Evaluate(DefaultReportPath, DefaultFileExists, DefaultReadAllText);
+        }
+
+        public static P0PlayModeReportFileEvidenceReport Evaluate(
+            string reportPath,
+            Func<string, bool> fileExists,
+            Func<string, string> readAllText)
+        {
+            string path = reportPath ?? string.Empty;
+            Func<string, bool> exists = fileExists ?? DefaultFileExists;
+            Func<string, string> read = readAllText ?? DefaultReadAllText;
+            bool reportExists = exists(path);
+            string text = reportExists ? read(path) ?? string.Empty : string.Empty;
+
+            P0PlayModeReportFileEvidenceReport report = new P0PlayModeReportFileEvidenceReport();
+            report.SetResult(
+                path,
+                reportExists,
+                Contains(text, "- Result: passed"),
+                Contains(text, "- Smoke state: Passed"),
+                Contains(text, "8 passed check(s)") && Contains(text, "0 pending warning(s)"),
+                Contains(text, "screenshot smoke passed with 11 screenshot(s)"),
+                Contains(text, "Route-flow smoke passed")
+                    && Contains(text, "cat-room return verified")
+                    && Contains(text, "RestNest next-battle recovery verified")
+                    && Contains(text, "DreamEvent catnip next-battle modifier verified")
+                    && Contains(text, "Shop bed-patch next-battle sleep verified"),
+                Contains(text, "Defeat-flow smoke passed")
+                    && Contains(text, "failed cat-room return verified"),
+                Contains(text, "[Passed] Screenshot File Evidence")
+                    && Contains(text, "11/11 expected validated capture(s)"),
+                Contains(NormalizeSlashes(text), P0PlayModeScreenshotFileEvidence.DefaultScreenshotDirectory),
+                Contains(text, P0PlayModeScreenshotSmoke.ActiveCatSaibanCaptureFileName)
+                    && Contains(text, P0PlayModeScreenshotSmoke.ActiveCatNephthysCaptureFileName)
+                    && Contains(text, P0PlayModeScreenshotSmoke.ActiveCatSuzuneCaptureFileName));
+            return report;
+        }
+
+        private static bool Contains(string text, string expected)
+        {
+            return !string.IsNullOrWhiteSpace(text)
+                && !string.IsNullOrWhiteSpace(expected)
+                && text.IndexOf(expected, StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
+        private static string NormalizeSlashes(string text)
+        {
+            return (text ?? string.Empty).Replace('\\', '/');
+        }
+
+        private static bool DefaultFileExists(string path)
+        {
+            return !string.IsNullOrWhiteSpace(ResolveFilePath(path));
+        }
+
+        private static string DefaultReadAllText(string path)
+        {
+            string resolved = ResolveFilePath(path);
+            return string.IsNullOrWhiteSpace(resolved) ? string.Empty : File.ReadAllText(resolved);
+        }
+
+        private static string ResolveFilePath(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                return string.Empty;
+            }
+
+            if (File.Exists(path))
+            {
+                return path;
+            }
+
+            DirectoryInfo current = new DirectoryInfo(Directory.GetCurrentDirectory());
+            for (int i = 0; i < 6 && current != null; i++)
+            {
+                string candidate = Path.Combine(current.FullName, path.Replace('/', Path.DirectorySeparatorChar));
+                if (File.Exists(candidate))
+                {
+                    return candidate;
+                }
+
+                current = current.Parent;
+            }
+
+            return string.Empty;
+        }
+    }
+
     public static class P0VisualAcceptance
     {
         public static P0VisualAcceptanceReport EvaluateCurrent()
@@ -302,7 +517,8 @@ namespace TheCat.Tools
                 P0ChineseUiScaleEvidencePacket.EvaluateCurrentPacket(),
                 P0PlayModeScreenshotFileEvidence.EvaluateP0Directory(),
                 P0PlayModeEvidenceChecklist.EvaluateCurrent(),
-                P0StarterCatFormalImportReadiness.EvaluateCurrentGate());
+                P0StarterCatFormalImportReadiness.EvaluateCurrentGate(),
+                P0PlayModeReportFileEvidence.EvaluateCurrentReport());
         }
 
         public static P0VisualAcceptanceReport Evaluate(
@@ -313,7 +529,8 @@ namespace TheCat.Tools
             P0ChineseUiScaleEvidencePacketReport chineseUiScaleEvidence,
             P0PlayModeScreenshotFileEvidenceReport screenshotFileEvidence,
             P0PlayModeEvidenceReport playModeEvidence,
-            P0StarterCatFormalImportReadinessReport starterCatFormalImport)
+            P0StarterCatFormalImportReadinessReport starterCatFormalImport,
+            P0PlayModeReportFileEvidenceReport playModeReportFileEvidence = null)
         {
             return new P0VisualAcceptanceReport(
                 playableReadiness,
@@ -323,7 +540,8 @@ namespace TheCat.Tools
                 chineseUiScaleEvidence,
                 screenshotFileEvidence,
                 playModeEvidence,
-                starterCatFormalImport);
+                starterCatFormalImport,
+                playModeReportFileEvidence);
         }
     }
 }

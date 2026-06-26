@@ -101,6 +101,7 @@ Projection bands:
 | Semantic sprites | `semantic_sprites/*.png` |
 | Manifest | `thecat_ui_unlock_token_batch96_semantic_manifest.csv` |
 | Contact sheet | `thecat_ui_unlock_token_batch96_semantic_contact_sheet_v001.png` |
+| 64px readability board | `thecat_ui_unlock_token_batch96_64px_readability_board_v001.png` |
 | Final review CSV | `thecat_ui_unlock_token_batch96_final_review.csv` |
 | Asset table | `thecat_ui_unlock_role_scene_token_batch96_asset_table.csv` |
 
@@ -131,6 +132,7 @@ Local QA passed for:
 - no Unity `.meta` files;
 - ASCII-safe file paths;
 - 9 planned sprites present.
+- local 64px light/dark-background readability board generated for early review.
 
 ## Current Gate
 

@@ -652,6 +652,541 @@ namespace TheCat.Tools
         }
     }
 
+    public enum P0FormalInstallGateSeverity
+    {
+        Info,
+        Failure
+    }
+
+    public readonly struct P0FormalInstallGateIssue
+    {
+        public P0FormalInstallGateIssue(P0FormalInstallGateSeverity severity, string message)
+        {
+            Severity = severity;
+            Message = message ?? string.Empty;
+        }
+
+        public P0FormalInstallGateSeverity Severity { get; }
+
+        public string Message { get; }
+    }
+
+    public sealed class P0FormalInstallGateQueueRow
+    {
+        public P0FormalInstallGateQueueRow(
+            string queueId,
+            string displayName,
+            P0AssetProductionQueueState state,
+            bool hasRuntimeEvidenceSixOfEight,
+            bool requiresSceneOrConsoleGate,
+            bool requiresHumanApproval,
+            bool formalInstallAllowed)
+        {
+            QueueId = queueId ?? string.Empty;
+            DisplayName = displayName ?? string.Empty;
+            State = state;
+            HasRuntimeEvidenceSixOfEight = hasRuntimeEvidenceSixOfEight;
+            RequiresSceneOrConsoleGate = requiresSceneOrConsoleGate;
+            RequiresHumanApproval = requiresHumanApproval;
+            FormalInstallAllowed = formalInstallAllowed;
+        }
+
+        public string QueueId { get; }
+
+        public string DisplayName { get; }
+
+        public P0AssetProductionQueueState State { get; }
+
+        public bool HasRuntimeEvidenceSixOfEight { get; }
+
+        public bool RequiresSceneOrConsoleGate { get; }
+
+        public bool RequiresHumanApproval { get; }
+
+        public bool FormalInstallAllowed { get; }
+
+        public bool BlocksFormalInstall => !FormalInstallAllowed
+            && (State == P0AssetProductionQueueState.CandidatePackCompletePendingUnityReview
+                || State == P0AssetProductionQueueState.BlockedByUnityValidation
+                || RequiresSceneOrConsoleGate
+                || RequiresHumanApproval);
+    }
+
+    public sealed class P0FormalInstallGateReport
+    {
+        private readonly List<P0FormalInstallGateIssue> issues = new List<P0FormalInstallGateIssue>();
+        private readonly List<string> coveredChecks = new List<string>();
+        private readonly List<P0FormalInstallGateQueueRow> queueRows = new List<P0FormalInstallGateQueueRow>();
+
+        public IReadOnlyList<P0FormalInstallGateIssue> Issues => issues.AsReadOnly();
+
+        public IReadOnlyList<string> CoveredChecks => coveredChecks.AsReadOnly();
+
+        public IReadOnlyList<P0FormalInstallGateQueueRow> QueueRows => queueRows.AsReadOnly();
+
+        public int QueueItemCount { get; private set; }
+
+        public int CandidatePackCompletePendingUnityReviewCount { get; private set; }
+
+        public int UnityBlockedCount { get; private set; }
+
+        public int RuntimeEvidenceSixOfEightCount { get; private set; }
+
+        public int SceneOrConsoleGateCount { get; private set; }
+
+        public int HumanApprovalGateCount { get; private set; }
+
+        public int ReadyForFormalInstallCount { get; private set; }
+
+        public bool StarterCatFormalImportAllowed { get; private set; }
+
+        public P0StarterCatFormalImportState StarterCatFormalImportState { get; private set; } = P0StarterCatFormalImportState.Invalid;
+
+        public bool SharedConsoleClassifierContractReady { get; private set; }
+
+        public string ConsoleClassifierPolicySummary { get; private set; } = string.Empty;
+
+        public bool FormalInstallAllowed => ReadyForFormalInstallCount > 0
+            || StarterCatFormalImportAllowed;
+
+        public int FailureCount => Count(P0FormalInstallGateSeverity.Failure);
+
+        public bool IsGateValid => FailureCount == 0
+            && coveredChecks.Count >= P0FormalInstallGate.ExpectedCoveredCheckCount;
+
+        public bool IsFormalInstallBlocked => IsGateValid
+            && !FormalInstallAllowed
+            && (CandidatePackCompletePendingUnityReviewCount > 0
+                || UnityBlockedCount > 0
+                || RuntimeEvidenceSixOfEightCount > 0);
+
+        public void SetSnapshot(
+            int queueItemCount,
+            int candidatePackCompletePendingUnityReviewCount,
+            int unityBlockedCount,
+            int runtimeEvidenceSixOfEightCount,
+            int sceneOrConsoleGateCount,
+            int humanApprovalGateCount,
+            int readyForFormalInstallCount,
+            bool starterCatFormalImportAllowed,
+            P0StarterCatFormalImportState starterCatFormalImportState,
+            IReadOnlyList<P0FormalInstallGateQueueRow> rows)
+        {
+            QueueItemCount = queueItemCount;
+            CandidatePackCompletePendingUnityReviewCount = candidatePackCompletePendingUnityReviewCount;
+            UnityBlockedCount = unityBlockedCount;
+            RuntimeEvidenceSixOfEightCount = runtimeEvidenceSixOfEightCount;
+            SceneOrConsoleGateCount = sceneOrConsoleGateCount;
+            HumanApprovalGateCount = humanApprovalGateCount;
+            ReadyForFormalInstallCount = readyForFormalInstallCount;
+            StarterCatFormalImportAllowed = starterCatFormalImportAllowed;
+            StarterCatFormalImportState = starterCatFormalImportState;
+
+            queueRows.Clear();
+            if (rows == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < rows.Count; i++)
+            {
+                queueRows.Add(rows[i]);
+            }
+        }
+
+        public void SetConsoleClassifierPolicy(bool ready, string summary)
+        {
+            SharedConsoleClassifierContractReady = ready;
+            ConsoleClassifierPolicySummary = summary ?? string.Empty;
+        }
+
+        public void AddIssue(P0FormalInstallGateSeverity severity, string message)
+        {
+            issues.Add(new P0FormalInstallGateIssue(severity, message));
+        }
+
+        public void AddCoveredCheck(string check)
+        {
+            if (!string.IsNullOrWhiteSpace(check))
+            {
+                coveredChecks.Add(check);
+            }
+        }
+
+        public string BuildSummary()
+        {
+            if (!IsGateValid)
+            {
+                return "P0 formal install gate matrix has " + FailureCount + " failure(s).";
+            }
+
+            if (IsFormalInstallBlocked)
+            {
+                return "P0 formal install gate matrix is valid and remains blocked: "
+                    + RuntimeEvidenceSixOfEightCount
+                    + " runtime-evidence-ready candidate pack(s) still require scene/Console or human approval gates.";
+            }
+
+            return "P0 formal install gate matrix requires review because at least one formal install row is open.";
+        }
+
+        public string BuildDetailedSummary()
+        {
+            List<string> lines = new List<string>
+            {
+                BuildSummary(),
+                "Formal install allowed: " + (FormalInstallAllowed ? "yes" : "no"),
+                "Formal install blocked: " + (IsFormalInstallBlocked ? "yes" : "no"),
+                "Queue items: " + QueueItemCount,
+                "Candidate packs pending Unity review: " + CandidatePackCompletePendingUnityReviewCount,
+                "Unity-blocked queue items: " + UnityBlockedCount,
+                "Runtime evidence 6/8 items: " + RuntimeEvidenceSixOfEightCount,
+                "Scene/Console-gated items: " + SceneOrConsoleGateCount,
+                "Human-approval-gated items: " + HumanApprovalGateCount,
+                "Ready-for-formal-install rows: " + ReadyForFormalInstallCount,
+                "Starter-cat formal import state: " + StarterCatFormalImportState,
+                "Starter-cat formal import allowed: " + (StarterCatFormalImportAllowed ? "yes" : "no"),
+                "Shared Console classifier contract: " + (SharedConsoleClassifierContractReady ? "ready" : "not ready"),
+                "Console classifier policy: " + ConsoleClassifierPolicySummary
+            };
+
+            for (int i = 0; i < coveredChecks.Count; i++)
+            {
+                lines.Add("- " + coveredChecks[i]);
+            }
+
+            for (int i = 0; i < issues.Count; i++)
+            {
+                lines.Add("[" + issues[i].Severity + "] " + issues[i].Message);
+            }
+
+            return string.Join(Environment.NewLine, lines);
+        }
+
+        public string BuildMarkdown()
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.AppendLine("# P0 Formal Install Gate Matrix");
+            builder.AppendLine();
+            builder.AppendLine(BuildSummary());
+            builder.AppendLine();
+            builder.AppendLine("## Decision");
+            builder.AppendLine();
+            builder.AppendLine("- Formal install allowed: " + (FormalInstallAllowed ? "yes" : "no"));
+            builder.AppendLine("- Formal install blocked: " + (IsFormalInstallBlocked ? "yes" : "no"));
+            builder.AppendLine("- Runtime evidence 6/8 items: " + RuntimeEvidenceSixOfEightCount);
+            builder.AppendLine("- Scene/Console-gated items: " + SceneOrConsoleGateCount);
+            builder.AppendLine("- Human-approval-gated items: " + HumanApprovalGateCount);
+            builder.AppendLine("- Starter-cat formal import state: `" + StarterCatFormalImportState + "`");
+            builder.AppendLine("- Shared Console classifier: " + (SharedConsoleClassifierContractReady ? "active strict-clean contract" : "not ready"));
+            builder.AppendLine("- Console classifier policy: " + EscapeTable(ConsoleClassifierPolicySummary));
+            builder.AppendLine();
+            builder.AppendLine("## Queue Rows");
+            builder.AppendLine();
+            builder.AppendLine("| queue | state | runtime evidence | scene/Console | human approval | formal install |");
+            builder.AppendLine("| --- | --- | --- | --- | --- | --- |");
+
+            for (int i = 0; i < queueRows.Count; i++)
+            {
+                P0FormalInstallGateQueueRow row = queueRows[i];
+                builder.Append("| ");
+                builder.Append(EscapeTable(row.DisplayName));
+                builder.Append(" | ");
+                builder.Append(row.State);
+                builder.Append(" | ");
+                builder.Append(row.HasRuntimeEvidenceSixOfEight ? "6/8" : "pending");
+                builder.Append(" | ");
+                builder.Append(row.RequiresSceneOrConsoleGate ? "blocked" : "not listed");
+                builder.Append(" | ");
+                builder.Append(row.RequiresHumanApproval ? "blocked" : "not listed");
+                builder.Append(" | ");
+                builder.Append(row.FormalInstallAllowed ? "allowed" : "blocked");
+                builder.AppendLine(" |");
+            }
+
+            if (issues.Count > 0)
+            {
+                builder.AppendLine();
+                builder.AppendLine("## Issues");
+                builder.AppendLine();
+                for (int i = 0; i < issues.Count; i++)
+                {
+                    builder.AppendLine("- [" + issues[i].Severity + "] " + issues[i].Message);
+                }
+            }
+
+            return builder.ToString();
+        }
+
+        private static string EscapeTable(string value)
+        {
+            return (value ?? string.Empty)
+                .Replace("|", "\\|")
+                .Replace("\r", " ")
+                .Replace("\n", " ");
+        }
+
+        private int Count(P0FormalInstallGateSeverity severity)
+        {
+            int count = 0;
+            for (int i = 0; i < issues.Count; i++)
+            {
+                if (issues[i].Severity == severity)
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+    }
+
+    public static class P0FormalInstallGate
+    {
+        public const int ExpectedCoveredCheckCount = 8;
+        public const int ExpectedRuntimeEvidenceSixOfEightCount = 8;
+        public const string ConsoleClassifierPolicySummary = "StrictClean is required for formal clean-Console evidence; known environment noise is classified but still blocks formal clean-Console approval.";
+
+        public static P0FormalInstallGateReport EvaluateCurrentGate()
+        {
+            return Evaluate(
+                P0AssetProductionQueueCatalog.CreateP0Queue(),
+                P0StarterCatFormalImportReadiness.EvaluateCurrentGate());
+        }
+
+        public static P0FormalInstallGateReport Evaluate(
+            IReadOnlyList<P0AssetProductionQueueEntry> queueEntries,
+            P0StarterCatFormalImportReadinessReport starterCatFormalImport)
+        {
+            P0FormalInstallGateReport report = new P0FormalInstallGateReport();
+            List<P0FormalInstallGateQueueRow> rows = new List<P0FormalInstallGateQueueRow>();
+            IReadOnlyList<P0AssetProductionQueueEntry> entries = queueEntries ?? Array.Empty<P0AssetProductionQueueEntry>();
+
+            int candidatePending = 0;
+            int unityBlocked = 0;
+            int runtimeEvidenceSixOfEight = 0;
+            int sceneOrConsoleGated = 0;
+            int humanApprovalGated = 0;
+            int readyForFormalInstall = 0;
+            bool runtimeEvidenceRowsStayBlocked = true;
+            bool runtimeEvidenceRowsKeepSceneOrConsoleGate = true;
+            bool runtimeEvidenceRowsKeepHumanApprovalGate = true;
+
+            for (int i = 0; i < entries.Count; i++)
+            {
+                P0AssetProductionQueueEntry entry = entries[i];
+                bool hasRuntimeEvidenceSixOfEight = ContainsEntryText(entry, "runtime evidence 6/8")
+                    || ContainsEntryText(entry, "Runtime evidence: 6/8");
+                bool requiresSceneOrConsoleGate = ContainsEntryText(entry, "scene/presenter")
+                    || ContainsEntryText(entry, "clean Console")
+                    || ContainsEntryText(entry, "Console");
+                bool requiresHumanApproval = ContainsEntryText(entry, "human approval")
+                    || ContainsEntryText(entry, "human review")
+                    || ContainsEntryText(entry, "explicit human");
+                bool formalInstallAllowed = entry.State == P0AssetProductionQueueState.ReadyForFormalInstall;
+
+                if (entry.IsCandidatePackCompletePendingUnityReview)
+                {
+                    candidatePending++;
+                }
+
+                if (entry.IsUnityBlocked)
+                {
+                    unityBlocked++;
+                }
+
+                if (hasRuntimeEvidenceSixOfEight)
+                {
+                    runtimeEvidenceSixOfEight++;
+                }
+
+                if (requiresSceneOrConsoleGate)
+                {
+                    sceneOrConsoleGated++;
+                }
+
+                if (requiresHumanApproval)
+                {
+                    humanApprovalGated++;
+                }
+
+                if (formalInstallAllowed)
+                {
+                    readyForFormalInstall++;
+                }
+
+                P0FormalInstallGateQueueRow row = new P0FormalInstallGateQueueRow(
+                    entry.QueueId,
+                    entry.DisplayName,
+                    entry.State,
+                    hasRuntimeEvidenceSixOfEight,
+                    requiresSceneOrConsoleGate,
+                    requiresHumanApproval,
+                    formalInstallAllowed);
+                rows.Add(row);
+
+                if (hasRuntimeEvidenceSixOfEight && !row.BlocksFormalInstall)
+                {
+                    runtimeEvidenceRowsStayBlocked = false;
+                }
+
+                if (hasRuntimeEvidenceSixOfEight && !requiresSceneOrConsoleGate)
+                {
+                    runtimeEvidenceRowsKeepSceneOrConsoleGate = false;
+                }
+
+                if (hasRuntimeEvidenceSixOfEight && !requiresHumanApproval)
+                {
+                    runtimeEvidenceRowsKeepHumanApprovalGate = false;
+                }
+            }
+
+            bool starterCatImportAllowed = starterCatFormalImport != null && starterCatFormalImport.IsImportAllowed;
+            P0StarterCatFormalImportState starterCatImportState = starterCatFormalImport == null
+                ? P0StarterCatFormalImportState.Invalid
+                : starterCatFormalImport.State;
+            bool sharedConsoleClassifierContractReady = IsSharedConsoleClassifierContractReady();
+
+            report.SetSnapshot(
+                entries.Count,
+                candidatePending,
+                unityBlocked,
+                runtimeEvidenceSixOfEight,
+                sceneOrConsoleGated,
+                humanApprovalGated,
+                readyForFormalInstall,
+                starterCatImportAllowed,
+                starterCatImportState,
+                rows);
+            report.SetConsoleClassifierPolicy(
+                sharedConsoleClassifierContractReady,
+                ConsoleClassifierPolicySummary);
+
+            Require(
+                report,
+                entries.Count == P0AssetProductionQueueCatalog.ExpectedP0QueueCount,
+                "Formal install matrix covers the current P0 asset-production queue.",
+                "Formal install matrix has a stale or missing queue item count.");
+
+            Require(
+                report,
+                candidatePending == P0AssetProductionQueueCatalog.ExpectedCandidatePackCompletePendingUnityReviewCount
+                    && unityBlocked == P0AssetProductionQueueCatalog.ExpectedUnityBlockedCount,
+                "Formal install matrix preserves the candidate-pending and Unity-blocked queue split.",
+                "Formal install matrix queue-state counts are stale.");
+
+            Require(
+                report,
+                runtimeEvidenceSixOfEight >= ExpectedRuntimeEvidenceSixOfEightCount,
+                "Formal install matrix records the Batch 83-90 runtime-evidence 6/8 lanes.",
+                "Formal install matrix is missing current runtime-evidence 6/8 lanes.");
+
+            Require(
+                report,
+                sceneOrConsoleGated >= runtimeEvidenceSixOfEight
+                    && runtimeEvidenceRowsKeepSceneOrConsoleGate,
+                "Every runtime-evidence-ready lane still names a scene/Console gate before formal install.",
+                "At least one runtime-evidence-ready lane lacks a scene/Console blocker.");
+
+            Require(
+                report,
+                humanApprovalGated >= runtimeEvidenceSixOfEight
+                    && runtimeEvidenceRowsKeepHumanApprovalGate,
+                "Every runtime-evidence-ready lane still names explicit human approval before formal install.",
+                "At least one runtime-evidence-ready lane lacks a human-approval blocker.");
+
+            Require(
+                report,
+                readyForFormalInstall == 0 && !starterCatImportAllowed,
+                "No current row is ready for formal install, and starter-cat body import remains blocked.",
+                "Formal install rows must remain blocked until scene/Console, human approval, and starter-cat review gates pass.");
+
+            Require(
+                report,
+                runtimeEvidenceRowsStayBlocked,
+                "Runtime-evidence 6/8 lanes are demo evidence only and remain formal-install blocked.",
+                "A runtime-evidence 6/8 lane is incorrectly treated as formal-install allowed.");
+
+            Require(
+                report,
+                sharedConsoleClassifierContractReady,
+                "Formal install matrix is bound to the shared strict-clean Unity Console classifier contract.",
+                "Formal install matrix is not bound to the shared Unity Console classifier contract.");
+
+            return report;
+        }
+
+        private static bool IsSharedConsoleClassifierContractReady()
+        {
+            P0UnityConsoleLogClassifierReport knownNoise = P0UnityConsoleLogClassifier.Classify(
+                "[TheCat] P0 batchmode acceptance passed 7 gate(s).\n"
+                + "[Licensing::Client] Error: noisy entitlement line\n"
+                + "Unity.AI.Tracing.ConsoleSink:LogToConsole (string,string,System.Exception)\n");
+            P0UnityConsoleLogClassifierReport unknownBlocking = P0UnityConsoleLogClassifier.Classify(
+                "SomePlugin Error: missing scene binding\n");
+
+            return !knownNoise.StrictClean
+                && knownNoise.ProjectOwnedClean
+                && knownNoise.HasKnownEnvironmentNoise
+                && !unknownBlocking.StrictClean
+                && !unknownBlocking.ProjectOwnedClean
+                && unknownBlocking.HasUnknownBlockingTokens;
+        }
+
+        private static void Require(
+            P0FormalInstallGateReport report,
+            bool condition,
+            string coveredCheck,
+            string failureMessage)
+        {
+            if (condition)
+            {
+                report.AddCoveredCheck(coveredCheck);
+                return;
+            }
+
+            report.AddIssue(P0FormalInstallGateSeverity.Failure, failureMessage);
+        }
+
+        private static bool ContainsEntryText(P0AssetProductionQueueEntry entry, string token)
+        {
+            if (entry == null || string.IsNullOrWhiteSpace(token))
+            {
+                return false;
+            }
+
+            return Contains(entry.NextAction, token)
+                || Contains(entry.DisplayName, token)
+                || Contains(entry.QueueId, token)
+                || ContainsAny(entry.RequiredEvidence, token);
+        }
+
+        private static bool ContainsAny(IReadOnlyList<string> values, string token)
+        {
+            if (values == null)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < values.Count; i++)
+            {
+                if (Contains(values[i], token))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool Contains(string value, string token)
+        {
+            return value != null
+                && token != null
+                && value.IndexOf(token, StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+    }
+
     public static class P0AssetProductionReadiness
     {
         public const int ExpectedCoveredCheckCount = 19;
@@ -857,7 +1392,7 @@ namespace TheCat.Tools
                 starterCatStrictCandidates != null
                     && starterCatStrictCandidates.IsReady
                     && starterCatStrictCandidates.CandidateCount == P0StarterCatStrictCandidateEvidence.ExpectedStarterCatCount,
-                "Starter cat strict candidate evidence records Batch 49/50/51 candidates and blocks import until active-cat screenshots pass.",
+                "Starter cat strict candidate evidence records Batch 49/50/51 candidates and blocks import until registered active-cat screenshots receive explicit colored-turnaround comparison approval.",
                 "Starter cat strict candidate evidence is incomplete or stale.");
 
             Require(

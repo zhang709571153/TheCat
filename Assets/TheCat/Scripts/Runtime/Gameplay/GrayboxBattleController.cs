@@ -13,6 +13,40 @@ using UnityEngine.SceneManagement;
 
 namespace TheCat.Gameplay
 {
+    public readonly struct P0BattleModifierEvidence
+    {
+        public P0BattleModifierEvidence(
+            bool hasPendingSource,
+            int sourceCount,
+            float skillDamageMultiplier,
+            float poopNaturalGrowthPerSecond)
+        {
+            HasPendingSource = hasPendingSource;
+            SourceCount = sourceCount;
+            SkillDamageMultiplier = skillDamageMultiplier;
+            PoopNaturalGrowthPerSecond = poopNaturalGrowthPerSecond;
+        }
+
+        public bool HasPendingSource { get; }
+
+        public int SourceCount { get; }
+
+        public float SkillDamageMultiplier { get; }
+
+        public float PoopNaturalGrowthPerSecond { get; }
+
+        public string BuildDiagnosticSummary()
+        {
+            return "sources "
+                + SourceCount
+                + ", skill x"
+                + SkillDamageMultiplier.ToString("0.##")
+                + ", poop growth "
+                + PoopNaturalGrowthPerSecond.ToString("0.###")
+                + "/s";
+        }
+    }
+
     public sealed class GrayboxBattleController : MonoBehaviour
     {
         private const float AutoAttackIntervalSeconds = 1.15f;
@@ -52,8 +86,10 @@ namespace TheCat.Gameplay
         private bool routeCompletionRecorded;
         private bool showDiagnosticsHud;
         private bool showSmokeTools;
+        private bool suppressHudForSmokeCapture;
         private bool restartConfirmationOpen;
         private RunNodeCompletionReport lastCompletionReport;
+        private P0BattleModifierEvidence battleModifierEvidence;
         private string message = "就绪";
         private P0HudMessageChannel messageChannel = P0HudMessageChannel.Player;
         private Vector2 hudScrollPosition;
@@ -63,8 +99,11 @@ namespace TheCat.Gameplay
         private GUIStyle wrappedHudButton;
         private GUIStyle hudSectionLabel;
         private GUIStyle hudPanelStyle;
+        private GUIStyle battleResultCardStyle;
+        private GUIStyle battleResultHeaderStyle;
         private P0BattleFeedback lastFeedback;
         private float feedbackAgeSeconds;
+        private bool showBattleResultDetails;
         private P0WorldVisualAssetView bedVisualView;
         private P0WorldVisualAssetView litterBoxVisualView;
         private P0WorldVisualAssetView feederVisualView;
@@ -167,9 +206,17 @@ namespace TheCat.Gameplay
 
         private void OnGUI()
         {
+            if (suppressHudForSmokeCapture)
+            {
+                return;
+            }
+
+            bool isResolvedBattle = IsBattleResolved;
             Rect panelRect = showDiagnosticsHud
                 ? P0ImGuiLayout.BuildLeftPanelRect(340f, 620f, 0.42f)
-                : P0ImGuiLayout.BuildLeftPanelRect(320f, 500f, 0.32f);
+                : isResolvedBattle
+                    ? P0ImGuiLayout.BuildLeftPanelRect(430f, 620f, 0.38f)
+                    : P0ImGuiLayout.BuildLeftPanelRect(320f, 500f, 0.32f);
             hudPanelInnerWidth = P0ImGuiLayout.ScrollContentWidth(panelRect);
             GUILayout.BeginArea(panelRect, HudPanelStyle);
             hudScrollPosition = GUILayout.BeginScrollView(hudScrollPosition, false, true);
@@ -181,6 +228,14 @@ namespace TheCat.Gameplay
             }
 
             DrawBattleState();
+            if (!showDiagnosticsHud && isResolvedBattle)
+            {
+                DrawHudMessage();
+                GUILayout.EndScrollView();
+                GUILayout.EndArea();
+                return;
+            }
+
             if (!showDiagnosticsHud)
             {
                 DrawRuntimeControls();
@@ -190,14 +245,19 @@ namespace TheCat.Gameplay
             DrawSkillControls();
             DrawInteractionControls();
             DrawHudMessage();
+            DrawLatestFeedbackVisual();
+
+            GUILayout.EndScrollView();
+            GUILayout.EndArea();
+        }
+
+        private void DrawLatestFeedbackVisual()
+        {
             P0BattleFeedbackVisualState feedbackVisual = P0BattleFeedbackVisualPresenter.Build(lastFeedback, feedbackAgeSeconds);
             if (feedbackVisual.HasVisual)
             {
                 DrawFeedbackVisual(feedbackVisual);
             }
-
-            GUILayout.EndScrollView();
-            GUILayout.EndArea();
         }
 
         private void DrawHudMessage()
@@ -262,6 +322,11 @@ namespace TheCat.Gameplay
                 : default(RunPendingBattleModifierSnapshot);
             BattleModifierSet battleModifiers = pendingBattleModifiers.ApplyTo(P0BlessingCatalog.CreateBattleModifiers(run.Blessings));
             P0Tuning battleTuning = pendingBattleModifiers.ApplyTo(P0Tuning.Default);
+            battleModifierEvidence = new P0BattleModifierEvidence(
+                pendingBattleModifiers.HasPending,
+                pendingBattleModifiers.SourceCount,
+                battleModifiers.SkillDamageMultiplier,
+                battleTuning.PoopNaturalGrowthPerSecond);
 
             BattleSimulationConfig config = new BattleSimulationConfig(
                 battleStartContext.Wave,
@@ -289,6 +354,7 @@ namespace TheCat.Gameplay
             catPressureTimer = 0f;
             routeCompletionRecorded = false;
             restartConfirmationOpen = false;
+            showBattleResultDetails = false;
             lastCompletionReport = null;
             runtimeSettings.SetPaused(false);
             lastFeedback = default(P0BattleFeedback);
@@ -544,6 +610,14 @@ namespace TheCat.Gameplay
 
         public void CollapseDiagnosticsHudForSmoke()
         {
+            showDiagnosticsHud = false;
+            showSmokeTools = false;
+            hudScrollPosition = Vector2.zero;
+        }
+
+        public void SuppressHudForSmokeCapture()
+        {
+            suppressHudForSmokeCapture = true;
             showDiagnosticsHud = false;
             showSmokeTools = false;
             hudScrollPosition = Vector2.zero;
@@ -1924,16 +1998,18 @@ namespace TheCat.Gameplay
         private void DrawPlayerBattleState()
         {
             DrawCoreValueIcons();
+            if (battle.Outcome != BattleOutcome.InProgress)
+            {
+                DrawPlayerBattleResultFocus();
+                return;
+            }
+
             P0BattlePlayerBrief brief = BuildBattlePlayerBriefForSmoke();
             if (P0BattlePlayerBriefPresenter.HasP0BattlePlayerBrief(brief))
             {
                 DrawHudSection(brief.ToHudSection());
             }
 
-            if (battle.Outcome != BattleOutcome.InProgress)
-            {
-                DrawPlayerResultActions();
-            }
             DrawHudSection(new P0BattleHudSection(
                 "目标",
                 new[]
@@ -1958,9 +2034,106 @@ namespace TheCat.Gameplay
             }
 
             DrawRouteState();
-            if (battle.Outcome != BattleOutcome.InProgress)
+        }
+
+        private void DrawPlayerBattleResultFocus()
+        {
+            P0BattleResultSurface resultSurface = BuildBattleResultSurfaceForSmoke();
+            GUILayout.Space(8f);
+            GUILayout.BeginVertical(BattleResultCardStyle);
+
+            if (resultSurface.OutcomeBannerAsset.HasAsset)
             {
-                DrawResultSummary();
+                float bannerWidth = Mathf.Min(P0ImGuiLayout.Scaled(360f), Mathf.Max(P0ImGuiLayout.Scaled(220f), hudPanelInnerWidth - P0ImGuiLayout.Scaled(28f)));
+                P0ImGuiVisualAssetDrawer.DrawGUILayoutTexture(
+                    resultSurface.OutcomeBannerAsset,
+                    bannerWidth,
+                    P0ImGuiLayout.Scaled(96f));
+            }
+
+            GUILayout.Label(resultSurface.Title + " - " + resultSurface.PromptText, BattleResultHeaderStyle);
+
+            IReadOnlyList<string> focusRows = P0BattleResultPresenter.BuildPlayerFocusRows(resultSurface);
+            for (int i = 0; i < focusRows.Count; i++)
+            {
+                GUILayout.Label(focusRows[i], WrappedHudLabel);
+            }
+
+            DrawBattleResultPrimaryAction(resultSurface);
+            DrawBattleResultSecondaryActions(resultSurface);
+
+            GUILayout.Space(4f);
+            string detailLabel = showBattleResultDetails ? "收起详细结算" : "查看详细结算";
+            if (GUILayout.Button(detailLabel, WrappedHudButton, GUILayout.MinWidth(0f), GUILayout.ExpandWidth(true), GUILayout.Height(P0ImGuiLayout.CompactButtonHeight)))
+            {
+                showBattleResultDetails = !showBattleResultDetails;
+            }
+
+            if (showBattleResultDetails)
+            {
+                DrawBattleResultDetails(resultSurface);
+            }
+
+            GUILayout.EndVertical();
+        }
+
+        private void DrawBattleResultPrimaryAction(P0BattleResultSurface resultSurface)
+        {
+            if (!resultSurface.TryGetAction(P0BattleResultActionIds.ContinueRoute, out P0BattleResultAction action))
+            {
+                return;
+            }
+
+            GUILayout.Space(8f);
+            GUI.enabled = action.IsEnabled;
+            string label = action.BuildButtonLabel() + "\n" + action.Detail;
+            if (GUILayout.Button(label, WrappedHudButton, GUILayout.MinWidth(0f), GUILayout.ExpandWidth(true), GUILayout.Height(P0ImGuiLayout.Scaled(64f))))
+            {
+                ExecuteBattleResultAction(action);
+            }
+
+            GUI.enabled = true;
+        }
+
+        private void DrawBattleResultSecondaryActions(P0BattleResultSurface resultSurface)
+        {
+            GUILayout.BeginHorizontal();
+            DrawBattleResultSecondaryAction(resultSurface, P0BattleResultActionIds.ReturnCatRoom);
+            DrawBattleResultSecondaryAction(resultSurface, P0BattleResultActionIds.RestartRun);
+            GUILayout.EndHorizontal();
+            GUI.enabled = true;
+        }
+
+        private void DrawBattleResultSecondaryAction(P0BattleResultSurface resultSurface, string actionId)
+        {
+            if (!resultSurface.TryGetAction(actionId, out P0BattleResultAction action))
+            {
+                return;
+            }
+
+            GUI.enabled = action.IsEnabled;
+            if (GUILayout.Button(action.BuildButtonLabel(), WrappedHudButton, GUILayout.MinWidth(0f), GUILayout.ExpandWidth(true), GUILayout.Height(P0ImGuiLayout.CompactButtonHeight)))
+            {
+                ExecuteBattleResultAction(action);
+            }
+        }
+
+        private void DrawBattleResultDetails(P0BattleResultSurface resultSurface)
+        {
+            GUILayout.Space(6f);
+            GUILayout.Label("路线细节", HudSectionLabel);
+            DrawBattleResultRows(resultSurface.RouteRows);
+            GUILayout.Label("战斗指标", HudSectionLabel);
+            DrawBattleResultRows(resultSurface.MetricRows);
+            GUILayout.Label("核心状态", HudSectionLabel);
+            DrawBattleResultRows(resultSurface.CoreRows);
+        }
+
+        private void DrawBattleResultRows(IReadOnlyList<string> rows)
+        {
+            for (int i = 0; i < rows.Count; i++)
+            {
+                GUILayout.Label(rows[i], WrappedHudLabel);
             }
         }
 
@@ -3072,6 +3245,18 @@ namespace TheCat.Gameplay
             return P0RuntimeSettingsPresenter.Build(runtimeSettings);
         }
 
+        public P0BattleModifierEvidence BuildBattleModifierEvidenceForSmoke()
+        {
+            return battleModifierEvidence;
+        }
+
+        public string BuildBattleStartContextSummaryForSmoke()
+        {
+            return battleStartContext.Wave == null
+                ? string.Empty
+                : battleStartContext.BuildSummary();
+        }
+
         public IReadOnlyList<P0CatHudCard> BuildCatHudCardsForSmoke()
         {
             return P0CatHudPresenter.BuildCards(cats, activeCatIndex, GetSkillCooldown);
@@ -3126,6 +3311,8 @@ namespace TheCat.Gameplay
         }
 
         private bool IsBattleInProgress => battle != null && battle.Outcome == BattleOutcome.InProgress;
+
+        private bool IsBattleResolved => battle != null && battle.Outcome != BattleOutcome.InProgress;
 
         private void ExecuteRuntimeSettingsAction(P0RuntimeSettingsAction action)
         {
@@ -3254,6 +3441,40 @@ namespace TheCat.Gameplay
 
                 hudPanelStyle.padding = P0ImGuiLayout.Padding();
                 return hudPanelStyle;
+            }
+        }
+
+        private GUIStyle BattleResultCardStyle
+        {
+            get
+            {
+                if (battleResultCardStyle == null)
+                {
+                    battleResultCardStyle = new GUIStyle(GUI.skin.box)
+                    {
+                        wordWrap = true
+                    };
+                }
+
+                battleResultCardStyle.padding = P0ImGuiLayout.Padding();
+                return battleResultCardStyle;
+            }
+        }
+
+        private GUIStyle BattleResultHeaderStyle
+        {
+            get
+            {
+                if (battleResultHeaderStyle == null)
+                {
+                    battleResultHeaderStyle = new GUIStyle(GUI.skin.label)
+                    {
+                        fontStyle = FontStyle.Bold,
+                        wordWrap = true
+                    };
+                }
+
+                return battleResultHeaderStyle;
             }
         }
 

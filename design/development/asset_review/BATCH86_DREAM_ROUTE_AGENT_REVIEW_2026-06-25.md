@@ -61,3 +61,10 @@ Result: `PASS_WITH_P2`, then local provenance fix applied.
 ## Decision
 
 Keep Batch86 candidate-only. Add it to the P0 asset production queue and Unity validation checklist as `CandidatePackCompletePendingUnityReview`, with the P2 watches carried into runtime gates.
+
+## 2026-06-26 K8 Boundary Addendum
+
+- The original review above describes the local candidate packet state before K8 and remains correct for the source candidate folder: no Unity `.meta` files are expected under `design/development/asset_candidates/...`.
+- K8 later copied the six reviewed sprites into `Assets/TheCat/Art/UI/DreamRoute` for candidate-only Unity preflight import validation.
+- This is not formal runtime installation: the later L5 runtime evidence pass moves Batch86 to `Runtime evidence: 6/8` with four candidate-backed Unity screenshots, text/reward replacement, node/path semantics, click-target, boss-gate scale, and candidate draw proof; scene/presenter binding, clean Console, human approval, and formal runtime binding decision still remain blocked.
+- Treat "candidate-only" for Batch86 after K8 as "source candidates remain review-only; Unity copies are preflight-only and must not enter formal runtime bindings before explicit approval."

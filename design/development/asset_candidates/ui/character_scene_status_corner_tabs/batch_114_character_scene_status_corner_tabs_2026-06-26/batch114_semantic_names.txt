@@ -1,0 +1,9 @@
+recommended_pairing_corner_tab
+story_clue_corner_tab
+scene_bonus_corner_tab
+risk_warning_corner_tab
+locked_pairing_corner_tab
+unknown_pairing_corner_tab
+selected_pairing_corner_tab
+team_slot_ready_corner_tab
+needs_review_corner_tab

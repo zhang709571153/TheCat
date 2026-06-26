@@ -8,7 +8,7 @@ This batch contains deterministic review candidates derived from the locked curr
 - Source authority remains the locked colored turnaround for each cat.
 - Candidate notes must include front/side/back, palette, prop/costume, and drift anchors from `design/development/asset_review/p0_starter_cat_turnaround_conformance_spec_2026-06-14.md`.
 - Generated starter-cat lineup is not used as primary source.
-- Unity import is blocked until active-cat Play Mode screenshots exist and pass visual review.
+- Unity import is blocked until registered active-cat Play Mode screenshots receive explicit colored-turnaround comparison approval.
 
 ## Files
 

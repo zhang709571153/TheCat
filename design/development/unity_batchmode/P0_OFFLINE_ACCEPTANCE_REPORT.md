@@ -1,7 +1,7 @@
 # P0 Offline Acceptance Report
 
 - Result: passed
-- Gate count: 6
+- Gate count: 7
 - Failure count: 0
 
 ## P0 Code Smoke Suite
@@ -23,11 +23,11 @@ P0 code smoke suite passed 28 check(s) with 0 warning(s).
 [Passed] Hard Reference Source Locks: Passed - P0 hard reference source locks ready for 12 source file(s) and 28 manifest asset link(s).
 [Passed] Status Tag Coverage: Passed - P0 status tag coverage complete for 5 tag(s).
 [Passed] Status HUD Coverage: Passed - P0 status HUD coverage complete for 8 check(s).
-[Passed] Main Menu Coverage: Passed - P0 main menu coverage complete for 8 start check(s).
+[Passed] Main Menu Coverage: Passed - P0 main menu coverage complete for 10 start check(s).
 [Passed] Route Choice Coverage: Passed - P0 route choice coverage complete for 5 non-battle node(s).
 [Passed] Route Map Input Coverage: Passed - P0 route map input coverage complete for 6 action(s).
-[Passed] Route Map Surface Coverage: Passed - P0 route map surface coverage complete for 20 surface check(s).
-[Passed] Runtime Settings Coverage: Passed - P0 runtime settings coverage complete for 7 check(s).
+[Passed] Route Map Surface Coverage: Passed - P0 route map surface coverage complete for 21 surface check(s).
+[Passed] Runtime Settings Coverage: Passed - P0 runtime settings coverage complete for 13 check(s).
 [Passed] Chinese UI Coverage: Passed - P0 Chinese UI coverage complete for 8 check(s).
 [Passed] Chinese UI Scale Validation: Passed - P0 Chinese UI scale validation plan ready for 5 surface(s), 4 resolution(s), and 7 acceptance check(s).
 [Passed] Enemy HUD Coverage: Passed - P0 enemy HUD coverage complete for 5 check(s).
@@ -35,7 +35,7 @@ P0 code smoke suite passed 28 check(s) with 0 warning(s).
 [Passed] Skill HUD Coverage: Passed - P0 skill HUD coverage complete for 5 card check(s).
 [Passed] Battle Feedback Coverage: Passed - P0 battle feedback coverage complete for 6 feedback check(s).
 [Passed] Battle Feedback Visual Coverage: Passed - P0 battle feedback visual coverage complete for 9 visual check(s).
-[Passed] Battle Result Coverage: Passed - P0 battle result coverage complete for 5 result check(s).
+[Passed] Battle Result Coverage: Passed - P0 battle result coverage complete for 7 result check(s).
 [Passed] Playable Readiness: Passed - P0 playable readiness passed with 0 warning(s).
 [Passed] Graybox Telemetry: Passed - P0 graybox telemetry captured 5/5 node(s), success 5, failure 0, time 179.0s, poop 0, maxLost 0, litter 5, feeder 5, weak 0, cat pressure 0 damage 0/0 shields 5/196, pressure 1 sleep 0/4, switches 10/10, targets auto 5/5 skill 5/5, skills 15/15, interactions 15/15.
 ```
@@ -47,11 +47,19 @@ P0 code smoke suite passed 28 check(s) with 0 warning(s).
 ```text
 P0 playable readiness passed with 0 warning(s).
 [Passed] Scene Flow: Passed - Main menu, route map, quick battle, and post-battle scene routing are aligned.
+[Passed] Entry Character Select: Passed - Main menu selects a starter roster, enters cat-room preparation as the only player-primary CTA, then exposes bedroom and Egypt dream entries without changing the selected-roster bedroom default.
+[Passed] Loading Start Surface: Passed - H1 loading/start contract exposes target scene, progress, spinner, screenshot hook, and Batch 83 candidate-only boundary.
+[Passed] Pause Settings Acceptance: Passed - D2/H1 pause/settings contract covers overlay, full settings hook, speed controls, shared key/button bindings, and restart confirmation.
+[Passed] Skill Selection Acceptance: Passed - D2 skill-selection contract covers ready, selected, disabled, locked, confirm, and runtime skill mapping states.
+[Passed] Battle Readability Acceptance: Passed - E1 battle brief keeps priority, action, compact threat, result actions, and candidate-only asset boundaries visible.
 [Passed] Starter Trio: Passed - Saiban, Nephthys, and Suzune cover defender, controller, and healer roles.
 [Passed] Starter Skills: Passed - All starter skill ids resolve to P0 cat-owned skill definitions.
 [Passed] Core Enemies: Passed - Core enemy roster covers P0 pressure, ranged, elite, flyer, and Call Tyrant boss roles.
 [Passed] Route Structure: Passed - Ten-layer route covers required P0 node types and ends at Call Tyrant.
-[Passed] Dream Maps: Passed - Bedroom is the playable map and Egypt is registered as a P0 placeholder context.
+[Passed] Route Choice Effects: Passed - RestNest restores run core/cat vitals and DreamEvent next-battle modifiers rewrite the next battle config before being consumed.
+[Passed] Dream Maps: Passed - Bedroom and Egypt are registered as playable P0 dream-map contexts while preserving the bedroom default.
+[Passed] Egypt Readiness: Passed - Egypt is enterable as a minimum shared-route dream while sharing the current route and combat content.
+[Passed] Route Settlement Return: Passed - Completed route settlement exposes cat-room return, Continue input requests it, and the cat-room return state closes the active run.
 [Passed] Battle Waves: Passed - All combat route nodes resolve to waves with known enemy spawns and a Call Tyrant boss wave.
 [Passed] Status Tags: Passed - P0 status tag coverage complete for 5 tag(s).
 [Passed] Golden Path: Passed - P0 golden path accepted with 0 warning(s).
@@ -143,7 +151,7 @@ Runtime-bound entries: 111
 - Starter cat source-turnaround reference plates provide front, side, and back hard visual inputs for future Codex image generation.
 - Starter cat Unity reference atlases are installed as source-derived debug references without replacing runtime combat art.
 - Starter cat runtime combat sprite audit binds current runtime sprites to source locks, Batch 70 front plates, and runtime binding ids.
-- Starter cat strict candidate evidence records Batch 49/50/51 candidates and keeps Unity import blocked until active-cat screenshots pass.
+- Starter cat strict candidate evidence records Batch 49/50/51 candidates and keeps Unity import blocked until registered active-cat screenshots receive explicit colored-turnaround comparison approval.
 - Starter cat formal import gate has an explicit blocked-or-approved decision tied to review notes and active screenshots.
 - Asset production queue separates Codex candidate production from Unity validation and formal install work.
 - Every runtime visual binding is represented in the asset review packet.
@@ -194,11 +202,40 @@ Runtime visual contact sheet present: yes
 - Starter cat production prompts pin real colored-turnaround source paths and block formal import until active screenshots pass.
 - Starter cat source-lock packet records turnaround hashes, locked sprite hashes, screenshots, and candidate review sheets.
 - Starter cat runtime combat sprite audit ties current runtime-bound sprites to exact colored-turnaround source paths and runtime binding ids.
-- Starter cat strict candidate evidence records Batch 49/50/51 candidates and blocks import until active-cat screenshots pass.
+- Starter cat strict candidate evidence records Batch 49/50/51 candidates and blocks import until registered active-cat screenshots receive explicit colored-turnaround comparison approval.
 - Starter cat formal import gate has an explicit blocked-or-approved decision tied to review notes and active screenshots.
 - Asset production queue separates Codex candidate production from Unity validation and formal install work.
 - Hard reference source locks are ready for source-sensitive P0 assets.
 - Starter cat turnaround review contact sheet is present for human visual comparison.
 - Runtime visual contact sheet is present for 111-slot offline asset review.
+```
+
+## P0 Formal Install Gate Matrix
+
+- Passed: yes
+
+```text
+P0 formal install gate matrix is valid and remains blocked: 8 runtime-evidence-ready candidate pack(s) still require scene/Console or human approval gates.
+Formal install allowed: no
+Formal install blocked: yes
+Queue items: 19
+Candidate packs pending Unity review: 14
+Unity-blocked queue items: 5
+Runtime evidence 6/8 items: 8
+Scene/Console-gated items: 19
+Human-approval-gated items: 9
+Ready-for-formal-install rows: 0
+Starter-cat formal import state: Blocked
+Starter-cat formal import allowed: no
+Shared Console classifier contract: ready
+Console classifier policy: StrictClean is required for formal clean-Console evidence; known environment noise is classified but still blocks formal clean-Console approval.
+- Formal install matrix covers the current P0 asset-production queue.
+- Formal install matrix preserves the candidate-pending and Unity-blocked queue split.
+- Formal install matrix records the Batch 83-90 runtime-evidence 6/8 lanes.
+- Every runtime-evidence-ready lane still names a scene/Console gate before formal install.
+- Every runtime-evidence-ready lane still names explicit human approval before formal install.
+- No current row is ready for formal install, and starter-cat body import remains blocked.
+- Runtime-evidence 6/8 lanes are demo evidence only and remain formal-install blocked.
+- Formal install matrix is bound to the shared strict-clean Unity Console classifier contract.
 ```
 

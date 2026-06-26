@@ -1,0 +1,9 @@
+title_crest_backplate
+start_continue_pedestal
+dream_window_backplate
+cat_room_doorway_frame
+route_map_scroll_frame
+settings_corner_panel
+notice_ribbon_backplate
+locked_file_seal
+version_footer_plaque

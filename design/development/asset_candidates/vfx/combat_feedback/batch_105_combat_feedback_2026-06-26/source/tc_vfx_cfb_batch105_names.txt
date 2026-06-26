@@ -1,0 +1,9 @@
+normal_hit_spark_token
+shield_flash_token
+slow_freeze_token
+aftershock_ring_token
+bed_hit_crack_token
+monster_death_puff_token
+damage_number_chip_token
+heal_plus_spark_token
+debuff_burst_token

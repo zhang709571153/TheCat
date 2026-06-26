@@ -46,7 +46,7 @@ namespace TheCat.Tests
             Assert.AreEqual(3, report.StarterCatFormalReviewNoteCount);
             Assert.AreEqual(3, report.StarterCatFormalBlockNoteCount);
             Assert.AreEqual(0, report.StarterCatFormalApprovalNoteCount);
-            Assert.AreEqual(0, report.StarterCatActiveScreenshotCount);
+            Assert.AreEqual(P0StarterCatFormalImportReadiness.ExpectedStarterCatCount, report.StarterCatActiveScreenshotCount);
             Assert.IsTrue(report.AssetProductionQueueReady, report.BuildDetailedSummary());
             Assert.AreEqual(P0AssetProductionQueueCatalog.ExpectedP0QueueCount, report.AssetProductionQueueCount);
             Assert.AreEqual(0, report.AssetProductionQueueCodexRunnableCount);
@@ -134,6 +134,7 @@ namespace TheCat.Tests
             StringAssert.Contains("Starter Cat Derivative Candidate Evidence", markdown);
             StringAssert.Contains("batch_05_source_locked_derivatives_2026-06-14", markdown);
             StringAssert.Contains("Candidate PNG files", markdown);
+            StringAssert.Contains("registered active-cat screenshots exist, but import remains blocked pending explicit colored-turnaround comparison approval", markdown);
             StringAssert.Contains("Turnaround conformance review notes: yes", markdown);
             StringAssert.Contains("Conformance spec mentions", markdown);
             StringAssert.Contains("Front/side/back anchor sections", markdown);

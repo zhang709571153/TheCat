@@ -1,6 +1,6 @@
 # P0 Development Architecture - 2026-06-25
 
-Checked: 2026-06-25 09:36 +08:00
+Checked: 2026-06-26 09:59 +08:00
 
 This is the current development architecture for the TheCat / 喵梦空间 P0 demo.
 It supersedes the planning boundary in `P0_CURRENT_ARCHITECTURE_2026-06-24.md`
@@ -134,19 +134,124 @@ replacement art.
 Current evidence proves the existing P0.0 implementation is real:
 
 - `design/development/unity_batchmode/P0_OFFLINE_ACCEPTANCE_REPORT.md` reports
-  offline gates passed with failure count `0`.
+  offline gates passed after B20 with gate count `7` and failure count `0`.
+  The B20 formal-install blocker matrix is green because it keeps formal
+  install blocked: Batch 83-90 are visible as `8` runtime-evidence `6/8` lanes,
+  but still require scene/Console and human-approval gates.
+  B21 adds the shared `P0UnityConsoleLogClassifier` foundation so strict-clean,
+  project-owned-clean, known environment noise, unknown blockers, and TheCat
+  project failures can be reported separately before any formal install lane
+  claims clean Console.
+  B22 routes Batch 83-90 preflight clean-log checks through that classifier and
+  retires duplicated per-batch token tables while keeping strict clean Console
+  blocked if any known environment noise remains.
+  B23 binds the formal-install matrix and offline report to that shared
+  strict-clean classifier contract, making the policy visible before any
+  single-lane formal install hardening.
+  B24 applies that policy to Batch 87 battle-HUD preflight and splits Unity
+  evidence completeness from formal install approval.
+  B25 adds a generated Batch 87 human-review request packet for reviewer
+  handoff without creating approval evidence or changing formal runtime binding
+  state.
+  B26 adds a generated Batch 87 formal-runtime-binding decision request packet
+  for catalog/scene/presenter review without installing candidate frames.
+  B19 adds an explicit current-demo readiness audit over this evidence and the
+  strict Play Mode report-file evidence, so demo release/readiness can be green
+  for the current baseline while final runtime and formal visual gates remain
+  pending.
 - `design/development/unity_batchmode/P0_PLAYMODE_ACCEPTANCE_SMOKE_REPORT.md`
-  reports Play Mode smoke passed, 11 screenshots captured including
-  `02-cat-room.png`, route flow cleared 10/10 nodes, boss observed, and defeat
-  flow passed.
+  reports the 2026-06-26 B18 normal Editor Play Mode smoke passed after the
+  route-settlement readability pass, 11 screenshots captured including
+  `01-main-menu.png` with compact starter cards and a visible cat-room primary
+  CTA, `02-cat-room.png` with distinct Bedroom enabled and Egypt disabled
+  no-jump placeholder states, and `03-route-map-layer1.png` with current-node
+  focus, primary route CTA, and folded route/resource detail sections.
+  `10-battle-result-layer1.png` now shows a focused result card with reward,
+  next-node/progress rows, primary `继续路线` CTA, secondary actions, folded
+  details, and no debug feedback card. `11-settlement.png` now shows a focused
+  route-settlement closeout with outcome, progress, battle record,
+  route-state resources, final core, final cat life, primary `返回猫房`, and
+  folded details. Route flow cleared 10/10 nodes, boss observed,
+  RestNest/DreamEvent/Shop bed-patch next-battle evidence verified, final
+  cat-room return verified, and defeat flow passed.
+- 2026-06-26 B27 code/readiness update: Egypt is now a minimum enterable
+  shared-route dream from cat room via `enter_egypt_dream` and
+  `P0RunSession.EnsureEgyptDreamRun()`. This keeps Bedroom as the default,
+  preserves selected roster handoff, and verifies Egypt route-map/battle-start
+  context without adding Egypt-specific route nodes, waves, enemies, or formal
+  art install. Dedicated normal Editor Play Mode Egypt-entry evidence now
+  passes in `P0_EGYPT_ENTRY_SMOKE_REPORT.md` with 5/5 screenshots in
+  `design/development/screenshots/p0-egypt-entry-smoke`. The route-map capture
+  visibly names the Egypt dream map, theme, target, and playable state; the
+  battle-HUD capture verifies `P0GrayboxBattle` starts with Egypt battle
+  context; the first battle result and route-map return captures prove
+  `ContinueRoute` preserves Egypt context after shared layer-one success.
+  Batchmode visual capture remains unsupported for this smoke in the current
+  editor environment and fails safely rather than accepting unusable PNGs.
 - Build settings currently cover `P0MainMenu`, `P0CatRoom`, `P0RouteMap`, and
   `P0GrayboxBattle`.
 - Current runtime visual gates report 118 review assets and 111 runtime
   bindings.
 
 This evidence does not complete the new live-source P0 boundary because Batch90
-cat-room candidate import/binding, Egypt dream, and the full opening/hub loop
-still need focused implementation and Unity review.
+cat-room candidate formal binding, Egypt unique content work, final visual QA,
+and starter-cat formal approval notes still need focused Unity review. The menu
+-> cat room -> Bedroom dream -> route -> settlement/return loop is now baseline
+smoke-backed, and Egypt now has minimum shared-route entry evidence through
+cat-room action, route-map layer one, battle HUD load, first battle result, and
+route-map return under Egypt dream context. The battle-result screenshot still
+uses shared route node naming, so read it with the detailed log and return
+route-map screenshot. A later Egypt validation target can drive multi-node or
+full-route traversal; remaining hub work should be tracked as candidate import,
+content, and polish evidence rather than missing flow implementation.
+
+2026-06-26 B19 update: `P0ArchitectureCompletionAudit.IsP0DemoReleaseReady`
+and `P0VisualAcceptanceReport.IsP0DemoVisualEvidenceReady` now name the current
+demo-ready middle state. They do not approve clean Console, formal runtime
+binding, candidate install, starter-cat body-art replacement, human review, or
+final P0 visual acceptance.
+
+2026-06-26 B20 update: `P0FormalInstallGate` now writes
+`P0_FORMAL_INSTALL_BLOCKER_EVIDENCE_MATRIX_2026-06-26.md`. The matrix keeps
+Batch 83-90 as demo/runtime evidence only and requires scene/Console evidence,
+human approval, and formal binding decisions before any formal install claim.
+
+2026-06-26 B21 update: `P0UnityConsoleLogClassifier` separates strict-clean
+logs, project-owned clean logs with known Unity/environment noise, unknown
+blocking tokens, and TheCat project failure tokens. Offline acceptance remains
+green at `7` gates, but the raw Unity log still includes Licensing, Unity AI
+tracing, D3D, MemoryLeaks, and StackAllocator noise. This is a classifier and
+reporting foundation, not a clean-Console or formal-install approval.
+
+2026-06-26 B22 update: Batch 83-90 preflight clean-log checks now call
+`P0UnityConsoleLogClassifier`, and their duplicated `FindConsoleFailureToken`
+tables are retired. Formal clean-Console evidence still requires
+`StrictClean`; environment noise is classified but remains a formal-clean
+blocker.
+
+2026-06-26 B23 update: `P0FormalInstallGate` now writes the shared Console
+classifier contract and strict-clean policy into the offline report and
+`P0_FORMAL_INSTALL_BLOCKER_EVIDENCE_MATRIX_2026-06-26.md`. This is report
+binding only: clean Console, human approval, formal runtime binding, candidate
+install, and final visual acceptance remain blocked.
+
+2026-06-26 B24 update: `P0BattleHudBatch87UnityPreflightReport` now exposes
+`UnityEvidenceComplete`, `FormalRuntimeBindingDecisionApproved`, and the shared
+strict-clean Console classifier policy. Batch 87 remains `Runtime evidence:
+6/8`, formal install remains `no`, and no approval artifacts were created.
+
+2026-06-26 B25 update: Batch 87 now has
+`BATCH87_BATTLE_HUD_HUMAN_REVIEW_REQUEST_2026-06-26.md` as a generated
+review-request packet. It lists evidence and reviewer checklist items, while
+remaining outside `human_review_approval.md`, clean Console evidence, formal
+runtime binding approval, and final visual acceptance.
+
+2026-06-26 B26 update: Batch 87 now has
+`BATCH87_BATTLE_HUD_FORMAL_RUNTIME_BINDING_DECISION_REQUEST_2026-06-26.md` as
+a generated decision-request packet. It scopes the possible battle-HUD runtime
+catalog/scene/presenter binding while keeping candidate ids outside
+`P0VisualAssetCatalog`, preserving the current IMGUI battle HUD path, and
+leaving formal install blocked.
 
 ## 7. Retirement Rules
 

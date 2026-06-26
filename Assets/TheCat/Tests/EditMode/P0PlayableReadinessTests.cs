@@ -40,7 +40,14 @@ namespace TheCat.Tests
             Assert.AreEqual(P0PlayableReadinessState.Passed, dreamMaps.State);
             Assert.IsTrue(report.TryGetCheck(P0PlayableReadiness.EgyptReadinessCheckId, out P0PlayableReadinessCheck egypt));
             Assert.AreEqual(P0PlayableReadinessState.Passed, egypt.State);
-            StringAssert.Contains("placeholder", egypt.Message);
+            StringAssert.Contains("shared-route", egypt.Message);
+            Assert.IsTrue(report.TryGetCheck(P0PlayableReadiness.RouteSettlementReturnCheckId, out P0PlayableReadinessCheck routeReturn));
+            Assert.AreEqual(P0PlayableReadinessState.Passed, routeReturn.State);
+            StringAssert.Contains("cat-room return", routeReturn.Message);
+            Assert.IsTrue(report.TryGetCheck(P0PlayableReadiness.RouteChoiceEffectsCheckId, out P0PlayableReadinessCheck routeChoiceEffects));
+            Assert.AreEqual(P0PlayableReadinessState.Passed, routeChoiceEffects.State);
+            StringAssert.Contains("RestNest", routeChoiceEffects.Message);
+            StringAssert.Contains("DreamEvent", routeChoiceEffects.Message);
             Assert.IsTrue(report.TryGetCheck(P0PlayableReadiness.GoldenPathCheckId, out P0PlayableReadinessCheck goldenPath));
             Assert.AreNotEqual(P0PlayableReadinessState.Failed, goldenPath.State);
         }
@@ -141,6 +148,8 @@ namespace TheCat.Tests
             StringAssert.Contains("Battle Readability Acceptance", summary);
             StringAssert.Contains("Starter Trio", summary);
             StringAssert.Contains("Egypt Readiness", summary);
+            StringAssert.Contains("Route Choice Effects", summary);
+            StringAssert.Contains("Route Settlement Return", summary);
             StringAssert.Contains("Golden Path", summary);
         }
 

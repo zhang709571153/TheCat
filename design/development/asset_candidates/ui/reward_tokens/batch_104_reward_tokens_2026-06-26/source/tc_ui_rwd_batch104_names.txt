@@ -1,0 +1,9 @@
+reward_chest_token
+shop_token
+event_question_token
+partner_invite_token
+blessing_sun_token
+curse_risk_token
+currency_fish_token
+reroll_dice_token
+claim_confirm_token

@@ -18,9 +18,14 @@ namespace TheCat.Gameplay
         private bool includeSaiban = true;
         private bool includeNephthys = true;
         private bool includeSuzune = true;
+        private bool showGrayboxTools;
         private Vector2 menuScrollPosition;
         private GUIStyle wrappedLabel;
         private GUIStyle panelContentStyle;
+        private GUIStyle sectionTitleStyle;
+        private GUIStyle starterCardStyle;
+        private GUIStyle starterHeaderStyle;
+        private GUIStyle helperFoldoutStyle;
 
         private void Awake()
         {
@@ -31,7 +36,7 @@ namespace TheCat.Gameplay
         private void OnGUI()
         {
             P0MainMenuSurface surface = BuildMainMenuSurface();
-            Rect panelRect = P0ImGuiLayout.BuildLeftPanelRect(340f, 640f, 0.46f);
+            Rect panelRect = P0ImGuiLayout.BuildLeftPanelRect(460f, 760f, 0.42f);
             float innerWidth = P0ImGuiLayout.ScrollContentWidth(panelRect);
             P0ImGuiVisualAssetDrawer.DrawTexture(
                 surface.UiShell.MainMenuBackground,
@@ -49,51 +54,11 @@ namespace TheCat.Gameplay
             GUILayout.Space(P0ImGuiLayout.SectionSpacing);
             DrawStarterSelection(surface);
             GUILayout.Space(P0ImGuiLayout.SectionSpacing);
-
-            P0MainMenuAction catRoomAction = GetAction(surface, P0MainMenuActionIds.EnterCatRoom);
-            GUI.enabled = HasAnyStarterSelected();
-            if (P0ImGuiVisualAssetDrawer.DrawTexturedButton(surface.UiShell.PrimaryButton, catRoomAction.Label, P0ImGuiLayout.PrimaryButtonHeight))
-            {
-                StartP0Run(P0RunStartMode.CatRoom);
-            }
-
+            DrawPrimaryPath(surface);
             GUILayout.Space(P0ImGuiLayout.SectionSpacing);
-            GUILayout.Label(surface.GrayboxHelperLabel, WrappedLabel);
-            DrawRoutePreview(surface);
+            DrawGrayboxTools(surface);
             GUILayout.Space(P0ImGuiLayout.SectionSpacing);
-
-            P0MainMenuAction selectedRouteAction = GetAction(surface, P0MainMenuActionIds.StartSelectedRoute);
-            GUI.enabled = HasAnyStarterSelected();
-            if (P0ImGuiVisualAssetDrawer.DrawTexturedButton(surface.UiShell.PrimaryButton, selectedRouteAction.Label, P0ImGuiLayout.ButtonHeight))
-            {
-                StartP0Run();
-            }
-
-            P0MainMenuAction defaultRouteAction = GetAction(surface, P0MainMenuActionIds.StartDefaultRoute);
-            GUI.enabled = true;
-            if (P0ImGuiVisualAssetDrawer.DrawTexturedButton(surface.UiShell.PrimaryButton, defaultRouteAction.Label, P0ImGuiLayout.ButtonHeight))
-            {
-                SelectDefaultStarters();
-                StartP0Run();
-            }
-
-            P0MainMenuAction quickBattleAction = GetAction(surface, P0MainMenuActionIds.QuickBattle);
-            GUI.enabled = HasAnyStarterSelected();
-            if (P0ImGuiVisualAssetDrawer.DrawTexturedButton(surface.UiShell.PrimaryButton, quickBattleAction.Label, P0ImGuiLayout.ButtonHeight))
-            {
-                StartP0QuickBattle();
-            }
-
-            P0MainMenuAction clearAction = GetAction(surface, P0MainMenuActionIds.ClearSession);
-            GUI.enabled = true;
-            if (P0ImGuiVisualAssetDrawer.DrawTexturedButton(surface.UiShell.PrimaryButton, clearAction.Label, P0ImGuiLayout.ButtonHeight))
-            {
-                P0RunSession.Clear();
-                message = "已清除当前进度。";
-            }
-
-            GUILayout.Space(P0ImGuiLayout.SectionSpacing);
-            GUILayout.Label(message);
+            GUILayout.Label(message, WrappedLabel);
             GUILayout.EndScrollView();
             GUILayout.EndArea();
         }
@@ -142,25 +107,31 @@ namespace TheCat.Gameplay
 
         private void DrawStarterSelection(P0MainMenuSurface surface)
         {
-            GUILayout.Label(surface.CharacterSelectLabel);
+            GUILayout.Label(surface.CharacterSelectLabel, SectionTitleStyle);
+            GUILayout.Label("已选择 " + surface.SelectedStarterCount + " / " + surface.StarterCards.Count + " 只初始猫", WrappedLabel);
             for (int i = 0; i < surface.StarterCards.Count; i++)
             {
                 P0MainMenuStarterCard card = surface.StarterCards[i];
                 bool selected = IsStarterSelected(card.CatId);
+                GUILayout.BeginVertical(StarterCardStyle);
+                GUILayout.BeginHorizontal();
+                P0ImGuiVisualAssetDrawer.DrawInlineIcon(card.HudAvatar, P0ImGuiLayout.Scaled(42f));
+                GUILayout.BeginVertical();
                 bool nextSelected = GUILayout.Toggle(
                     selected,
-                    card.BuildSelectionLabel());
+                    card.DisplayName + " · " + card.RoleLabel + " · " + card.ReadyBadgeLabel,
+                    StarterHeaderStyle);
                 SetStarterSelected(card.CatId, nextSelected);
-                if (nextSelected)
-                {
-                    GUILayout.Label(card.BuildCharacterSelectSummary(), WrappedLabel);
-                    GUILayout.Label("技能：" + card.BuildSkillPreview(), WrappedLabel);
-                }
+                GUILayout.Label(card.RoleHint + " / " + card.AuthorityLabel + " / " + card.AttributeLabel, WrappedLabel);
+                GUILayout.Label("技能：" + card.BuildSkillPreview(), WrappedLabel);
+                GUILayout.EndVertical();
+                GUILayout.EndHorizontal();
+                GUILayout.EndVertical();
             }
 
             if (!HasAnyStarterSelected())
             {
-                GUILayout.Label("至少选择一只初始猫。");
+                GUILayout.Label("至少选择一只初始猫后进入猫房。", WrappedLabel);
             }
 
             if (GUILayout.Button("恢复默认三猫", GUILayout.Height(P0ImGuiLayout.CompactButtonHeight)))
@@ -168,6 +139,69 @@ namespace TheCat.Gameplay
                 SelectDefaultStarters();
                 message = "已选择默认三猫。";
             }
+        }
+
+        private void DrawPrimaryPath(P0MainMenuSurface surface)
+        {
+            GUILayout.Label("今晚从猫房出发", SectionTitleStyle);
+            P0MainMenuAction catRoomAction = GetAction(surface, P0MainMenuActionIds.EnterCatRoom);
+            GUILayout.Label(catRoomAction.Detail, WrappedLabel);
+            GUI.enabled = HasAnyStarterSelected();
+            if (P0ImGuiVisualAssetDrawer.DrawTexturedButton(surface.UiShell.PrimaryButton, catRoomAction.Label, P0ImGuiLayout.PrimaryButtonHeight))
+            {
+                StartP0Run(P0RunStartMode.CatRoom);
+            }
+
+            GUI.enabled = true;
+        }
+
+        private void DrawGrayboxTools(P0MainMenuSurface surface)
+        {
+            showGrayboxTools = GUILayout.Toggle(
+                showGrayboxTools,
+                showGrayboxTools ? "隐藏灰盒验证入口" : "显示灰盒验证入口",
+                HelperFoldoutStyle,
+                GUILayout.Height(P0ImGuiLayout.CompactButtonHeight));
+            if (!showGrayboxTools)
+            {
+                return;
+            }
+
+            GUILayout.Label(surface.GrayboxHelperLabel, SectionTitleStyle);
+            DrawRoutePreview(surface);
+            GUILayout.Space(P0ImGuiLayout.SectionSpacing);
+
+            P0MainMenuAction selectedRouteAction = GetAction(surface, P0MainMenuActionIds.StartSelectedRoute);
+            GUI.enabled = HasAnyStarterSelected();
+            if (P0ImGuiVisualAssetDrawer.DrawTexturedButton(surface.UiShell.PrimaryButton, selectedRouteAction.Label, P0ImGuiLayout.ButtonHeight))
+            {
+                StartP0Run();
+            }
+
+            P0MainMenuAction defaultRouteAction = GetAction(surface, P0MainMenuActionIds.StartDefaultRoute);
+            GUI.enabled = true;
+            if (P0ImGuiVisualAssetDrawer.DrawTexturedButton(surface.UiShell.PrimaryButton, defaultRouteAction.Label, P0ImGuiLayout.ButtonHeight))
+            {
+                SelectDefaultStarters();
+                StartP0Run();
+            }
+
+            P0MainMenuAction quickBattleAction = GetAction(surface, P0MainMenuActionIds.QuickBattle);
+            GUI.enabled = HasAnyStarterSelected();
+            if (P0ImGuiVisualAssetDrawer.DrawTexturedButton(surface.UiShell.PrimaryButton, quickBattleAction.Label, P0ImGuiLayout.ButtonHeight))
+            {
+                StartP0QuickBattle();
+            }
+
+            P0MainMenuAction clearAction = GetAction(surface, P0MainMenuActionIds.ClearSession);
+            GUI.enabled = true;
+            if (P0ImGuiVisualAssetDrawer.DrawTexturedButton(surface.UiShell.PrimaryButton, clearAction.Label, P0ImGuiLayout.ButtonHeight))
+            {
+                P0RunSession.Clear();
+                message = "已清除当前进度。";
+            }
+
+            GUI.enabled = true;
         }
 
         private IReadOnlyList<string> GetSelectedStarterIds()
@@ -289,6 +323,8 @@ namespace TheCat.Gameplay
                     };
                 }
 
+                wrappedLabel.fontSize = Mathf.RoundToInt(P0ImGuiLayout.Scaled(14f));
+                wrappedLabel.normal.textColor = Color.white;
                 return wrappedLabel;
             }
         }
@@ -304,6 +340,84 @@ namespace TheCat.Gameplay
 
                 panelContentStyle.padding = P0ImGuiLayout.Padding();
                 return panelContentStyle;
+            }
+        }
+
+        private GUIStyle SectionTitleStyle
+        {
+            get
+            {
+                if (sectionTitleStyle == null)
+                {
+                    sectionTitleStyle = new GUIStyle(GUI.skin.label)
+                    {
+                        fontStyle = FontStyle.Bold,
+                        wordWrap = true
+                    };
+                }
+
+                sectionTitleStyle.fontSize = Mathf.RoundToInt(P0ImGuiLayout.Scaled(16f));
+                sectionTitleStyle.normal.textColor = new Color(1f, 0.88f, 0.52f);
+                return sectionTitleStyle;
+            }
+        }
+
+        private GUIStyle StarterCardStyle
+        {
+            get
+            {
+                if (starterCardStyle == null)
+                {
+                    starterCardStyle = new GUIStyle(GUI.skin.box)
+                    {
+                        wordWrap = true
+                    };
+                }
+
+                int horizontal = Mathf.RoundToInt(P0ImGuiLayout.Scaled(10f));
+                int vertical = Mathf.RoundToInt(P0ImGuiLayout.Scaled(8f));
+                starterCardStyle.padding = new RectOffset(horizontal, horizontal, vertical, vertical);
+                starterCardStyle.margin = new RectOffset(0, 0, 0, Mathf.RoundToInt(P0ImGuiLayout.Scaled(6f)));
+                starterCardStyle.normal.textColor = Color.white;
+                return starterCardStyle;
+            }
+        }
+
+        private GUIStyle StarterHeaderStyle
+        {
+            get
+            {
+                if (starterHeaderStyle == null)
+                {
+                    starterHeaderStyle = new GUIStyle(GUI.skin.toggle)
+                    {
+                        fontStyle = FontStyle.Bold,
+                        wordWrap = true
+                    };
+                }
+
+                starterHeaderStyle.fontSize = Mathf.RoundToInt(P0ImGuiLayout.Scaled(14f));
+                starterHeaderStyle.normal.textColor = Color.white;
+                starterHeaderStyle.onNormal.textColor = new Color(0.72f, 1f, 0.62f);
+                return starterHeaderStyle;
+            }
+        }
+
+        private GUIStyle HelperFoldoutStyle
+        {
+            get
+            {
+                if (helperFoldoutStyle == null)
+                {
+                    helperFoldoutStyle = new GUIStyle(GUI.skin.button)
+                    {
+                        fontStyle = FontStyle.Bold,
+                        wordWrap = true
+                    };
+                }
+
+                helperFoldoutStyle.fontSize = Mathf.RoundToInt(P0ImGuiLayout.Scaled(13f));
+                return helperFoldoutStyle;
             }
         }
     }

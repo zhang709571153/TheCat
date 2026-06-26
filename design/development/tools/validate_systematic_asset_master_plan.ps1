@@ -30,8 +30,8 @@ $promptPath = Require-File $promptRelative
 
 if (Test-Path -LiteralPath $matrixPath) {
     $rows = Import-Csv -LiteralPath $matrixPath
-    if ($rows.Count -ne 11) {
-        Add-Failure "Expected 11 master gap rows but found $($rows.Count)."
+    if ($rows.Count -ne 15) {
+        Add-Failure "Expected 15 master gap rows but found $($rows.Count)."
     }
 
     $requiredLanes = @(

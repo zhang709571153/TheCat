@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TheCat.Data;
 using TheCat.Data.Catalogs;
 using TheCat.Gameplay;
+using TheCat.Inputs;
 using TheCat.Roguelite;
 
 namespace TheCat.Tools
@@ -103,7 +104,7 @@ namespace TheCat.Tools
             P0RouteMapSurfaceCoverageReport report = new P0RouteMapSurfaceCoverageReport();
 
             EvaluateLayerOneSurface(report);
-            EvaluateEgyptPlaceholderSurface(report);
+            EvaluateEgyptSharedRouteSurface(report);
             EvaluateBranchSurface(report);
             EvaluateRewardChoiceSurface(report);
             EvaluateOldDreamMapPreviewSurface(report);
@@ -138,22 +139,41 @@ namespace TheCat.Tools
                 && surface.ProgressLabel == "进度：0/10"
                 && surface.CurrentNode.NodeId == P0RouteCatalog.LayerOneDefenseId
                 && surface.CurrentNode.RequiresBattle
+                && surface.CurrentNode.NodeTypeToken == "守床"
+                && !string.IsNullOrWhiteSpace(surface.CurrentNode.Title)
+                && !string.IsNullOrWhiteSpace(surface.CurrentNode.Detail)
+                && !string.IsNullOrWhiteSpace(surface.CurrentNode.RiskHint)
+                && !string.IsNullOrWhiteSpace(surface.CurrentNode.RewardHint)
+                && surface.CurrentNode.BuildSummary().Contains(surface.CurrentNode.NodeTypeToken)
+                && surface.CurrentNode.BuildSummary().Contains(surface.CurrentNode.RewardHint)
+                && VisibleCurrentNodeTextHasNoDeveloperTokens(surface)
+                && CountCurrentRows(surface) == 1
+                && surface.LayerRows[0].IsCurrent
+                && surface.LayerRows[0].SelectedNodeId == surface.CurrentNode.NodeId
+                && surface.LayerRows[0].BuildLabel().StartsWith("> ")
+                && surface.LayerRows[0].BuildLabel().Contains("*")
+                && surface.TryGetAction(P0RouteMapActionIds.EnterCurrentNode, out P0RouteMapAction enter)
+                && enter.IsEnabled
+                && enter.Command == P0InputCommand.ContinueRoute
+                && enter.Detail.Contains("战斗")
+                && enter.TargetSceneName == P0SceneFlow.GrayboxBattleSceneName
                 && surface.SummaryRows.Count >= 6,
-                "Route map layer-one surface exposes progress, battle current node, route rows, and run summary rows.",
+                "Route map layer-one surface exposes progress, readable current-node focus, CTA, route rows, and run summary rows.",
                 "Route map layer-one surface is incomplete.");
         }
 
-        private static void EvaluateEgyptPlaceholderSurface(P0RouteMapSurfaceCoverageReport report)
+        private static void EvaluateEgyptSharedRouteSurface(P0RouteMapSurfaceCoverageReport report)
         {
             DreamMapDefinition egypt = P0DreamMapCatalog.GetEgyptDreamMap();
             RunProgressionState run = new RunProgressionState(
-                P0RouteCatalog.CreateEgyptPlaceholderRoute(),
+                P0RouteCatalog.CreateEgyptPlayableRoute(),
                 P0RunSession.CreateDefaultStarterCatIds());
-            P0RouteMapSurface surface = P0RouteMapPresenter.BuildSurface(run, "埃及梦境占位验证。");
+            P0RouteMapSurface surface = P0RouteMapPresenter.BuildSurface(run, "埃及梦境共享路线验证。");
 
             Require(
                 report,
-                egypt.IsPlaceholder
+                egypt.IsPlayableInP0
+                && !egypt.IsPlaceholder
                 && P0RouteMapPresenter.HasP0RouteMapSurface(surface)
                 && Contains(surface.SummaryRows, egypt.DisplayName)
                 && Contains(surface.SummaryRows, egypt.ThemeLabel)
@@ -161,8 +181,8 @@ namespace TheCat.Tools
                 && surface.TryGetAction(P0RouteMapActionIds.EnterCurrentNode, out P0RouteMapAction enter)
                 && enter.IsEnabled
                 && enter.TargetSceneName == P0SceneFlow.GrayboxBattleSceneName,
-                "Route map Egypt placeholder surface exposes map theme, defense target, and current shared battle entry.",
-                "Route map Egypt placeholder surface did not expose map context or shared battle entry.");
+                "Route map Egypt shared-route surface exposes map theme, defense target, and current shared battle entry.",
+                "Route map Egypt shared-route surface did not expose map context or shared battle entry.");
         }
 
         private static void EvaluateBranchSurface(P0RouteMapSurfaceCoverageReport report)
@@ -402,15 +422,21 @@ namespace TheCat.Tools
             }
 
             P0RouteMapSurface surface = P0RouteMapPresenter.BuildSurface(run, "路线通关。");
-
             Require(
                 report,
                 surface.IsRouteComplete
                 && surface.IsRouteCleared
                 && surface.SettlementRows.Count > 0
+                && HasPlayerSettlementFocusRows(surface, true)
                 && Contains(surface.SettlementRows, "结算：路线通关")
-                && Contains(surface.SettlementRows, "路线：10/10 节点"),
-                "Route map settlement surface exposes cleared settlement rows after Boss completion.",
+                && Contains(surface.SettlementRows, "路线：10/10 节点")
+                && surface.TryGetAction(P0RouteMapActionIds.ReturnCatRoom, out P0RouteMapAction clearedReturn)
+                && clearedReturn.IsEnabled
+                && clearedReturn.Command == P0InputCommand.ContinueRoute
+                && clearedReturn.Label.Contains("猫房")
+                && clearedReturn.Detail.Contains("结算")
+                && clearedReturn.TargetSceneName == P0SceneFlow.CatRoomSceneName,
+                "Route map settlement surface exposes cleared settlement rows and cat-room return after Boss completion.",
                 "Route map settlement surface did not expose cleared settlement rows.");
         }
 
@@ -426,11 +452,42 @@ namespace TheCat.Tools
                 && !surface.IsRouteCleared
                 && surface.StatusLabel == "失败"
                 && P0SettlementPresenter.HasP0FailedSettlementRows(summary)
+                && HasPlayerSettlementFocusRows(surface, false)
                 && Contains(surface.SettlementRows, "结算：路线失败")
                 && Contains(surface.SettlementRows, "路线：1/10 节点")
-                && Contains(surface.SettlementRows, "战斗：0胜 / 1负"),
-                "Route map failed-settlement surface exposes failed run rows after owner sleep collapse.",
+                && Contains(surface.SettlementRows, "战斗：0胜 / 1负")
+                && surface.TryGetAction(P0RouteMapActionIds.ReturnCatRoom, out P0RouteMapAction failedReturn)
+                && failedReturn.IsEnabled
+                && failedReturn.Command == P0InputCommand.ContinueRoute
+                && failedReturn.Label.Contains("猫房")
+                && failedReturn.Detail.Contains("结算")
+                && failedReturn.TargetSceneName == P0SceneFlow.CatRoomSceneName,
+                "Route map failed-settlement surface exposes failed run rows and cat-room return after owner sleep collapse.",
                 "Route map failed-settlement surface did not expose failed run rows.");
+        }
+
+        private static bool HasPlayerSettlementFocusRows(P0RouteMapSurface surface, bool expectCleared)
+        {
+            if (surface.SettlementFocusRows.Count < 6)
+            {
+                return false;
+            }
+
+            string expectedResult = expectCleared ? "结算：路线通关" : "结算：路线失败";
+            return Contains(surface.SettlementFocusRows, expectedResult)
+                && Contains(surface.SettlementFocusRows, "路线：")
+                && Contains(surface.SettlementFocusRows, "战斗：")
+                && Contains(surface.SettlementFocusRows, "路线状态：梦屑")
+                && Contains(surface.SettlementFocusRows, "小鱼干")
+                && Contains(surface.SettlementFocusRows, "猫")
+                && Contains(surface.SettlementFocusRows, "祝福")
+                && Contains(surface.SettlementFocusRows, "最终核心：")
+                && Contains(surface.SettlementFocusRows, "最终猫咪生命：")
+                && !Contains(surface.SettlementFocusRows, "HP")
+                && !Contains(surface.SettlementFocusRows, " Lv")
+                && !Contains(surface.SettlementFocusRows, "阻止")
+                && !Contains(surface.SettlementFocusRows, "索敌")
+                && !Contains(surface.SettlementFocusRows, "缺失定义");
         }
 
         private static void EvaluateSettlementOutcomeBannerSurface(P0RouteMapSurfaceCoverageReport report)
@@ -592,6 +649,44 @@ namespace TheCat.Tools
             }
 
             return false;
+        }
+
+        private static int CountCurrentRows(P0RouteMapSurface surface)
+        {
+            if (surface == null)
+            {
+                return 0;
+            }
+
+            int count = 0;
+            for (int i = 0; i < surface.LayerRows.Count; i++)
+            {
+                count += surface.LayerRows[i].IsCurrent ? 1 : 0;
+            }
+
+            return count;
+        }
+
+        private static bool VisibleCurrentNodeTextHasNoDeveloperTokens(P0RouteMapSurface surface)
+        {
+            if (surface == null)
+            {
+                return false;
+            }
+
+            string text = surface.CurrentNode.Title
+                + " " + surface.CurrentNode.NodeTypeToken
+                + " " + surface.CurrentNode.RiskHint
+                + " " + surface.CurrentNode.RewardHint
+                + " " + surface.CurrentNode.Detail
+                + " " + surface.CurrentNode.BuildSummary();
+            return !text.Contains("_")
+                && !text.Contains("P0")
+                && !text.Contains("cat_upgrade")
+                && !text.Contains("saiban")
+                && !text.Contains("nephthys")
+                && !text.Contains("suzune")
+                && !text.Contains("placeholder");
         }
 
         private static bool CatUpgradeChoicesArePlayerFacing(P0RouteMapSurface surface)

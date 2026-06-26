@@ -1,3 +1,4 @@
+using TheCat.Roguelite;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -10,11 +11,15 @@ namespace TheCat.Gameplay
         private Vector2 scrollPosition;
         private GUIStyle wrappedLabel;
         private GUIStyle panelContentStyle;
+        private GUIStyle sectionTitleStyle;
+        private GUIStyle dreamChoiceStyle;
+        private GUIStyle dreamChoiceHeaderStyle;
+        private GUIStyle dreamChoiceDisabledHeaderStyle;
 
         private void OnGUI()
         {
             P0CatRoomSurface surface = BuildCatRoomSurfaceForSmoke();
-            Rect panelRect = P0ImGuiLayout.BuildLeftPanelRect(360f, 620f, 0.48f);
+            Rect panelRect = P0ImGuiLayout.BuildLeftPanelRect(460f, 760f, 0.42f);
             P0ImGuiVisualAssetDrawer.DrawTexture(
                 surface.UiShell.MainMenuBackground,
                 new Rect(0f, 0f, Screen.width, Screen.height),
@@ -30,13 +35,15 @@ namespace TheCat.Gameplay
             GUILayout.Label(surface.ReturnFeedbackLabel, WrappedLabel);
             GUILayout.Space(P0ImGuiLayout.SectionSpacing);
 
+            DrawDreamChoices(surface);
+            GUILayout.Space(P0ImGuiLayout.SectionSpacing);
+            DrawActions(surface);
+            GUILayout.Space(P0ImGuiLayout.SectionSpacing);
             DrawValueRows(surface);
             GUILayout.Space(P0ImGuiLayout.SectionSpacing);
             DrawResourceRows(surface);
             GUILayout.Space(P0ImGuiLayout.SectionSpacing);
             DrawHotspots(surface);
-            GUILayout.Space(P0ImGuiLayout.SectionSpacing);
-            DrawActions(surface);
 
             GUILayout.EndScrollView();
             GUILayout.EndArea();
@@ -49,6 +56,13 @@ namespace TheCat.Gameplay
 
         public void EnterDream()
         {
+            P0RunSession.EnsureBedroomDreamRun();
+            SceneManager.LoadScene(P0SceneFlow.RouteMapSceneName);
+        }
+
+        public void EnterEgyptDream()
+        {
+            P0RunSession.EnsureEgyptDreamRun();
             SceneManager.LoadScene(P0SceneFlow.RouteMapSceneName);
         }
 
@@ -59,7 +73,7 @@ namespace TheCat.Gameplay
 
         private void DrawValueRows(P0CatRoomSurface surface)
         {
-            GUILayout.Label("核心状态");
+            GUILayout.Label("核心状态", SectionTitleStyle);
             for (int i = 0; i < surface.ValueRows.Count; i++)
             {
                 GUILayout.Label(surface.ValueRows[i].BuildSummary(), WrappedLabel);
@@ -68,16 +82,50 @@ namespace TheCat.Gameplay
 
         private void DrawResourceRows(P0CatRoomSurface surface)
         {
-            GUILayout.Label("猫房资源");
+            GUILayout.Label("猫房资源", SectionTitleStyle);
             for (int i = 0; i < surface.ResourceRows.Count; i++)
             {
                 GUILayout.Label(surface.ResourceRows[i].BuildSummary(), WrappedLabel);
             }
         }
 
+        private void DrawDreamChoices(P0CatRoomSurface surface)
+        {
+            GUILayout.Label("梦境主题", SectionTitleStyle);
+            for (int i = 0; i < surface.DreamChoices.Count; i++)
+            {
+                P0CatRoomDreamChoice choice = surface.DreamChoices[i];
+                GUILayout.BeginVertical(DreamChoiceStyle);
+                GUILayout.Label(BuildDreamChoiceHeader(choice), GetDreamChoiceHeaderStyle(choice));
+                GUILayout.Label(choice.ThemeLabel + " / 守护目标：" + choice.TargetLabel, WrappedLabel);
+                GUILayout.Label(choice.Detail, WrappedLabel);
+                GUILayout.EndVertical();
+            }
+        }
+
+        private static string BuildDreamChoiceHeader(P0CatRoomDreamChoice choice)
+        {
+            if (choice.IsEnabled)
+            {
+                return choice.Label + "  可进入当前Demo路线";
+            }
+
+            if (!choice.IsPlayable)
+            {
+                return choice.Label + "  占位，不可进入，无跳转";
+            }
+
+            return choice.Label + "  已锁定，等待开局条件";
+        }
+
+        private GUIStyle GetDreamChoiceHeaderStyle(P0CatRoomDreamChoice choice)
+        {
+            return choice.IsEnabled ? DreamChoiceHeaderStyle : DreamChoiceDisabledHeaderStyle;
+        }
+
         private void DrawHotspots(P0CatRoomSurface surface)
         {
-            GUILayout.Label("房间角落");
+            GUILayout.Label("房间角落", SectionTitleStyle);
             for (int i = 0; i < surface.Hotspots.Count; i++)
             {
                 GUILayout.Label(surface.Hotspots[i].BuildSummary(), WrappedLabel);
@@ -106,6 +154,9 @@ namespace TheCat.Gameplay
                 case P0CatRoomActionIds.EnterDream:
                     EnterDream();
                     break;
+                case P0CatRoomActionIds.EnterEgyptDream:
+                    EnterEgyptDream();
+                    break;
                 case P0CatRoomActionIds.ReturnMainMenu:
                     ReturnMainMenu();
                     break;
@@ -124,6 +175,8 @@ namespace TheCat.Gameplay
                     };
                 }
 
+                wrappedLabel.fontSize = Mathf.RoundToInt(P0ImGuiLayout.Scaled(14f));
+                wrappedLabel.normal.textColor = Color.white;
                 return wrappedLabel;
             }
         }
@@ -139,6 +192,84 @@ namespace TheCat.Gameplay
 
                 panelContentStyle.padding = P0ImGuiLayout.Padding();
                 return panelContentStyle;
+            }
+        }
+
+        private GUIStyle SectionTitleStyle
+        {
+            get
+            {
+                if (sectionTitleStyle == null)
+                {
+                    sectionTitleStyle = new GUIStyle(GUI.skin.label)
+                    {
+                        fontStyle = FontStyle.Bold,
+                        wordWrap = true
+                    };
+                }
+
+                sectionTitleStyle.fontSize = Mathf.RoundToInt(P0ImGuiLayout.Scaled(16f));
+                sectionTitleStyle.normal.textColor = new Color(1f, 0.88f, 0.52f);
+                return sectionTitleStyle;
+            }
+        }
+
+        private GUIStyle DreamChoiceStyle
+        {
+            get
+            {
+                if (dreamChoiceStyle == null)
+                {
+                    dreamChoiceStyle = new GUIStyle(GUI.skin.box)
+                    {
+                        wordWrap = true
+                    };
+                }
+
+                int horizontal = Mathf.RoundToInt(P0ImGuiLayout.Scaled(10f));
+                int vertical = Mathf.RoundToInt(P0ImGuiLayout.Scaled(8f));
+                dreamChoiceStyle.padding = new RectOffset(horizontal, horizontal, vertical, vertical);
+                dreamChoiceStyle.margin = new RectOffset(0, 0, 0, Mathf.RoundToInt(P0ImGuiLayout.Scaled(6f)));
+                dreamChoiceStyle.normal.textColor = Color.white;
+                return dreamChoiceStyle;
+            }
+        }
+
+        private GUIStyle DreamChoiceHeaderStyle
+        {
+            get
+            {
+                if (dreamChoiceHeaderStyle == null)
+                {
+                    dreamChoiceHeaderStyle = new GUIStyle(GUI.skin.label)
+                    {
+                        fontStyle = FontStyle.Bold,
+                        wordWrap = true
+                    };
+                }
+
+                dreamChoiceHeaderStyle.fontSize = Mathf.RoundToInt(P0ImGuiLayout.Scaled(15f));
+                dreamChoiceHeaderStyle.normal.textColor = new Color(0.72f, 1f, 0.62f);
+                return dreamChoiceHeaderStyle;
+            }
+        }
+
+        private GUIStyle DreamChoiceDisabledHeaderStyle
+        {
+            get
+            {
+                if (dreamChoiceDisabledHeaderStyle == null)
+                {
+                    dreamChoiceDisabledHeaderStyle = new GUIStyle(GUI.skin.label)
+                    {
+                        fontStyle = FontStyle.Bold,
+                        wordWrap = true
+                    };
+                }
+
+                dreamChoiceDisabledHeaderStyle.fontSize = Mathf.RoundToInt(P0ImGuiLayout.Scaled(15f));
+                dreamChoiceDisabledHeaderStyle.normal.textColor = new Color(0.8f, 0.8f, 0.8f);
+                return dreamChoiceDisabledHeaderStyle;
             }
         }
     }

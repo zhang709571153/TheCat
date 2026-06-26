@@ -32,11 +32,15 @@ namespace TheCat.Tools
 
         public static bool IsRunning => State == P0PlayModeDefeatFlowSmokeState.Running;
 
+        public static bool LastRunFailedCatRoomReturnVerified { get; private set; }
+
         public static bool IsFinished => State == P0PlayModeDefeatFlowSmokeState.Passed
             || State == P0PlayModeDefeatFlowSmokeState.Failed;
 
         public static bool StartDefaultDefeatSmoke()
         {
+            LastRunFailedCatRoomReturnVerified = false;
+
             if (!Application.isPlaying)
             {
                 Complete(
@@ -72,6 +76,11 @@ namespace TheCat.Tools
             LastSummary = string.IsNullOrWhiteSpace(summary) ? state.ToString() : summary;
             LastDetailedLog = detailedLog ?? string.Empty;
             activeRunner = null;
+        }
+
+        internal static void MarkFailedCatRoomReturnVerified()
+        {
+            LastRunFailedCatRoomReturnVerified = true;
         }
     }
 
@@ -216,12 +225,52 @@ namespace TheCat.Tools
                 yield break;
             }
 
+            if (!routeSurface.TryGetAction(P0RouteMapActionIds.ReturnCatRoom, out P0RouteMapAction returnCatRoom)
+                || !returnCatRoom.IsEnabled
+                || returnCatRoom.TargetSceneName != P0SceneFlow.CatRoomSceneName
+                || returnCatRoom.Command != P0InputCommand.ContinueRoute)
+            {
+                Fail("Forced defeat settlement does not expose enabled cat-room return action.");
+                yield break;
+            }
+
             Add("Failed settlement rows verified: "
                 + P0SettlementPresenter.BuildCompactSummary(settlement)
                 + ".");
 
+            failedRouteMap.ExecuteInputCommand(P0InputCommand.ContinueRoute);
+            yield return WaitForScene(P0SceneFlow.CatRoomSceneName);
+            if (failed)
+            {
+                yield break;
+            }
+
+            CatRoomController catRoom = Object.FindAnyObjectByType<CatRoomController>();
+            if (catRoom == null)
+            {
+                Fail("CatRoomController missing after failed settlement cat-room return.");
+                yield break;
+            }
+
+            P0CatRoomSurface catRoomSurface = catRoom.BuildCatRoomSurfaceForSmoke();
+            if (!P0CatRoomPresenter.HasP0CatRoomSurface(catRoomSurface)
+                || P0CatRoomSession.CurrentState.ReturnReason != P0CatRoomReturnReason.RouteFailed
+                || P0CatRoomSession.CurrentState.HasActiveRun)
+            {
+                Fail("Cat-room return state is incomplete after forced defeat settlement: "
+                    + P0CatRoomPresenter.BuildCompactSummary(catRoomSurface)
+                    + ".");
+                yield break;
+            }
+
+            Add("Failed settlement cat-room return verified: "
+                + catRoomSurface.ReturnFeedbackLabel
+                + ".");
+            P0PlayModeDefeatFlowSmoke.MarkFailedCatRoomReturnVerified();
+
             string summary = "P0 play mode defeat flow smoke passed: "
                 + P0SettlementPresenter.BuildCompactSummary(settlement)
+                + ", failed cat-room return verified"
                 + ".";
             Add(summary);
             Complete(P0PlayModeDefeatFlowSmokeState.Passed, summary);

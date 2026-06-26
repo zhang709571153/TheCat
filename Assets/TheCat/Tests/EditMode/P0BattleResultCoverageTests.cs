@@ -19,6 +19,8 @@ namespace TheCat.Tests
             StringAssert.Contains("Victory result surface", report.BuildDetailedSummary());
             StringAssert.Contains("outcome banner assets", report.BuildDetailedSummary());
             StringAssert.Contains("In-progress result surface", report.BuildDetailedSummary());
+            StringAssert.Contains("Player-facing result focus rows", report.BuildDetailedSummary());
+            StringAssert.Contains("Result action shortcut labels", report.BuildDetailedSummary());
         }
 
         [Test]

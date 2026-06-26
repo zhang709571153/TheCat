@@ -38,10 +38,11 @@ namespace TheCat.Tools
 
         public int UnexpectedPngFileCount => unexpectedPngFiles.Count;
 
-        public bool IsComplete => ExpectedFileCount == P0PlayModeScreenshotSmoke.ExpectedCaptureCount
+        public bool IsComplete => ExpectedFileCount > 0
             && ExistingExpectedFileCount == ExpectedFileCount
             && MissingExpectedFileCount == 0
-            && UnusableExpectedFileCount == 0;
+            && UnusableExpectedFileCount == 0
+            && UnexpectedPngFileCount == 0;
 
         public void SetDirectory(string screenshotDirectory, int expectedFileCount)
         {

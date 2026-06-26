@@ -1,0 +1,9 @@
+front_line_slot_marker
+rear_support_slot_marker
+healer_slot_marker
+shield_guard_slot_marker
+burst_skill_slot_marker
+utility_control_slot_marker
+synergy_pair_link_marker
+reserve_bench_marker
+empty_locked_team_slot_marker

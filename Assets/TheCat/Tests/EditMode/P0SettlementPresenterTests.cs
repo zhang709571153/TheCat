@@ -77,6 +77,29 @@ namespace TheCat.Tests
         }
 
         [Test]
+        public void BuildPlayerFocusRows_ExposesReadableClearedSettlement()
+        {
+            P0RunSettlementSummary summary = new P0RunSettlementSummary(CreateClearedRun());
+
+            IReadOnlyList<string> rows = P0SettlementPresenter.BuildPlayerFocusRows(summary);
+
+            Assert.AreEqual(6, rows.Count);
+            Assert.IsTrue(Contains(rows, "结算：路线通关"));
+            Assert.IsTrue(Contains(rows, "路线：10/10 节点"));
+            Assert.IsTrue(Contains(rows, "战斗：5胜 / 0负"));
+            Assert.IsTrue(Contains(rows, "路线状态：梦屑"));
+            Assert.IsTrue(Contains(rows, "小鱼干"));
+            Assert.IsTrue(Contains(rows, "祝福"));
+            Assert.IsTrue(Contains(rows, "最终核心："));
+            Assert.IsTrue(Contains(rows, "最终猫咪生命："));
+            Assert.IsFalse(Contains(rows, "HP"));
+            Assert.IsFalse(Contains(rows, " Lv"));
+            Assert.IsFalse(Contains(rows, "阻止"));
+            Assert.IsFalse(Contains(rows, "索敌"));
+            Assert.IsFalse(Contains(rows, "缺失定义"));
+        }
+
+        [Test]
         public void HasP0ClearedSettlementRows_RejectsIncompleteRun()
         {
             RunProgressionState run = new RunProgressionState(P0RouteCatalog.CreateTenLayerRoute(), new[] { "saiban" });

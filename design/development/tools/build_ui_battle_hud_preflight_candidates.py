@@ -529,7 +529,7 @@ def write_process_note() -> None:
                 "- Candidate boundary: all PNGs stay under `design/development/asset_candidates`; do not import into `Assets` before Unity review.",
                 "- Text rule: no baked Chinese text; Unity-rendered text, numbers, cooldowns, and status counts remain required.",
                 "- Starter-cat rule: HUD avatar reuse is allowed; no new body, pose, costume, color, or framesheet generation is included.",
-                "- Runtime gate: Unity-rendered battle HUD screenshots, skill state readability, gauge value replacement, click targets, import settings, binding, and Console.",
+                "- Runtime gate: Batch 87 candidate-backed Unity-rendered battle HUD screenshots, skill state readability, gauge value replacement, click targets, import settings, binding, and Console.",
             ]
         )
         + "\n",

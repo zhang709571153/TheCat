@@ -1,0 +1,9 @@
+north_doorway_dream_arch_prop
+side_window_moonbeam_marker
+blanket_curtain_entry_prop
+floor_path_ribbon_curve
+sock_trail_path_marker
+alarm_clock_hazard_prop
+nightlight_safe_glow_marker
+toy_train_path_blocker
+wall_crack_entry_marker

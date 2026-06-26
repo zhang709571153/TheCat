@@ -17,6 +17,7 @@ namespace TheCat.Gameplay
         ResolveCatUpgradeChoice,
         StartBattle,
         StartNewRun,
+        ReturnCatRoom,
         RouteEnded
     }
 
@@ -255,7 +256,7 @@ namespace TheCat.Gameplay
         {
             return new P0RouteMapCommandResult(
                 true,
-                P0RouteMapCommandAction.RouteEnded,
+                P0RouteMapCommandAction.ReturnCatRoom,
                 route.IsFailed ? "路线失败。" : "路线已通关。");
         }
 
@@ -273,11 +274,18 @@ namespace TheCat.Gameplay
         public const string RouteMapSceneName = P0SceneFlow.RouteMapSceneName;
 
         private string message = "就绪";
+        private bool showRouteTimeline;
+        private bool showRunDetails;
+        private bool showSettlementDetails;
         private Vector2 routeScrollPosition;
         private float routePanelInnerWidth = P0ImGuiLayout.ReferenceWidth;
         private GUIStyle panelContentStyle;
         private GUIStyle wrappedRouteLabel;
         private GUIStyle routeSectionLabel;
+        private GUIStyle routeCardStyle;
+        private GUIStyle routeHeaderStyle;
+        private GUIStyle routeFoldoutStyle;
+        private GUIStyle mutedRouteLabel;
 
         private void Awake()
         {
@@ -294,7 +302,7 @@ namespace TheCat.Gameplay
             P0RouteMapSurface surface = BuildRouteMapSurface();
             Rect panelRect = surface.IsRouteComplete
                 ? P0ImGuiLayout.BuildLeftPanelRect(520f, 860f, 0.56f)
-                : P0ImGuiLayout.BuildLeftPanelRect(360f, 600f, 0.44f);
+                : P0ImGuiLayout.BuildLeftPanelRect(520f, 860f, 0.50f);
             routePanelInnerWidth = P0ImGuiLayout.ScrollContentWidth(panelRect);
             P0ImGuiVisualAssetDrawer.DrawTexture(surface.UiShell.DreamGlassPanel, panelRect, ScaleMode.StretchToFill);
 
@@ -303,50 +311,35 @@ namespace TheCat.Gameplay
             GUILayout.Label(surface.Title, RouteSectionLabel);
             DrawRoute(surface);
             GUILayout.Space(P0ImGuiLayout.SectionSpacing);
+            DrawPrimaryRouteAction(surface);
+            GUILayout.Space(P0ImGuiLayout.SectionSpacing);
+            DrawRouteSupportActions(surface);
+            GUILayout.Space(P0ImGuiLayout.SectionSpacing);
 
-            if (!surface.IsRouteComplete)
+            if (surface.IsRouteComplete)
             {
-                P0RouteMapAction enterAction = GetAction(surface, P0RouteMapActionIds.EnterCurrentNode);
-                GUI.enabled = enterAction.IsEnabled;
-                if (P0ImGuiVisualAssetDrawer.DrawTexturedButton(surface.UiShell.PrimaryButton, enterAction.Label, P0ImGuiLayout.PrimaryButtonHeight))
-                {
-                    EnterCurrentNode();
-                }
+                DrawSettlementDetailsFoldout(surface);
+                GUILayout.Space(P0ImGuiLayout.SectionSpacing);
             }
-
-            P0RouteMapAction newRunAction = GetAction(surface, P0RouteMapActionIds.NewRun);
-            GUI.enabled = true;
-            if (P0ImGuiVisualAssetDrawer.DrawTexturedButton(surface.UiShell.PrimaryButton, newRunAction.Label, P0ImGuiLayout.ButtonHeight))
+            else
             {
-                P0RunSession.StartNewRun();
-                message = "新路线已开始。";
-            }
-
-            P0RouteMapAction mainMenuAction = GetAction(surface, P0RouteMapActionIds.MainMenu);
-            if (P0ImGuiVisualAssetDrawer.DrawTexturedButton(surface.UiShell.PrimaryButton, mainMenuAction.Label, P0ImGuiLayout.ButtonHeight))
-            {
-                SceneManager.LoadScene(MainMenuController.MainMenuSceneName);
+                DrawRouteTimeline(surface);
+                DrawRunDetails(surface);
             }
 
             GUILayout.Space(P0ImGuiLayout.SectionSpacing);
-            if (surface.IsRouteComplete)
-            {
-                DrawSettlementDetails(surface);
-                GUILayout.Space(P0ImGuiLayout.SectionSpacing);
-            }
-
-            GUILayout.Label(message);
+            GUILayout.Label(message, WrappedRouteLabel);
             GUILayout.EndScrollView();
             GUILayout.EndArea();
         }
 
-        public void ExecuteInputCommand(P0InputCommand command)
+        public P0RouteMapCommandResult ExecuteInputCommand(P0InputCommand command)
         {
             RunProgressionState run = P0RunSession.EnsureAnyProgression();
             P0RouteMapCommandResult result = P0RouteMapCommandRouter.Execute(run, command);
             if (!result.IsHandled)
             {
-                return;
+                return result;
             }
 
             if (!string.IsNullOrWhiteSpace(result.Message))
@@ -357,13 +350,21 @@ namespace TheCat.Gameplay
             if (result.Action == P0RouteMapCommandAction.StartNewRun)
             {
                 P0RunSession.StartNewRun();
-                return;
+                return result;
+            }
+
+            if (result.Action == P0RouteMapCommandAction.ReturnCatRoom)
+            {
+                ReturnToCatRoom();
+                return result;
             }
 
             if (result.ShouldLoadBattle)
             {
                 SceneManager.LoadScene(P0SceneFlow.GrayboxBattleSceneName);
             }
+
+            return result;
         }
 
         public P0RouteMapSurface BuildRouteMapSurfaceForSmoke()
@@ -397,6 +398,19 @@ namespace TheCat.Gameplay
             }
 
             message = "请选择 " + P0RouteNodePresenter.Describe(node, run).Title + " 的奖励。";
+        }
+
+        public void ReturnToCatRoom()
+        {
+            RunProgressionState run = P0RunSession.EnsureAnyProgression();
+            if (run.Route == null || !run.Route.IsComplete)
+            {
+                message = "Route is not complete; cat-room return is unavailable.";
+                return;
+            }
+
+            P0CatRoomSession.RecordRouteReturn(run);
+            SceneManager.LoadScene(P0SceneFlow.CatRoomSceneName);
         }
 
         private void HandleKeyboardInput()
@@ -449,66 +463,167 @@ namespace TheCat.Gameplay
                 return;
             }
 
-            GUILayout.Label(surface.ProgressLabel);
-            GUILayout.Label("状态：" + surface.StatusLabel);
+            GUILayout.Label(surface.ProgressLabel + "  状态：" + surface.StatusLabel, MutedRouteLabel);
+            DrawDreamMapContext(surface);
             if (surface.HasCurrentNode)
             {
-                if (surface.CurrentNode.VisualAsset.HasAsset)
-                {
-                    P0ImGuiVisualAssetDrawer.DrawIcon(surface.CurrentNode.VisualAsset, 56f);
-                }
-
-                if (surface.CurrentNode.SummaryBannerAsset.HasAsset)
-                {
-                    float bannerHeight = P0ImGuiLayout.Scaled(86f);
-                    Rect bannerRect = GUILayoutUtility.GetRect(
-                        1f,
-                        bannerHeight,
-                        GUILayout.ExpandWidth(true),
-                        GUILayout.Height(bannerHeight));
-                    P0ImGuiVisualAssetDrawer.DrawTexture(
-                        surface.CurrentNode.SummaryBannerAsset,
-                        bannerRect,
-                        ScaleMode.ScaleToFit);
-                }
-
-                GUILayout.Label("当前：第 " + surface.CurrentNode.Layer + " 层 " + surface.CurrentNode.Title);
-                GUILayout.Label("风险：" + surface.CurrentNode.RiskHint + "  奖励：" + surface.CurrentNode.RewardHint);
-                GUILayout.Label(surface.CurrentNode.Detail);
+                DrawCurrentNodeFocus(surface.CurrentNode);
             }
 
             DrawCatUpgradeChoices(surface);
             DrawCurrentNodeOptions(surface);
-            GUILayout.Space(6f);
-            for (int i = 0; i < surface.LayerRows.Count; i++)
+            DrawCurrentChoices(surface);
+        }
+
+        private void DrawDreamMapContext(P0RouteMapSurface surface)
+        {
+            if (surface.SummaryRows.Count > 1)
             {
-                GUILayout.Label(surface.LayerRows[i].BuildLabel());
+                GUILayout.Label(surface.SummaryRows[1], MutedRouteLabel);
+            }
+        }
+
+        private void DrawCurrentNodeFocus(P0RouteMapCurrentNodeCard node)
+        {
+            GUILayout.BeginVertical(RouteCardStyle);
+            GUILayout.Label("当前节点", RouteHeaderStyle);
+            GUILayout.BeginHorizontal();
+            if (node.VisualAsset.HasAsset)
+            {
+                P0ImGuiVisualAssetDrawer.DrawInlineIcon(node.VisualAsset, P0ImGuiLayout.Scaled(42f));
             }
 
-            GUILayout.Space(6f);
+            GUILayout.BeginVertical();
+            GUILayout.Label("第 " + node.Layer + " 层 · " + node.NodeTypeToken + " · " + node.Title, RouteHeaderStyle);
+            GUILayout.Label(
+                "风险：" + node.RiskHint + "  奖励：" + node.RewardHint,
+                WrappedRouteLabel);
+            GUILayout.EndVertical();
+            GUILayout.EndHorizontal();
+
+            if (node.SummaryBannerAsset.HasAsset)
+            {
+                float bannerHeight = P0ImGuiLayout.Scaled(86f);
+                Rect bannerRect = GUILayoutUtility.GetRect(
+                    1f,
+                    bannerHeight,
+                    GUILayout.ExpandWidth(true),
+                    GUILayout.Height(bannerHeight));
+                P0ImGuiVisualAssetDrawer.DrawTexture(
+                    node.SummaryBannerAsset,
+                    bannerRect,
+                    ScaleMode.ScaleToFit);
+            }
+
+            GUILayout.Label(node.Detail, WrappedRouteLabel);
+            GUILayout.EndVertical();
+        }
+
+        private void DrawPrimaryRouteAction(P0RouteMapSurface surface)
+        {
+            if (!surface.IsRouteComplete)
+            {
+                P0RouteMapAction enterAction = GetAction(surface, P0RouteMapActionIds.EnterCurrentNode);
+                GUILayout.Label(enterAction.Detail, MutedRouteLabel);
+                GUI.enabled = enterAction.IsEnabled;
+                if (P0ImGuiVisualAssetDrawer.DrawTexturedButton(surface.UiShell.PrimaryButton, enterAction.Label, P0ImGuiLayout.PrimaryButtonHeight))
+                {
+                    EnterCurrentNode();
+                }
+
+                GUI.enabled = true;
+                return;
+            }
+
+            P0RouteMapAction returnCatRoomAction = GetAction(surface, P0RouteMapActionIds.ReturnCatRoom);
+            GUILayout.Label(returnCatRoomAction.Detail, MutedRouteLabel);
+            GUI.enabled = returnCatRoomAction.IsEnabled;
+            if (P0ImGuiVisualAssetDrawer.DrawTexturedButton(surface.UiShell.PrimaryButton, returnCatRoomAction.Label, P0ImGuiLayout.PrimaryButtonHeight))
+            {
+                ReturnToCatRoom();
+            }
+
+            GUI.enabled = true;
+        }
+
+        private void DrawRouteSupportActions(P0RouteMapSurface surface)
+        {
+            P0RouteMapAction newRunAction = GetAction(surface, P0RouteMapActionIds.NewRun);
+            P0RouteMapAction mainMenuAction = GetAction(surface, P0RouteMapActionIds.MainMenu);
+            if (IsRoutePanelNarrow)
+            {
+                DrawSupportActionButton(surface, newRunAction);
+                DrawSupportActionButton(surface, mainMenuAction);
+                return;
+            }
+
+            GUILayout.BeginHorizontal();
+            DrawSupportActionButton(surface, newRunAction);
+            DrawSupportActionButton(surface, mainMenuAction);
+            GUILayout.EndHorizontal();
+        }
+
+        private void DrawSupportActionButton(P0RouteMapSurface surface, P0RouteMapAction action)
+        {
+            GUI.enabled = action.IsEnabled;
+            if (P0ImGuiVisualAssetDrawer.DrawTexturedButton(surface.UiShell.PrimaryButton, action.Label, P0ImGuiLayout.ButtonHeight))
+            {
+                if (action.ActionId == P0RouteMapActionIds.NewRun)
+                {
+                    P0RunSession.StartNewRun();
+                    message = "新路线已开始。";
+                }
+                else if (action.ActionId == P0RouteMapActionIds.MainMenu)
+                {
+                    SceneManager.LoadScene(MainMenuController.MainMenuSceneName);
+                }
+            }
+
+            GUI.enabled = true;
+        }
+
+        private void DrawRouteTimeline(P0RouteMapSurface surface)
+        {
+            showRouteTimeline = GUILayout.Toggle(
+                showRouteTimeline,
+                showRouteTimeline ? "隐藏路线回顾" : "显示路线回顾",
+                RouteFoldoutStyle,
+                GUILayout.Height(P0ImGuiLayout.CompactButtonHeight));
+            if (!showRouteTimeline)
+            {
+                return;
+            }
+
+            GUILayout.Label("路线回顾", RouteSectionLabel);
+            for (int i = 0; i < surface.LayerRows.Count; i++)
+            {
+                GUILayout.Label(surface.LayerRows[i].BuildLabel(), WrappedRouteLabel);
+            }
+        }
+
+        private void DrawRunDetails(P0RouteMapSurface surface)
+        {
+            showRunDetails = GUILayout.Toggle(
+                showRunDetails,
+                showRunDetails ? "隐藏资源与队伍" : "显示资源与队伍",
+                RouteFoldoutStyle,
+                GUILayout.Height(P0ImGuiLayout.CompactButtonHeight));
+            if (!showRunDetails)
+            {
+                return;
+            }
+
+            GUILayout.Label("资源与队伍", RouteSectionLabel);
             DrawWalletStrip(surface);
             for (int i = 0; i < surface.SummaryRows.Count; i++)
             {
-                GUILayout.Label(surface.SummaryRows[i]);
+                GUILayout.Label(surface.SummaryRows[i], WrappedRouteLabel);
             }
-
-            if (surface.SettlementOutcomeBannerAsset.HasAsset)
-            {
-                float bannerWidth = Mathf.Min(P0ImGuiLayout.Scaled(260f), routePanelInnerWidth);
-                P0ImGuiVisualAssetDrawer.DrawGUILayoutTexture(surface.SettlementOutcomeBannerAsset, bannerWidth, P0ImGuiLayout.Scaled(82f));
-            }
-
-            for (int i = 0; i < surface.SettlementRows.Count; i++)
-            {
-                GUILayout.Label(surface.SettlementRows[i]);
-            }
-
-            DrawCurrentChoices(surface);
         }
 
         private void DrawSettlementFocus(P0RouteMapSurface surface)
         {
-            GUILayout.Label(surface.ProgressLabel + "  状态：" + surface.StatusLabel, WrappedRouteLabel);
+            GUILayout.Label(surface.ProgressLabel + "  状态：" + surface.StatusLabel, MutedRouteLabel);
             if (surface.SettlementOutcomeBannerAsset.HasAsset)
             {
                 float bannerWidth = Mathf.Min(P0ImGuiLayout.Scaled(420f), routePanelInnerWidth);
@@ -519,15 +634,28 @@ namespace TheCat.Gameplay
             }
 
             GUILayout.Space(6f);
-            GUILayout.Label("结算结果", RouteSectionLabel);
-            for (int i = 0; i < surface.SettlementRows.Count; i++)
+            GUILayout.BeginVertical(RouteCardStyle);
+            GUILayout.Label(surface.IsRouteCleared ? "路线通关" : "路线结束", RouteHeaderStyle);
+            for (int i = 0; i < surface.SettlementFocusRows.Count; i++)
             {
-                if (ShouldShowSettlementFocusRow(i))
-                {
-                    GUILayout.Label(surface.SettlementRows[i], WrappedRouteLabel);
-                }
+                GUILayout.Label(surface.SettlementFocusRows[i], WrappedRouteLabel);
             }
 
+            GUILayout.Label("下一步：返回猫房整理本轮结果，或开启新路线。", MutedRouteLabel);
+            GUILayout.EndVertical();
+        }
+
+        private void DrawSettlementDetailsFoldout(P0RouteMapSurface surface)
+        {
+            showSettlementDetails = GUILayout.Toggle(
+                showSettlementDetails,
+                showSettlementDetails ? "隐藏结算明细" : "显示结算明细",
+                RouteFoldoutStyle,
+                GUILayout.Height(P0ImGuiLayout.CompactButtonHeight));
+            if (showSettlementDetails)
+            {
+                DrawSettlementDetails(surface);
+            }
         }
 
         private void DrawSettlementDetails(P0RouteMapSurface surface)
@@ -535,10 +663,7 @@ namespace TheCat.Gameplay
             GUILayout.Label("结算明细", RouteSectionLabel);
             for (int i = 0; i < surface.SettlementRows.Count; i++)
             {
-                if (!ShouldShowSettlementFocusRow(i))
-                {
-                    GUILayout.Label(surface.SettlementRows[i], WrappedRouteLabel);
-                }
+                GUILayout.Label(surface.SettlementRows[i], WrappedRouteLabel);
             }
 
             GUILayout.Space(8f);
@@ -555,16 +680,6 @@ namespace TheCat.Gameplay
             {
                 GUILayout.Label(surface.SummaryRows[i], WrappedRouteLabel);
             }
-        }
-
-        private static bool ShouldShowSettlementFocusRow(int index)
-        {
-            return index == 0
-                || index == 1
-                || index == 2
-                || index == 8
-                || index == 9
-                || index == 10;
         }
 
         private void DrawCatUpgradeChoices(P0RouteMapSurface surface)
@@ -907,6 +1022,8 @@ namespace TheCat.Gameplay
                     };
                 }
 
+                wrappedRouteLabel.fontSize = Mathf.RoundToInt(P0ImGuiLayout.Scaled(14f));
+                wrappedRouteLabel.normal.textColor = Color.white;
                 return wrappedRouteLabel;
             }
         }
@@ -924,7 +1041,85 @@ namespace TheCat.Gameplay
                     };
                 }
 
+                routeSectionLabel.fontSize = Mathf.RoundToInt(P0ImGuiLayout.Scaled(16f));
+                routeSectionLabel.normal.textColor = new Color(1f, 0.88f, 0.52f);
                 return routeSectionLabel;
+            }
+        }
+
+        private GUIStyle RouteCardStyle
+        {
+            get
+            {
+                if (routeCardStyle == null)
+                {
+                    routeCardStyle = new GUIStyle(GUI.skin.box)
+                    {
+                        wordWrap = true
+                    };
+                }
+
+                int horizontal = Mathf.RoundToInt(P0ImGuiLayout.Scaled(10f));
+                int vertical = Mathf.RoundToInt(P0ImGuiLayout.Scaled(8f));
+                routeCardStyle.padding = new RectOffset(horizontal, horizontal, vertical, vertical);
+                routeCardStyle.margin = new RectOffset(0, 0, 0, Mathf.RoundToInt(P0ImGuiLayout.Scaled(6f)));
+                routeCardStyle.normal.textColor = Color.white;
+                return routeCardStyle;
+            }
+        }
+
+        private GUIStyle RouteHeaderStyle
+        {
+            get
+            {
+                if (routeHeaderStyle == null)
+                {
+                    routeHeaderStyle = new GUIStyle(GUI.skin.label)
+                    {
+                        fontStyle = FontStyle.Bold,
+                        wordWrap = true
+                    };
+                }
+
+                routeHeaderStyle.fontSize = Mathf.RoundToInt(P0ImGuiLayout.Scaled(14f));
+                routeHeaderStyle.normal.textColor = new Color(0.72f, 1f, 0.62f);
+                return routeHeaderStyle;
+            }
+        }
+
+        private GUIStyle RouteFoldoutStyle
+        {
+            get
+            {
+                if (routeFoldoutStyle == null)
+                {
+                    routeFoldoutStyle = new GUIStyle(GUI.skin.button)
+                    {
+                        fontStyle = FontStyle.Bold,
+                        wordWrap = true
+                    };
+                }
+
+                routeFoldoutStyle.fontSize = Mathf.RoundToInt(P0ImGuiLayout.Scaled(13f));
+                return routeFoldoutStyle;
+            }
+        }
+
+        private GUIStyle MutedRouteLabel
+        {
+            get
+            {
+                if (mutedRouteLabel == null)
+                {
+                    mutedRouteLabel = new GUIStyle(GUI.skin.label)
+                    {
+                        wordWrap = true
+                    };
+                }
+
+                mutedRouteLabel.fontSize = Mathf.RoundToInt(P0ImGuiLayout.Scaled(13f));
+                mutedRouteLabel.normal.textColor = new Color(0.82f, 0.84f, 0.88f);
+                return mutedRouteLabel;
             }
         }
 

@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using TheCat.Combat;
+using TheCat.Data;
 using TheCat.Data.Catalogs;
 using TheCat.Gameplay;
 using TheCat.Roguelite;
@@ -18,6 +19,7 @@ namespace TheCat.Tests
             Assert.AreEqual("饱肚度", surface.ValueRows[2].Label);
             Assert.AreEqual("充足", surface.ValueRows[2].StatusLabel);
             Assert.AreEqual(3, surface.ResourceRows.Count);
+            Assert.AreEqual(2, surface.DreamChoices.Count);
             Assert.AreEqual(4, surface.Hotspots.Count);
             Assert.IsTrue(surface.TryGetHotspot(P0CatRoomHotspotIds.Bed, out P0CatRoomHotspot bed));
             Assert.IsTrue(surface.TryGetHotspot(P0CatRoomHotspotIds.Feeder, out P0CatRoomHotspot feeder));
@@ -27,13 +29,30 @@ namespace TheCat.Tests
             Assert.IsTrue(feeder.IsFeedbackOnly);
             Assert.IsTrue(litter.IsFeedbackOnly);
             Assert.IsFalse(dreamEntrance.IsFeedbackOnly);
-            StringAssert.Contains("卧室梦境可进入", dreamEntrance.FeedbackLine);
-            StringAssert.Contains("埃及梦境仍在占位验证", dreamEntrance.FeedbackLine);
+            StringAssert.Contains("卧室", dreamEntrance.FeedbackLine);
+            StringAssert.Contains("埃及", dreamEntrance.FeedbackLine);
+            StringAssert.Contains("共享现有路线和战斗", dreamEntrance.FeedbackLine);
+            Assert.IsTrue(surface.TryGetDreamChoice(P0DreamMapCatalog.BedroomDreamMapId, out P0CatRoomDreamChoice bedroom));
+            Assert.AreEqual(P0CatRoomActionIds.EnterDream, bedroom.ActionId);
+            Assert.IsTrue(bedroom.IsPlayable);
+            Assert.IsTrue(bedroom.IsEnabled);
+            StringAssert.Contains("中心床", bedroom.TargetLabel);
+            Assert.IsTrue(surface.TryGetDreamChoice(P0DreamMapCatalog.EgyptDreamMapId, out P0CatRoomDreamChoice egypt));
+            Assert.AreEqual(P0CatRoomActionIds.EnterEgyptDream, egypt.ActionId);
+            Assert.IsTrue(egypt.IsPlayable);
+            Assert.IsTrue(egypt.IsEnabled);
+            Assert.AreEqual("P0可进入", egypt.StatusLabel);
+            StringAssert.Contains("共享卧室战斗规则", egypt.Detail);
             Assert.IsTrue(surface.TryGetAction(P0CatRoomActionIds.EnterDream, out P0CatRoomAction enterDream));
             Assert.IsTrue(enterDream.IsEnabled);
             Assert.AreEqual(P0SceneFlow.RouteMapSceneName, enterDream.TargetSceneName);
             Assert.AreEqual("进入卧室梦境", enterDream.Label);
             StringAssert.Contains("守护中心床", enterDream.Detail);
+            Assert.IsTrue(surface.TryGetAction(P0CatRoomActionIds.EnterEgyptDream, out P0CatRoomAction egyptDream));
+            Assert.IsTrue(egyptDream.IsEnabled);
+            Assert.AreEqual(P0SceneFlow.RouteMapSceneName, egyptDream.TargetSceneName);
+            Assert.AreEqual("进入埃及梦境", egyptDream.Label);
+            StringAssert.Contains("月砂祭坛", egyptDream.Detail);
         }
 
         [Test]
@@ -129,8 +148,13 @@ namespace TheCat.Tests
             Assert.IsTrue(P0CatRoomPresenter.HasP0CatRoomSurface(surface));
             Assert.IsTrue(surface.TryGetHotspot(P0CatRoomHotspotIds.DreamEntrance, out P0CatRoomHotspot dreamEntrance));
             Assert.IsTrue(surface.TryGetAction(P0CatRoomActionIds.EnterDream, out P0CatRoomAction enterDream));
+            Assert.IsTrue(surface.TryGetDreamChoice(P0DreamMapCatalog.BedroomDreamMapId, out P0CatRoomDreamChoice bedroom));
+            Assert.IsTrue(surface.TryGetDreamChoice(P0DreamMapCatalog.EgyptDreamMapId, out P0CatRoomDreamChoice egypt));
             Assert.IsFalse(dreamEntrance.IsEnabled);
             Assert.IsFalse(enterDream.IsEnabled);
+            Assert.IsFalse(bedroom.IsEnabled);
+            Assert.IsFalse(egypt.IsEnabled);
+            Assert.AreEqual(P0CatRoomActionIds.EnterEgyptDream, egypt.ActionId);
             StringAssert.Contains("进行中", surface.ResourceRows[2].ValueLabel);
             StringAssert.Contains("未解锁", enterDream.BuildButtonLabel());
         }
@@ -152,6 +176,35 @@ namespace TheCat.Tests
             Assert.AreEqual("4", surface.ResourceRows[0].ValueLabel);
             Assert.AreEqual("2", surface.ResourceRows[1].ValueLabel);
             Assert.AreEqual("进行中", surface.ResourceRows[2].ValueLabel);
+        }
+
+        [Test]
+        public void CatRoomSession_RouteReturnCarriesClearedStateAndClosesRun()
+        {
+            RunProgressionState run = new RunProgressionState(
+                P0RouteCatalog.CreateTenLayerRoute(),
+                P0RunSession.CreateDefaultStarterCatIds());
+            while (!run.Route.IsComplete)
+            {
+                var node = run.Route.CurrentNode;
+                if (RouteNodeResolver.RequiresBattle(node.NodeType))
+                {
+                    P0RouteRewardResolver.ApplyBattleReward(node, run);
+                    run.Route.CompleteCurrentNode(NodeResult.Success);
+                }
+                else
+                {
+                    RouteNodeResolver.ResolveCurrentNode(run);
+                }
+            }
+
+            P0CatRoomSession.RecordRouteReturn(run);
+            P0CatRoomSurface surface = P0CatRoomPresenter.BuildSurface(P0CatRoomSession.CurrentState);
+
+            Assert.AreEqual(P0CatRoomReturnReason.RouteCleared, P0CatRoomSession.CurrentState.ReturnReason);
+            Assert.IsFalse(P0CatRoomSession.CurrentState.HasActiveRun);
+            StringAssert.Contains("本轮梦境完成", surface.ReturnFeedbackLabel);
+            Assert.AreEqual("结束", surface.ResourceRows[2].ValueLabel);
         }
     }
 }

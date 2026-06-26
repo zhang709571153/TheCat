@@ -35,7 +35,7 @@ namespace TheCat.Tests
             Assert.IsFalse(report.StarterCatFormalImportAllowed, report.BuildDetailedSummary());
             Assert.AreEqual(P0StarterCatFormalImportState.Blocked, report.StarterCatFormalImportState);
             Assert.AreEqual(3, report.StarterCatFormalReviewNoteCount);
-            Assert.AreEqual(0, report.StarterCatActiveScreenshotCount);
+            Assert.AreEqual(P0StarterCatFormalImportReadiness.ExpectedStarterCatCount, report.StarterCatActiveScreenshotCount);
             Assert.IsTrue(report.AssetProductionQueueReady, report.BuildDetailedSummary());
             Assert.AreEqual(P0AssetProductionQueueCatalog.ExpectedP0QueueCount, report.AssetProductionQueueCount);
             Assert.AreEqual(0, report.AssetProductionQueueCodexRunnableCount);
@@ -109,6 +109,70 @@ namespace TheCat.Tests
         }
 
         [Test]
+        public void EvaluateCurrentFormalInstallGate_ReportsRuntimeEvidenceSixOfEightButBlocksFormalInstall()
+        {
+            P0FormalInstallGateReport report = P0FormalInstallGate.EvaluateCurrentGate();
+
+            Assert.IsTrue(report.IsGateValid, report.BuildDetailedSummary());
+            Assert.IsTrue(report.IsFormalInstallBlocked, report.BuildDetailedSummary());
+            Assert.IsFalse(report.FormalInstallAllowed, report.BuildDetailedSummary());
+            Assert.AreEqual(P0AssetProductionQueueCatalog.ExpectedP0QueueCount, report.QueueItemCount);
+            Assert.AreEqual(P0AssetProductionQueueCatalog.ExpectedCandidatePackCompletePendingUnityReviewCount, report.CandidatePackCompletePendingUnityReviewCount);
+            Assert.AreEqual(P0AssetProductionQueueCatalog.ExpectedUnityBlockedCount, report.UnityBlockedCount);
+            Assert.AreEqual(P0FormalInstallGate.ExpectedRuntimeEvidenceSixOfEightCount, report.RuntimeEvidenceSixOfEightCount);
+            Assert.GreaterOrEqual(report.SceneOrConsoleGateCount, report.RuntimeEvidenceSixOfEightCount);
+            Assert.GreaterOrEqual(report.HumanApprovalGateCount, report.RuntimeEvidenceSixOfEightCount);
+            Assert.AreEqual(0, report.ReadyForFormalInstallCount);
+            Assert.AreEqual(P0StarterCatFormalImportState.Blocked, report.StarterCatFormalImportState);
+            Assert.IsFalse(report.StarterCatFormalImportAllowed);
+            Assert.IsTrue(report.SharedConsoleClassifierContractReady, report.BuildDetailedSummary());
+            Assert.AreEqual(P0FormalInstallGate.ExpectedCoveredCheckCount, report.CoveredChecks.Count);
+
+            string markdown = report.BuildMarkdown();
+            StringAssert.Contains("P0 Formal Install Gate Matrix", markdown);
+            StringAssert.Contains("Formal install allowed: no", markdown);
+            StringAssert.Contains("Formal install blocked: yes", markdown);
+            StringAssert.Contains("Battle HUD Preflight Candidate Pack", markdown);
+            StringAssert.Contains("Cat Room Preflight Candidate Pack", markdown);
+            StringAssert.Contains("Runtime evidence 6/8 items: " + P0FormalInstallGate.ExpectedRuntimeEvidenceSixOfEightCount, markdown);
+            StringAssert.Contains("Shared Console classifier: active strict-clean contract", markdown);
+            StringAssert.Contains("known environment noise is classified but still blocks formal clean-Console approval", markdown);
+        }
+
+        [Test]
+        public void EvaluateFormalInstallGate_RuntimeEvidenceLaneWithoutHumanApprovalFailsMatrix()
+        {
+            List<P0AssetProductionQueueEntry> queue = new List<P0AssetProductionQueueEntry>(P0AssetProductionQueueCatalog.CreateP0Queue());
+            int batch87Index = queue.FindIndex(entry => entry.QueueId == P0AssetProductionQueueCatalog.BattleHudPreflightCandidateQueueId);
+            Assert.GreaterOrEqual(batch87Index, 0);
+
+            P0AssetProductionQueueEntry batch87 = queue[batch87Index];
+            queue[batch87Index] = new P0AssetProductionQueueEntry(
+                batch87.QueueId,
+                batch87.Priority,
+                batch87.DisplayName,
+                batch87.SubjectGroup,
+                batch87.Phase,
+                batch87.State,
+                batch87.ExecutionPromptPath,
+                batch87.CandidateDirectory,
+                batch87.UnityImportRoot,
+                batch87.RelatedBatchSlugs,
+                batch87.SourceLockIds,
+                RemoveHumanApprovalEvidence(batch87.RequiredEvidence),
+                batch87.ForbiddenWriteRoots,
+                "Batch 87 battle HUD is candidate-backed runtime evidence 6/8 with candidate imports under Assets/TheCat/Art/UI/BattleHUD; keep it review-only until clean Console checks and formal runtime binding decision approve a formal install.");
+
+            P0FormalInstallGateReport report = P0FormalInstallGate.Evaluate(
+                queue,
+                P0StarterCatFormalImportReadiness.EvaluateCurrentGate());
+
+            Assert.IsFalse(report.IsGateValid, report.BuildDetailedSummary());
+            Assert.IsFalse(report.FormalInstallAllowed);
+            StringAssert.Contains("lacks a human-approval blocker", report.BuildDetailedSummary());
+        }
+
+        [Test]
         public void EvaluateNextBatchGate_ApprovedStarterCatImportFailsCurrentPreReviewGate()
         {
             P0StarterCatFormalImportReadinessReport approvedImport = CreateApprovedStarterCatFormalImport();
@@ -176,6 +240,26 @@ namespace TheCat.Tests
 
             report.SetState(P0StarterCatFormalImportState.Approved);
             return report;
+        }
+
+        private static IReadOnlyList<string> RemoveHumanApprovalEvidence(IReadOnlyList<string> evidence)
+        {
+            List<string> filtered = new List<string>();
+            for (int i = 0; i < evidence.Count; i++)
+            {
+                string value = evidence[i];
+                if (value != null
+                    && (value.IndexOf("human approval", System.StringComparison.OrdinalIgnoreCase) >= 0
+                        || value.IndexOf("explicit human", System.StringComparison.OrdinalIgnoreCase) >= 0
+                        || value.IndexOf("human review", System.StringComparison.OrdinalIgnoreCase) >= 0))
+                {
+                    continue;
+                }
+
+                filtered.Add(value);
+            }
+
+            return filtered;
         }
     }
 }

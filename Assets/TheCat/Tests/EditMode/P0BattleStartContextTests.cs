@@ -74,7 +74,7 @@ namespace TheCat.Tests
                 P0RouteCatalog.CreateTenLayerRoute(),
                 P0RunSession.CreateDefaultStarterCatIds());
             RunProgressionState egyptRun = new RunProgressionState(
-                P0RouteCatalog.CreateEgyptPlaceholderRoute(),
+                P0RouteCatalog.CreateEgyptPlayableRoute(),
                 P0RunSession.CreateDefaultStarterCatIds());
 
             P0BattleStartContext bedroom = P0BattleStartContext.Create(bedroomRun);

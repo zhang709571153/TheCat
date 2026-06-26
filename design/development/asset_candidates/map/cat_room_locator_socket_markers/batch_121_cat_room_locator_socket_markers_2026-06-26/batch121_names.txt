@@ -1,0 +1,9 @@
+bed_care_locator_socket
+feeder_meal_locator_socket
+litter_clean_locator_socket
+dream_portal_locator_socket
+rest_ready_floor_socket
+low_hunger_alert_floor_socket
+cleanup_needed_alert_floor_socket
+return_to_room_floor_socket
+locked_interaction_floor_socket

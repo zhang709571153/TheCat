@@ -74,9 +74,13 @@ namespace TheCat.Tests
                 P0PlayModeScreenshotSmoke.ExpectedCaptureCount,
                 "Screenshot smoke passed.",
                 P0PlayModeRouteFlowSmokeState.Passed,
-                "Route flow smoke passed.",
+                "Route flow smoke passed with RestNest next-battle recovery verified, DreamEvent catnip next-battle modifier verified, Shop bed-patch next-battle sleep verified, and cat-room return verified.",
                 P0PlayModeDefeatFlowSmokeState.Failed,
-                "Forced defeat result surface missing.");
+                "Forced defeat result surface missing.",
+                routeFlowCatRoomReturnVerified: true,
+                routeFlowRestNestNextBattleRecoveryVerified: true,
+                routeFlowDreamEventCatnipNextBattleModifierVerified: true,
+                routeFlowShopBedPatchNextBattleSleepVerified: true);
 
             P0PlayModeEvidenceReport report = P0PlayModeEvidenceChecklist.Evaluate(snapshot);
 
@@ -87,6 +91,70 @@ namespace TheCat.Tests
             Assert.IsTrue(report.TryGetCheck(P0PlayModeEvidenceChecklist.DefeatFlowSmokeCheckId, out P0PlayModeEvidenceCheck defeatFlow));
             Assert.AreEqual(P0PlayModeEvidenceState.Failed, defeatFlow.State);
             StringAssert.Contains("Smoke failed", defeatFlow.Message);
+        }
+
+        [Test]
+        public void Evaluate_RouteSmokeWithoutCatRoomReturnEvidenceFails()
+        {
+            P0PlayModeEvidenceSnapshot snapshot = new P0PlayModeEvidenceSnapshot(
+                true,
+                true,
+                true,
+                true,
+                "Screenshot file evidence complete.",
+                true,
+                "Unity runtime validation plan ready.",
+                P0PlayModeScreenshotSmokeState.Passed,
+                P0PlayModeScreenshotSmoke.ExpectedCaptureCount,
+                "Screenshot smoke passed.",
+                P0PlayModeRouteFlowSmokeState.Passed,
+                "Route flow smoke passed.",
+                P0PlayModeDefeatFlowSmokeState.Passed,
+                "Defeat flow smoke passed.",
+                routeFlowCatRoomReturnVerified: false,
+                routeFlowRestNestNextBattleRecoveryVerified: true,
+                routeFlowDreamEventCatnipNextBattleModifierVerified: true,
+                routeFlowShopBedPatchNextBattleSleepVerified: true,
+                defeatFlowFailedCatRoomReturnVerified: true);
+
+            P0PlayModeEvidenceReport report = P0PlayModeEvidenceChecklist.Evaluate(snapshot);
+
+            Assert.IsFalse(report.IsUsable);
+            Assert.IsTrue(report.TryGetCheck(P0PlayModeEvidenceChecklist.RouteFlowSmokeCheckId, out P0PlayModeEvidenceCheck routeFlow));
+            Assert.AreEqual(P0PlayModeEvidenceState.Failed, routeFlow.State);
+            StringAssert.Contains("without final cat-room return evidence", routeFlow.Message);
+        }
+
+        [Test]
+        public void Evaluate_RouteSmokeWithoutRestNestRecoveryEvidenceFails()
+        {
+            P0PlayModeEvidenceSnapshot snapshot = new P0PlayModeEvidenceSnapshot(
+                true,
+                true,
+                true,
+                true,
+                "Screenshot file evidence complete.",
+                true,
+                "Unity runtime validation plan ready.",
+                P0PlayModeScreenshotSmokeState.Passed,
+                P0PlayModeScreenshotSmoke.ExpectedCaptureCount,
+                "Screenshot smoke passed.",
+                P0PlayModeRouteFlowSmokeState.Passed,
+                "Route flow smoke passed with cat-room return verified.",
+                P0PlayModeDefeatFlowSmokeState.Passed,
+                "Defeat flow smoke passed with failed cat-room return verified.",
+                routeFlowCatRoomReturnVerified: true,
+                routeFlowRestNestNextBattleRecoveryVerified: false,
+                routeFlowDreamEventCatnipNextBattleModifierVerified: true,
+                routeFlowShopBedPatchNextBattleSleepVerified: true,
+                defeatFlowFailedCatRoomReturnVerified: true);
+
+            P0PlayModeEvidenceReport report = P0PlayModeEvidenceChecklist.Evaluate(snapshot);
+
+            Assert.IsFalse(report.IsUsable);
+            Assert.IsTrue(report.TryGetCheck(P0PlayModeEvidenceChecklist.RouteFlowSmokeCheckId, out P0PlayModeEvidenceCheck routeFlow));
+            Assert.AreEqual(P0PlayModeEvidenceState.Failed, routeFlow.State);
+            StringAssert.Contains("without RestNest next-battle recovery evidence", routeFlow.Message);
         }
 
         [Test]
@@ -192,9 +260,110 @@ namespace TheCat.Tests
                 P0PlayModeScreenshotSmoke.ExpectedCaptureCount,
                 "Screenshot smoke passed.",
                 P0PlayModeRouteFlowSmokeState.Passed,
-                "Route flow smoke passed.",
+                "Route flow smoke passed with RestNest next-battle recovery verified, DreamEvent catnip next-battle modifier verified, Shop bed-patch next-battle sleep verified, and cat-room return verified.",
                 P0PlayModeDefeatFlowSmokeState.Passed,
-                "Defeat flow smoke passed.");
+                "Defeat flow smoke passed with failed cat-room return verified.",
+                routeFlowCatRoomReturnVerified: true,
+                routeFlowRestNestNextBattleRecoveryVerified: true,
+                routeFlowDreamEventCatnipNextBattleModifierVerified: true,
+                routeFlowShopBedPatchNextBattleSleepVerified: true,
+                defeatFlowFailedCatRoomReturnVerified: true);
+        }
+
+        [Test]
+        public void Evaluate_RouteSmokeWithoutDreamEventModifierEvidenceFails()
+        {
+            P0PlayModeEvidenceSnapshot snapshot = new P0PlayModeEvidenceSnapshot(
+                true,
+                true,
+                true,
+                true,
+                "Screenshot file evidence complete.",
+                true,
+                "Unity runtime validation plan ready.",
+                P0PlayModeScreenshotSmokeState.Passed,
+                P0PlayModeScreenshotSmoke.ExpectedCaptureCount,
+                "Screenshot smoke passed.",
+                P0PlayModeRouteFlowSmokeState.Passed,
+                "Route flow smoke passed with RestNest next-battle recovery verified and cat-room return verified.",
+                P0PlayModeDefeatFlowSmokeState.Passed,
+                "Defeat flow smoke passed with failed cat-room return verified.",
+                routeFlowCatRoomReturnVerified: true,
+                routeFlowRestNestNextBattleRecoveryVerified: true,
+                routeFlowDreamEventCatnipNextBattleModifierVerified: false,
+                routeFlowShopBedPatchNextBattleSleepVerified: true,
+                defeatFlowFailedCatRoomReturnVerified: true);
+
+            P0PlayModeEvidenceReport report = P0PlayModeEvidenceChecklist.Evaluate(snapshot);
+
+            Assert.IsFalse(report.IsUsable);
+            Assert.IsTrue(report.TryGetCheck(P0PlayModeEvidenceChecklist.RouteFlowSmokeCheckId, out P0PlayModeEvidenceCheck routeFlow));
+            Assert.AreEqual(P0PlayModeEvidenceState.Failed, routeFlow.State);
+            StringAssert.Contains("without DreamEvent catnip next-battle modifier evidence", routeFlow.Message);
+        }
+
+        [Test]
+        public void Evaluate_RouteSmokeWithoutShopBedPatchSleepEvidenceFails()
+        {
+            P0PlayModeEvidenceSnapshot snapshot = new P0PlayModeEvidenceSnapshot(
+                true,
+                true,
+                true,
+                true,
+                "Screenshot file evidence complete.",
+                true,
+                "Unity runtime validation plan ready.",
+                P0PlayModeScreenshotSmokeState.Passed,
+                P0PlayModeScreenshotSmoke.ExpectedCaptureCount,
+                "Screenshot smoke passed.",
+                P0PlayModeRouteFlowSmokeState.Passed,
+                "Route flow smoke passed with RestNest next-battle recovery verified, DreamEvent catnip next-battle modifier verified, and cat-room return verified.",
+                P0PlayModeDefeatFlowSmokeState.Passed,
+                "Defeat flow smoke passed with failed cat-room return verified.",
+                routeFlowCatRoomReturnVerified: true,
+                routeFlowRestNestNextBattleRecoveryVerified: true,
+                routeFlowDreamEventCatnipNextBattleModifierVerified: true,
+                routeFlowShopBedPatchNextBattleSleepVerified: false,
+                defeatFlowFailedCatRoomReturnVerified: true);
+
+            P0PlayModeEvidenceReport report = P0PlayModeEvidenceChecklist.Evaluate(snapshot);
+
+            Assert.IsFalse(report.IsUsable);
+            Assert.IsTrue(report.TryGetCheck(P0PlayModeEvidenceChecklist.RouteFlowSmokeCheckId, out P0PlayModeEvidenceCheck routeFlow));
+            Assert.AreEqual(P0PlayModeEvidenceState.Failed, routeFlow.State);
+            StringAssert.Contains("without Shop bed-patch next-battle sleep evidence", routeFlow.Message);
+        }
+
+        [Test]
+        public void Evaluate_DefeatSmokeWithoutCatRoomReturnEvidenceFails()
+        {
+            P0PlayModeEvidenceSnapshot snapshot = new P0PlayModeEvidenceSnapshot(
+                true,
+                true,
+                true,
+                true,
+                "Screenshot file evidence complete.",
+                true,
+                "Unity runtime validation plan ready.",
+                P0PlayModeScreenshotSmokeState.Passed,
+                P0PlayModeScreenshotSmoke.ExpectedCaptureCount,
+                "Screenshot smoke passed.",
+                P0PlayModeRouteFlowSmokeState.Passed,
+                "Route flow smoke passed with RestNest next-battle recovery verified, DreamEvent catnip next-battle modifier verified, Shop bed-patch next-battle sleep verified, and cat-room return verified.",
+                P0PlayModeDefeatFlowSmokeState.Passed,
+                "Defeat flow smoke passed.",
+                routeFlowCatRoomReturnVerified: true,
+                routeFlowRestNestNextBattleRecoveryVerified: true,
+                routeFlowDreamEventCatnipNextBattleModifierVerified: true,
+                routeFlowShopBedPatchNextBattleSleepVerified: true,
+                defeatFlowFailedCatRoomReturnVerified: false);
+
+            P0PlayModeEvidenceReport report = P0PlayModeEvidenceChecklist.Evaluate(snapshot);
+
+            Assert.IsFalse(report.IsUsable);
+            Assert.IsTrue(report.TryGetCheck(P0PlayModeEvidenceChecklist.DefeatFlowSmokeCheckId, out P0PlayModeEvidenceCheck defeatFlow));
+            Assert.AreEqual(P0PlayModeEvidenceState.Failed, defeatFlow.State);
+            StringAssert.Contains("without failed cat-room return evidence", defeatFlow.Message);
         }
     }
 }

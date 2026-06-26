@@ -94,6 +94,7 @@ namespace TheCat.EditorTools
         private const string OfflineReportPath = OutputFolder + "/P0_OFFLINE_ACCEPTANCE_REPORT.md";
         private const string FullReportPath = OutputFolder + "/P0_FULL_ACCEPTANCE_REPORT.md";
         private const string AssetReviewPacketPath = "design/development/asset_review/P0_RUNTIME_VISUAL_REVIEW_PACKET.md";
+        private const string FormalInstallMatrixPath = "design/development/asset_review/P0_FORMAL_INSTALL_BLOCKER_EVIDENCE_MATRIX_2026-06-26.md";
 
         public static void RunOfflineP0GatesForBatchmode()
         {
@@ -139,6 +140,10 @@ namespace TheCat.EditorTools
 
             P0AssetProductionReadinessReport assetProduction = P0AssetProductionReadiness.EvaluateP0OfflineReadiness();
             report.AddGate("P0 Offline Asset Production Readiness", assetProduction.IsReady, assetProduction.BuildDetailedSummary());
+
+            P0FormalInstallGateReport formalInstallGate = P0FormalInstallGate.EvaluateCurrentGate();
+            report.AddGate("P0 Formal Install Gate Matrix", formalInstallGate.IsGateValid && formalInstallGate.IsFormalInstallBlocked, formalInstallGate.BuildDetailedSummary());
+            WriteReport(FormalInstallMatrixPath, formalInstallGate.BuildMarkdown());
 
             if (includePlayModeEvidence)
             {

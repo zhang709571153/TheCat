@@ -1,0 +1,9 @@
+bedroom_scene_card_token
+cat_room_scene_card_token
+dream_route_scene_card_token
+battle_scene_card_token
+reward_scene_card_token
+shop_event_scene_card_token
+settings_scene_card_token
+locked_scene_card_token
+unknown_scene_card_token

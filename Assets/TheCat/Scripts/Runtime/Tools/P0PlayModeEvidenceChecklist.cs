@@ -128,7 +128,12 @@ namespace TheCat.Tools
             P0PlayModeRouteFlowSmokeState routeFlowState,
             string routeFlowSummary,
             P0PlayModeDefeatFlowSmokeState defeatFlowState,
-            string defeatFlowSummary)
+            string defeatFlowSummary,
+            bool routeFlowCatRoomReturnVerified = false,
+            bool routeFlowRestNestNextBattleRecoveryVerified = false,
+            bool routeFlowDreamEventCatnipNextBattleModifierVerified = false,
+            bool routeFlowShopBedPatchNextBattleSleepVerified = false,
+            bool defeatFlowFailedCatRoomReturnVerified = false)
         {
             HasScreenshotCapturePlan = hasScreenshotCapturePlan;
             HasRuntimeVisualScreenshotPlan = hasRuntimeVisualScreenshotPlan;
@@ -144,6 +149,11 @@ namespace TheCat.Tools
             RouteFlowSummary = routeFlowSummary ?? string.Empty;
             DefeatFlowState = defeatFlowState;
             DefeatFlowSummary = defeatFlowSummary ?? string.Empty;
+            RouteFlowCatRoomReturnVerified = routeFlowCatRoomReturnVerified;
+            RouteFlowRestNestNextBattleRecoveryVerified = routeFlowRestNestNextBattleRecoveryVerified;
+            RouteFlowDreamEventCatnipNextBattleModifierVerified = routeFlowDreamEventCatnipNextBattleModifierVerified;
+            RouteFlowShopBedPatchNextBattleSleepVerified = routeFlowShopBedPatchNextBattleSleepVerified;
+            DefeatFlowFailedCatRoomReturnVerified = defeatFlowFailedCatRoomReturnVerified;
         }
 
         public bool HasScreenshotCapturePlan { get; }
@@ -173,6 +183,16 @@ namespace TheCat.Tools
         public P0PlayModeDefeatFlowSmokeState DefeatFlowState { get; }
 
         public string DefeatFlowSummary { get; }
+
+        public bool RouteFlowCatRoomReturnVerified { get; }
+
+        public bool RouteFlowRestNestNextBattleRecoveryVerified { get; }
+
+        public bool RouteFlowDreamEventCatnipNextBattleModifierVerified { get; }
+
+        public bool RouteFlowShopBedPatchNextBattleSleepVerified { get; }
+
+        public bool DefeatFlowFailedCatRoomReturnVerified { get; }
     }
 
     public static class P0PlayModeEvidenceChecklist
@@ -204,7 +224,12 @@ namespace TheCat.Tools
                 P0PlayModeRouteFlowSmoke.State,
                 P0PlayModeRouteFlowSmoke.LastSummary,
                 P0PlayModeDefeatFlowSmoke.State,
-                P0PlayModeDefeatFlowSmoke.LastSummary);
+                P0PlayModeDefeatFlowSmoke.LastSummary,
+                P0PlayModeRouteFlowSmoke.LastRunCatRoomReturnVerified,
+                P0PlayModeRouteFlowSmoke.LastRunRestNestNextBattleRecoveryVerified,
+                P0PlayModeRouteFlowSmoke.LastRunDreamEventCatnipNextBattleModifierVerified,
+                P0PlayModeRouteFlowSmoke.LastRunShopBedPatchNextBattleSleepVerified,
+                P0PlayModeDefeatFlowSmoke.LastRunFailedCatRoomReturnVerified);
         }
 
         public static P0PlayModeEvidenceReport EvaluateCurrent()
@@ -322,11 +347,26 @@ namespace TheCat.Tools
         {
             if (snapshot.RouteFlowState == P0PlayModeRouteFlowSmokeState.Passed)
             {
+                bool hasCatRoomReturnEvidence = snapshot.RouteFlowCatRoomReturnVerified;
+                bool hasRestNestRecoveryEvidence = snapshot.RouteFlowRestNestNextBattleRecoveryVerified;
+                bool hasDreamEventModifierEvidence = snapshot.RouteFlowDreamEventCatnipNextBattleModifierVerified;
+                bool hasShopBedPatchSleepEvidence = snapshot.RouteFlowShopBedPatchNextBattleSleepVerified;
+                bool isComplete = hasCatRoomReturnEvidence
+                    && hasRestNestRecoveryEvidence
+                    && hasDreamEventModifierEvidence
+                    && hasShopBedPatchSleepEvidence;
                 report.AddCheck(
                     RouteFlowSmokeCheckId,
                     "Route Flow Smoke",
-                    P0PlayModeEvidenceState.Passed,
-                    snapshot.RouteFlowSummary);
+                    isComplete ? P0PlayModeEvidenceState.Passed : P0PlayModeEvidenceState.Failed,
+                    isComplete
+                        ? snapshot.RouteFlowSummary
+                        : BuildRouteFlowEvidenceFailure(
+                            snapshot.RouteFlowSummary,
+                            hasCatRoomReturnEvidence,
+                            hasRestNestRecoveryEvidence,
+                            hasDreamEventModifierEvidence,
+                            hasShopBedPatchSleepEvidence));
                 return;
             }
 
@@ -344,11 +384,14 @@ namespace TheCat.Tools
         {
             if (snapshot.DefeatFlowState == P0PlayModeDefeatFlowSmokeState.Passed)
             {
+                bool hasFailedCatRoomReturnEvidence = snapshot.DefeatFlowFailedCatRoomReturnVerified;
                 report.AddCheck(
                     DefeatFlowSmokeCheckId,
                     "Defeat Flow Smoke",
-                    P0PlayModeEvidenceState.Passed,
-                    snapshot.DefeatFlowSummary);
+                    hasFailedCatRoomReturnEvidence ? P0PlayModeEvidenceState.Passed : P0PlayModeEvidenceState.Failed,
+                    hasFailedCatRoomReturnEvidence
+                        ? snapshot.DefeatFlowSummary
+                        : "Defeat flow smoke passed without failed cat-room return evidence: " + snapshot.DefeatFlowSummary);
                 return;
             }
 
@@ -375,6 +418,36 @@ namespace TheCat.Tools
                 failed
                     ? "Smoke failed: " + summary
                     : "Smoke is pending or not complete yet (" + state + "): " + summary);
+        }
+
+        private static string BuildRouteFlowEvidenceFailure(
+            string summary,
+            bool hasCatRoomReturnEvidence,
+            bool hasRestNestRecoveryEvidence,
+            bool hasDreamEventModifierEvidence,
+            bool hasShopBedPatchSleepEvidence)
+        {
+            if (!hasCatRoomReturnEvidence)
+            {
+                return "Route flow smoke passed without final cat-room return evidence: " + summary;
+            }
+
+            if (!hasRestNestRecoveryEvidence)
+            {
+                return "Route flow smoke passed without RestNest next-battle recovery evidence: " + summary;
+            }
+
+            if (!hasDreamEventModifierEvidence)
+            {
+                return "Route flow smoke passed without DreamEvent catnip next-battle modifier evidence: " + summary;
+            }
+
+            if (!hasShopBedPatchSleepEvidence)
+            {
+                return "Route flow smoke passed without Shop bed-patch next-battle sleep evidence: " + summary;
+            }
+
+            return "Route flow smoke passed with incomplete route-flow evidence: " + summary;
         }
     }
 }

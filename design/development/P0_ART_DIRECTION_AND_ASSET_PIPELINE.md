@@ -562,8 +562,9 @@ it must have a planned runtime surface:
 - Batch 07 starter cat source-lock packet prompt:
   `design/development/agent_prompts/p0_asset_batch_07_starter_cat_source_lock_packet.md`
 - Current Play Mode screenshot file evidence:
-  `P0PlayModeScreenshotFileEvidence` reports only 3/10 expected screenshots,
-  with 7 missing expected files and one stale unexpected `04-settlement.png`.
+  `P0PlayModeScreenshotFileEvidence` reports the current `11/11` expected
+  screenshots after the 2026-06-26 Play Mode smoke refresh. These captures are
+  baseline runtime evidence, not formal starter-cat replacement approval.
 - Offline asset production readiness gate:
   `P0AssetProductionReadiness` / `P0 Offline Asset Production Readiness`
 - Starter cat formal import readiness gate:
@@ -587,13 +588,13 @@ and Suzune:
   Unity sprite, and candidate derivatives.
 
 These are candidate-review assets only. They are blocked from Unity import until
-the active-cat Play Mode screenshots exist and pass side-by-side review against
-the locked colored-turnaround contact sheet.
+the registered active-cat Play Mode screenshots receive explicit side-by-side
+colored-turnaround comparison approval notes.
 
 The block is now enforced in code. `P0StarterCatFormalImportReadiness` must
 remain valid and report either `Blocked` or `Approved`; current state is
-`Blocked`, import allowed `no`, 3/3 explicit block notes, and 0/3 active-cat
-screenshots. Do not copy Batch 05 cat candidates into
+`Blocked`, import allowed `no`, 3/3 explicit block notes, and 3/3 registered
+active-cat screenshots. Do not copy Batch 05 cat candidates into
 `Assets/TheCat/Art/Characters/Sprites` until the gate reports `Approved`.
 
 ## Batch 07 Starter Cat Source-Lock Packet Status
@@ -617,7 +618,9 @@ The packet records each starter cat's colored turnaround path and SHA-256,
 current locked Unity sprite path and SHA-256, runtime binding id, active-cat
 Play Mode screenshot filename, Batch 05 candidate review note, and Batch 05
 review sheet. It also repeats the explicit `do not import into Unity yet`
-decision while active-cat screenshots are missing.
+decision because registered active-cat screenshots do not approve import by
+themselves; formal replacement still requires colored-turnaround comparison
+approval notes.
 
 This batch exists because starter-cat assets are high-risk: any future
 derivative, including AI-generated or hand-touched art, must pass through this
@@ -1293,9 +1296,9 @@ The current strict candidate chain is:
 `P0StarterCatStrictCandidateEvidence` records these three candidates as
 review-only evidence. `P0AssetReviewPacket` and `P0AssetProductionReadiness`
 now require that evidence, but the requirement does not approve Unity import.
-Formal starter-cat import remains blocked until `04-active-cat-saiban.png`,
-`05-active-cat-nephthys.png`, and `06-active-cat-suzune.png` are captured and
-accepted against the locked colored three-view turnarounds.
+Formal starter-cat import remains blocked until `05-active-cat-saiban.png`,
+`06-active-cat-nephthys.png`, and `07-active-cat-suzune.png` receive explicit
+approval against the locked colored three-view turnarounds.
 
 ## P0 Systematic Asset Production Queue
 

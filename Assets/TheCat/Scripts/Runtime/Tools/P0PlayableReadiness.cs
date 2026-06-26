@@ -5,6 +5,7 @@ using TheCat.Data;
 using TheCat.Data.Catalogs;
 using TheCat.Data.Definitions;
 using TheCat.Gameplay;
+using TheCat.Inputs;
 using TheCat.Roguelite;
 
 namespace TheCat.Tools
@@ -172,8 +173,10 @@ namespace TheCat.Tools
         public const string StarterSkillsCheckId = "starter_skills";
         public const string CoreEnemiesCheckId = "core_enemies";
         public const string RouteStructureCheckId = "route_structure";
+        public const string RouteChoiceEffectsCheckId = "route_choice_effects";
         public const string DreamMapCheckId = "dream_maps";
         public const string EgyptReadinessCheckId = "egypt_readiness";
+        public const string RouteSettlementReturnCheckId = "route_settlement_return";
         public const string BattleWavesCheckId = "battle_waves";
         public const string StatusTagsCheckId = "status_tags";
         public const string GoldenPathCheckId = "golden_path";
@@ -211,8 +214,10 @@ namespace TheCat.Tools
             EvaluateStarterSkills(context, report);
             EvaluateCoreEnemies(context, report);
             EvaluateRouteStructure(context, report);
+            EvaluateRouteChoiceEffects(report);
             EvaluateDreamMaps(context, report);
             EvaluateEgyptReadiness(context, report);
+            EvaluateRouteSettlementReturn(report);
             EvaluateBattleWaves(context, report);
             EvaluateStatusTags(context, report);
             EvaluateGoldenPath(context, report);
@@ -297,6 +302,18 @@ namespace TheCat.Tools
                 && enterDream.IsEnabled
                 && enterDream.TargetSceneName == P0SceneFlow.RouteMapSceneName
                 && enterDream.Detail.Contains("守护中心床")
+                && catRoom.TryGetDreamChoice(P0DreamMapCatalog.BedroomDreamMapId, out P0CatRoomDreamChoice bedroomChoice)
+                && bedroomChoice.IsPlayable
+                && bedroomChoice.IsEnabled
+                && bedroomChoice.ActionId == P0CatRoomActionIds.EnterDream
+                && catRoom.TryGetDreamChoice(P0DreamMapCatalog.EgyptDreamMapId, out P0CatRoomDreamChoice egyptChoice)
+                && egyptChoice.IsPlayable
+                && egyptChoice.IsEnabled
+                && egyptChoice.ActionId == P0CatRoomActionIds.EnterEgyptDream
+                && egyptChoice.Detail.Contains("共享卧室战斗规则")
+                && catRoom.TryGetAction(P0CatRoomActionIds.EnterEgyptDream, out P0CatRoomAction egyptDream)
+                && egyptDream.IsEnabled
+                && egyptDream.TargetSceneName == P0SceneFlow.RouteMapSceneName
                 && catRoom.TryGetHotspot(P0CatRoomHotspotIds.DreamEntrance, out P0CatRoomHotspot entrance)
                 && entrance.FeedbackLine.Contains("卧室梦境")
                 && entrance.FeedbackLine.Contains("埃及梦境");
@@ -306,7 +323,7 @@ namespace TheCat.Tools
                 report.AddPassed(
                     EntryCharacterSelectCheckId,
                     "Entry Character Select",
-                    "Main menu selects a starter roster, enters cat-room preparation as the only player-primary CTA, then gates bedroom dream entry through the cat room.");
+                    "Main menu selects a starter roster, enters cat-room preparation as the only player-primary CTA, then exposes bedroom and Egypt dream entries without changing the selected-roster bedroom default.");
                 return;
             }
 
@@ -554,7 +571,7 @@ namespace TheCat.Tools
                     && map.IsPlayableInP0
                     && !string.IsNullOrWhiteSpace(map.DefenseTargetLabel);
                 hasEgypt |= map.Id == P0DreamMapCatalog.EgyptDreamMapId
-                    && map.IsPlaceholder
+                    && map.IsPlayableInP0
                     && !string.IsNullOrWhiteSpace(map.ThemeLabel);
             }
 
@@ -567,7 +584,7 @@ namespace TheCat.Tools
                 report.AddPassed(
                     DreamMapCheckId,
                     "Dream Maps",
-                    "Bedroom is the playable map and Egypt is registered as a P0 placeholder context.");
+                    "Bedroom and Egypt are registered as playable P0 dream-map contexts while preserving the bedroom default.");
                 return;
             }
 
@@ -582,7 +599,7 @@ namespace TheCat.Tools
             DreamMapDefinition bedroom = P0DreamMapCatalog.GetBedroomDreamMap();
             DreamMapDefinition egypt = P0DreamMapCatalog.GetEgyptDreamMap();
             RouteDefinition bedroomRoute = P0RouteCatalog.CreateTenLayerRoute(bedroom);
-            RouteDefinition egyptRoute = P0RouteCatalog.CreateEgyptPlaceholderRoute();
+            RouteDefinition egyptRoute = P0RouteCatalog.CreateEgyptPlayableRoute();
             RunProgressionState bedroomRun = new RunProgressionState(
                 bedroomRoute,
                 P0RunSession.CreateDefaultStarterCatIds());
@@ -591,13 +608,13 @@ namespace TheCat.Tools
                 P0RunSession.CreateDefaultStarterCatIds());
             P0RouteMapSurface egyptSurface = P0RouteMapPresenter.BuildSurface(
                 egyptRun,
-                "埃及梦境占位验证。");
+                "埃及梦境共享路线验证。");
             P0BattleStartContext bedroomStart = P0BattleStartContext.Create(bedroomRun);
             P0BattleStartContext egyptStart = P0BattleStartContext.Create(egyptRun);
 
             bool catalogState = egypt.Id == P0DreamMapCatalog.EgyptDreamMapId
-                && egypt.IsPlaceholder
-                && !egypt.IsPlayableInP0
+                && !egypt.IsPlaceholder
+                && egypt.IsPlayableInP0
                 && !string.IsNullOrWhiteSpace(egypt.DisplayName)
                 && !string.IsNullOrWhiteSpace(egypt.ThemeLabel)
                 && !string.IsNullOrWhiteSpace(egypt.DefenseTargetLabel)
@@ -622,14 +639,186 @@ namespace TheCat.Tools
                 report.AddPassed(
                     EgyptReadinessCheckId,
                     "Egypt Readiness",
-                    "Egypt is registered as a placeholder UI/readiness target while sharing the current route and combat content.");
+                    "Egypt is enterable as a minimum shared-route dream while sharing the current route and combat content.");
                 return;
             }
 
             report.AddFailure(
                 EgyptReadinessCheckId,
                 "Egypt Readiness",
-                "Egypt must remain a registered placeholder with visible route-map context and no separate combat fork.");
+                "Egypt must be enterable with visible route-map context while keeping the current shared combat route and no separate combat fork.");
+        }
+
+        private static void EvaluateRouteSettlementReturn(P0PlayableReadinessReport report)
+        {
+            RunProgressionState run = new RunProgressionState(
+                P0RouteCatalog.CreateTenLayerRoute(),
+                P0RunSession.CreateDefaultStarterCatIds());
+            int safety = 0;
+            while (!run.Route.IsComplete && safety < 20)
+            {
+                RouteNodeDefinition node = run.Route.CurrentNode;
+                if (RouteNodeResolver.RequiresBattle(node.NodeType))
+                {
+                    P0RouteRewardResolver.ApplyBattleReward(node, run);
+                    run.Route.CompleteCurrentNode(NodeResult.Success);
+                }
+                else
+                {
+                    RouteNodeResolver.ResolveCurrentNode(run);
+                }
+
+                safety++;
+            }
+
+            P0RouteMapSurface settlement = P0RouteMapPresenter.BuildSurface(run, "路线通关。");
+            P0RouteMapCommandResult commandResult = P0RouteMapCommandRouter.Execute(run, P0InputCommand.ContinueRoute);
+            P0CatRoomState catRoomState = P0CatRoomSession.BuildState(
+                P0CatRoomReturnReason.RouteCleared,
+                "路线结算已回收到猫房。",
+                run);
+            P0CatRoomSurface catRoom = P0CatRoomPresenter.BuildSurface(catRoomState);
+
+            bool hasSettlementReturn = run.Route.IsComplete
+                && run.Route.IsCleared
+                && P0RouteMapPresenter.HasP0RouteMapSurface(settlement)
+                && settlement.TryGetAction(P0RouteMapActionIds.ReturnCatRoom, out P0RouteMapAction returnCatRoom)
+                && returnCatRoom.IsEnabled
+                && returnCatRoom.TargetSceneName == P0SceneFlow.CatRoomSceneName
+                && returnCatRoom.Command == P0InputCommand.ContinueRoute;
+            bool commandReturns = commandResult.IsHandled
+                && commandResult.Action == P0RouteMapCommandAction.ReturnCatRoom
+                && !commandResult.ShouldLoadBattle;
+            bool catRoomReceives = P0CatRoomPresenter.HasP0CatRoomSurface(catRoom)
+                && catRoomState.ReturnReason == P0CatRoomReturnReason.RouteCleared
+                && !catRoomState.HasActiveRun;
+
+            if (hasSettlementReturn && commandReturns && catRoomReceives)
+            {
+                report.AddPassed(
+                    RouteSettlementReturnCheckId,
+                    "Route Settlement Return",
+                    "Completed route settlement exposes cat-room return, Continue input requests it, and the cat-room return state closes the active run.");
+                return;
+            }
+
+            report.AddFailure(
+                RouteSettlementReturnCheckId,
+                "Route Settlement Return",
+                "Completed route settlement must expose cat-room return, route Continue input must request it, and cat-room state must receive a closed route return.");
+        }
+
+        private static void EvaluateRouteChoiceEffects(P0PlayableReadinessReport report)
+        {
+            bool restNestReady = EvaluateRestNestRouteChoiceEffect(out string restNestMessage);
+            bool dreamEventReady = EvaluateDreamEventNextBattleEffect(out string dreamEventMessage);
+
+            if (restNestReady && dreamEventReady)
+            {
+                report.AddPassed(
+                    RouteChoiceEffectsCheckId,
+                    "Route Choice Effects",
+                    "RestNest restores run core/cat vitals and DreamEvent next-battle modifiers rewrite the next battle config before being consumed.");
+                return;
+            }
+
+            report.AddFailure(
+                RouteChoiceEffectsCheckId,
+                "Route Choice Effects",
+                "Route choice effects are incomplete. RestNest: "
+                + restNestMessage
+                + " DreamEvent: "
+                + dreamEventMessage);
+        }
+
+        private static bool EvaluateRestNestRouteChoiceEffect(out string message)
+        {
+            RouteNodeDefinition restNode = new RouteNodeDefinition(1, "readiness_rest_nest", RouteNodeType.RestNest, "rest_nest");
+            RunProgressionState run = new RunProgressionState(
+                P0RouteCatalog.CreateTenLayerRoute(),
+                P0RunSession.CreateDefaultStarterCatIds());
+            run.CoreValues.Capture(60f, 70f, 100f, 25f, 35f);
+            run.CatVitals.Capture(P0PrototypeCatalog.SaibanId, 200f, 20f, 10f);
+
+            RouteRewardChoice choice = P0RouteRewardResolver.GetDefaultPlaceholderChoice(restNode, run);
+            bool applied = P0RouteRewardResolver.ApplyPlaceholderChoice(restNode, run, choice);
+            bool catRecovered = run.CatVitals.TryGet(P0PrototypeCatalog.SaibanId, out RunCatVitalSnapshot saiban)
+                && Approximately(saiban.CurrentHp, 140f)
+                && !saiban.IsWeak;
+            bool coreRecovered = Approximately(run.CoreValues.OwnerSleepCurrent, 70f)
+                && Approximately(run.CoreValues.TeamPoop, 0f)
+                && Approximately(run.CoreValues.TeamHunger, RunCoreValues.RestNestHungerSafeLine);
+            bool choiceState = choice != null
+                && choice.ChoiceType == RouteRewardChoiceType.RestSupply
+                && choice.CatHpSafePercent >= 70
+                && choice.OwnerSleepRestored > 0
+                && choice.PoopReduced > 0
+                && choice.HungerSafeLine > 0;
+            bool ready = applied
+                && choiceState
+                && coreRecovered
+                && catRecovered
+                && run.RestNestUses == 1;
+
+            message = ready
+                ? "rest recovery applies core values, clears weak state, and records one RestNest use."
+                : "rest recovery did not apply core/cat vital state or usage count.";
+            return ready;
+        }
+
+        private static bool EvaluateDreamEventNextBattleEffect(out string message)
+        {
+            RouteNodeDefinition dreamNode = new RouteNodeDefinition(
+                1,
+                "readiness_dream_event",
+                RouteNodeType.DreamEvent,
+                P0RouteCatalog.SoftRainWindowEventContentId);
+            RunProgressionState run = new RunProgressionState(
+                P0RouteCatalog.CreateTenLayerRoute(),
+                P0RunSession.CreateDefaultStarterCatIds());
+            RouteRewardChoice choice = FindChoiceById(
+                P0RouteRewardResolver.CreatePlaceholderChoices(dreamNode, run),
+                "dream_event_catnip_residue");
+
+            bool applied = P0RouteRewardResolver.ApplyPlaceholderChoice(dreamNode, run, choice);
+            bool queued = run.PendingBattleModifiers.HasPending;
+            RunPendingBattleModifierSnapshot snapshot = run.PendingBattleModifiers.Consume();
+            BattleModifierSet modifiers = snapshot.ApplyTo(BattleModifierSet.Neutral);
+            P0Tuning tuning = snapshot.ApplyTo(P0Tuning.Default);
+            BattleSimulationConfig config = new BattleSimulationConfig(
+                P0PrototypeCatalog.CreateLayerOneWave(),
+                P0PrototypeCatalog.CreateCoreEnemies(),
+                tuning,
+                statusTags: P0PrototypeCatalog.CreateStatusTags(),
+                modifiers: modifiers);
+            BattleSimulation battle = new BattleSimulation(config, new RunMetrics());
+            battle.Tick(1f);
+
+            bool choiceState = choice != null
+                && choice.ChoiceType == RouteRewardChoiceType.DreamEventModifier
+                && choice.NextBattleSkillDamagePercent == 20
+                && choice.NextBattlePoopGrowthPercent == 50;
+            bool modifierState = snapshot.HasPending
+                && Approximately(snapshot.SkillDamageMultiplier, 1.2f)
+                && Approximately(snapshot.PoopGrowthMultiplier, 1.5f)
+                && Approximately(modifiers.SkillDamageMultiplier, 1.2f)
+                && Approximately(tuning.PoopNaturalGrowthPerSecond, 0.45f);
+            bool consumed = !run.PendingBattleModifiers.HasPending;
+            bool battleState = battle.BattleTimeSeconds > 0f
+                && Approximately(config.Modifiers.SkillDamageMultiplier, 1.2f)
+                && Approximately(config.Tuning.PoopNaturalGrowthPerSecond, 0.45f);
+            bool ready = applied
+                && queued
+                && choiceState
+                && modifierState
+                && consumed
+                && battleState
+                && run.DreamEventsResolved == 1;
+
+            message = ready
+                ? "catnip residue queues, applies, consumes, and starts a modified next battle config."
+                : "catnip residue did not queue, apply, consume, or start a modified next battle config.";
+            return ready;
         }
 
         private static void EvaluateBattleWaves(P0PlayableReadinessContext context, P0PlayableReadinessReport report)
@@ -877,6 +1066,29 @@ namespace TheCat.Tools
             }
 
             return false;
+        }
+
+        private static RouteRewardChoice FindChoiceById(IReadOnlyList<RouteRewardChoice> choices, string choiceId)
+        {
+            if (choices == null || string.IsNullOrWhiteSpace(choiceId))
+            {
+                return null;
+            }
+
+            for (int i = 0; i < choices.Count; i++)
+            {
+                if (choices[i] != null && choices[i].Id == choiceId)
+                {
+                    return choices[i];
+                }
+            }
+
+            return null;
+        }
+
+        private static bool Approximately(float actual, float expected)
+        {
+            return Math.Abs(actual - expected) <= 0.001f;
         }
     }
 }

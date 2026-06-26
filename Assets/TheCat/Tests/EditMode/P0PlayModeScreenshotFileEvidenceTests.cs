@@ -25,6 +25,23 @@ namespace TheCat.Tests
         }
 
         [Test]
+        public void Evaluate_EgyptEntryExpectedFilesCompleteDedicatedEvidence()
+        {
+            IReadOnlyList<string> expected = P0PlayModeEgyptEntrySmoke.ExpectedCaptureFileNames;
+            P0PlayModeScreenshotFileEvidenceReport report = P0PlayModeScreenshotFileEvidence.Evaluate(
+                P0PlayModeEgyptEntrySmoke.DefaultScreenshotDirectory,
+                expected,
+                path => ContainsPath(expected, path),
+                _ => expected);
+
+            Assert.IsTrue(report.IsComplete, report.BuildDetailedSummary());
+            Assert.AreEqual(P0PlayModeEgyptEntrySmoke.ExpectedCaptureCount, report.ExpectedFileCount);
+            Assert.AreEqual(P0PlayModeEgyptEntrySmoke.ExpectedCaptureCount, report.ExistingExpectedFileCount);
+            Assert.AreEqual(0, report.MissingExpectedFileCount);
+            Assert.AreEqual(0, report.UnexpectedPngFileCount);
+        }
+
+        [Test]
         public void Evaluate_MissingRuntimeVisualCapturesAreReported()
         {
             string[] existing =
@@ -66,6 +83,34 @@ namespace TheCat.Tests
             Assert.AreEqual(0, report.MissingExpectedFileCount);
             Assert.AreEqual(1, report.UnusableExpectedFileCount);
             StringAssert.Contains("09-call-tyrant-warning-vfx.png", report.BuildDetailedSummary());
+        }
+
+        [Test]
+        public void Evaluate_UnexpectedPngFailsEvidence()
+        {
+            string[] expected =
+            {
+                "01-main-menu.png",
+                "02-cat-room.png"
+            };
+            string[] existing =
+            {
+                "01-main-menu.png",
+                "02-cat-room.png",
+                "99-stale.png"
+            };
+
+            P0PlayModeScreenshotFileEvidenceReport report = P0PlayModeScreenshotFileEvidence.Evaluate(
+                P0PlayModeScreenshotFileEvidence.DefaultScreenshotDirectory,
+                expected,
+                path => ContainsPath(existing, path),
+                _ => existing);
+
+            Assert.IsFalse(report.IsComplete);
+            Assert.AreEqual(2, report.ExistingExpectedFileCount);
+            Assert.AreEqual(0, report.MissingExpectedFileCount);
+            Assert.AreEqual(1, report.UnexpectedPngFileCount);
+            StringAssert.Contains("99-stale.png", report.BuildDetailedSummary());
         }
 
         private static bool ContainsPath(IReadOnlyList<string> fileNames, string path)

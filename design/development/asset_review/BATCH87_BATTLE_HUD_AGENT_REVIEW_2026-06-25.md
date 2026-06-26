@@ -41,7 +41,8 @@ Status: `candidate_complete_pending_unity_review`
 
 ## Remaining Unity Gates
 
-- Unity-rendered battle HUD screenshots across target resolutions.
+- Batch 87 candidate-backed Unity-rendered battle HUD screenshots across target
+  resolutions.
 - Four-gauge proof at 1024x768 with dynamic HP/sleep/poop/hunger values.
 - Chinese labels/tooltips/text and number replacement proof.
 - Skill ready/selected/cooldown/disabled/low-resource/cost-chip readability.

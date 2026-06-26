@@ -30,8 +30,8 @@ namespace TheCat.Roguelite
                 "月砂祭坛",
                 "猫房沙月梦门",
                 "月砂神殿外环",
-                "作为 P0 第二梦境主题目标登记，先共享卧室战斗规则。",
-                false);
+                "作为 P0 第二梦境主题的最小可玩路线，先共享卧室战斗规则。",
+                true);
         }
 
         public static IReadOnlyList<DreamMapDefinition> CreateP0DreamMaps()

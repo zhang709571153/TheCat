@@ -47,16 +47,17 @@ namespace TheCat.Tests
             Assert.AreEqual("埃及梦境", egypt.DisplayName);
             Assert.AreEqual("月砂遗迹", egypt.ThemeLabel);
             Assert.AreEqual("月砂祭坛", egypt.DefenseTargetLabel);
-            Assert.IsTrue(egypt.IsPlaceholder);
+            Assert.IsTrue(egypt.IsPlayableInP0);
+            Assert.IsFalse(egypt.IsPlaceholder);
             Assert.IsTrue(P0DreamMapCatalog.IsKnownMapId(egypt.Id));
-            StringAssert.Contains("P0占位", egypt.BuildSummary());
+            StringAssert.Contains("P0可玩", egypt.BuildSummary());
         }
 
         [Test]
-        public void P0RouteCatalog_EgyptPlaceholderSharesRouteShapeAndCombatContent()
+        public void P0RouteCatalog_EgyptPlayableRouteSharesRouteShapeAndCombatContent()
         {
             RouteDefinition bedroom = P0RouteCatalog.CreateTenLayerRoute();
-            RouteDefinition egypt = P0RouteCatalog.CreateEgyptPlaceholderRoute();
+            RouteDefinition egypt = P0RouteCatalog.CreateEgyptPlayableRoute();
 
             Assert.AreEqual(P0DreamMapCatalog.BedroomDreamMapId, bedroom.DreamMap.Id);
             Assert.AreEqual(P0DreamMapCatalog.EgyptDreamMapId, egypt.DreamMap.Id);
@@ -74,6 +75,81 @@ namespace TheCat.Tests
 
             Assert.AreEqual(P0DreamMapCatalog.EgyptDreamMapId, P0RunSession.CurrentRun.DreamMap.Id);
             Assert.AreEqual(P0DreamMapCatalog.EgyptDreamMapId, P0RunSession.CurrentRoute.Route.DreamMap.Id);
+            P0RunSession.Clear();
+        }
+
+        [Test]
+        public void P0RunSession_EnsureBedroomDreamRunPreservesActiveBedroomRun()
+        {
+            P0RunSession.Clear();
+            RunRouteState started = P0RunSession.StartNewRun(new[] { "suzune", "saiban" });
+
+            RunRouteState preserved = P0RunSession.EnsureBedroomDreamRun();
+
+            Assert.AreSame(started, preserved);
+            Assert.AreEqual(P0DreamMapCatalog.BedroomDreamMapId, P0RunSession.CurrentRun.DreamMap.Id);
+            Assert.AreEqual(2, P0RunSession.CurrentRun.Roster.Count);
+            Assert.IsTrue(P0RunSession.CurrentRun.Roster.HasCat("suzune"));
+            Assert.IsTrue(P0RunSession.CurrentRun.Roster.HasCat("saiban"));
+            P0RunSession.Clear();
+        }
+
+        [Test]
+        public void P0RunSession_EnsureBedroomDreamRunConvertsEgyptRunWithoutLosingRoster()
+        {
+            P0RunSession.Clear();
+            RunRouteState egypt = P0RunSession.StartNewRun(
+                new[] { "suzune", "saiban" },
+                P0DreamMapCatalog.GetEgyptDreamMap());
+
+            RunRouteState bedroom = P0RunSession.EnsureBedroomDreamRun();
+
+            Assert.AreNotSame(egypt, bedroom);
+            Assert.AreEqual(P0DreamMapCatalog.BedroomDreamMapId, P0RunSession.CurrentRun.DreamMap.Id);
+            Assert.AreEqual(P0DreamMapCatalog.BedroomDreamMapId, P0RunSession.CurrentRoute.Route.DreamMap.Id);
+            Assert.AreEqual(2, P0RunSession.CurrentRun.Roster.Count);
+            Assert.IsTrue(P0RunSession.CurrentRun.Roster.HasCat("suzune"));
+            Assert.IsTrue(P0RunSession.CurrentRun.Roster.HasCat("saiban"));
+            P0RunSession.Clear();
+        }
+
+        [Test]
+        public void P0RunSession_EnsureEgyptDreamRunPreservesActiveEgyptRun()
+        {
+            P0RunSession.Clear();
+            RunRouteState started = P0RunSession.StartNewRun(
+                new[] { "suzune", "saiban" },
+                P0DreamMapCatalog.GetEgyptDreamMap());
+
+            RunRouteState preserved = P0RunSession.EnsureEgyptDreamRun();
+
+            Assert.AreSame(started, preserved);
+            Assert.AreEqual(P0DreamMapCatalog.EgyptDreamMapId, P0RunSession.CurrentRun.DreamMap.Id);
+            Assert.AreEqual(2, P0RunSession.CurrentRun.Roster.Count);
+            Assert.IsTrue(P0RunSession.CurrentRun.Roster.HasCat("suzune"));
+            Assert.IsTrue(P0RunSession.CurrentRun.Roster.HasCat("saiban"));
+            P0RunSession.Clear();
+        }
+
+        [Test]
+        public void P0RunSession_EnsureEgyptDreamRunConvertsBedroomRunWithoutChangingBedroomHelper()
+        {
+            P0RunSession.Clear();
+            RunRouteState bedroom = P0RunSession.StartNewRun(new[] { "suzune", "saiban" });
+
+            RunRouteState egypt = P0RunSession.EnsureEgyptDreamRun();
+
+            Assert.AreNotSame(bedroom, egypt);
+            Assert.AreEqual(P0DreamMapCatalog.EgyptDreamMapId, P0RunSession.CurrentRun.DreamMap.Id);
+            Assert.AreEqual(P0DreamMapCatalog.EgyptDreamMapId, P0RunSession.CurrentRoute.Route.DreamMap.Id);
+            Assert.AreEqual(2, P0RunSession.CurrentRun.Roster.Count);
+            Assert.IsTrue(P0RunSession.CurrentRun.Roster.HasCat("suzune"));
+            Assert.IsTrue(P0RunSession.CurrentRun.Roster.HasCat("saiban"));
+
+            RunRouteState bedroomAgain = P0RunSession.EnsureBedroomDreamRun();
+
+            Assert.AreNotSame(egypt, bedroomAgain);
+            Assert.AreEqual(P0DreamMapCatalog.BedroomDreamMapId, P0RunSession.CurrentRun.DreamMap.Id);
             P0RunSession.Clear();
         }
 

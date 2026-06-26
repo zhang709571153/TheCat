@@ -11,6 +11,7 @@ namespace TheCat.Gameplay
     {
         public const string EnterCurrentNode = "enter_current_node";
         public const string NewRun = "new_run";
+        public const string ReturnCatRoom = "return_cat_room";
         public const string MainMenu = "main_menu";
     }
 
@@ -335,6 +336,7 @@ namespace TheCat.Gameplay
             bool canRerollCatUpgrade,
             IReadOnlyList<string> summaryRows,
             IReadOnlyList<string> settlementRows,
+            IReadOnlyList<string> settlementFocusRows,
             P0VisualAssetReference settlementOutcomeBannerAsset,
             IReadOnlyList<P0RouteMapAction> actions)
         {
@@ -353,6 +355,7 @@ namespace TheCat.Gameplay
             CanRerollCatUpgrade = canRerollCatUpgrade;
             SummaryRows = summaryRows ?? Array.Empty<string>();
             SettlementRows = settlementRows ?? Array.Empty<string>();
+            SettlementFocusRows = settlementFocusRows ?? Array.Empty<string>();
             SettlementOutcomeBannerAsset = settlementOutcomeBannerAsset;
             Actions = actions ?? Array.Empty<P0RouteMapAction>();
         }
@@ -386,6 +389,8 @@ namespace TheCat.Gameplay
         public IReadOnlyList<string> SummaryRows { get; }
 
         public IReadOnlyList<string> SettlementRows { get; }
+
+        public IReadOnlyList<string> SettlementFocusRows { get; }
 
         public P0VisualAssetReference SettlementOutcomeBannerAsset { get; }
 
@@ -433,6 +438,7 @@ namespace TheCat.Gameplay
                     false,
                     new[] { "路线：未初始化" },
                     Array.Empty<string>(),
+                    Array.Empty<string>(),
                     default(P0VisualAssetReference),
                     BuildActions(null));
             }
@@ -454,6 +460,7 @@ namespace TheCat.Gameplay
                 run.CatUpgrades.CanRerollWithPawStamp(run.EventItems),
                 BuildSummaryRows(run),
                 BuildSettlementRows(run),
+                BuildSettlementFocusRows(run),
                 BuildSettlementOutcomeBanner(run),
                 BuildActions(run));
         }
@@ -469,6 +476,11 @@ namespace TheCat.Gameplay
                 || !HasAction(surface, P0RouteMapActionIds.NewRun)
                 || !HasAction(surface, P0RouteMapActionIds.MainMenu)
                 || surface.SummaryRows.Count < 6)
+            {
+                return false;
+            }
+
+            if (surface.IsRouteComplete && !HasAction(surface, P0RouteMapActionIds.ReturnCatRoom))
             {
                 return false;
             }
@@ -831,6 +843,16 @@ namespace TheCat.Gameplay
             return P0SettlementPresenter.BuildRows(new P0RunSettlementSummary(run));
         }
 
+        private static IReadOnlyList<string> BuildSettlementFocusRows(RunProgressionState run)
+        {
+            if (run == null || !run.Route.IsComplete)
+            {
+                return Array.Empty<string>();
+            }
+
+            return P0SettlementPresenter.BuildPlayerFocusRows(new P0RunSettlementSummary(run));
+        }
+
         private static P0VisualAssetReference BuildSettlementOutcomeBanner(RunProgressionState run)
         {
             if (run == null || !run.Route.IsComplete)
@@ -854,7 +876,7 @@ namespace TheCat.Gameplay
                 && route.CurrentNode != null
                 && RouteNodeResolver.RequiresBattle(route.CurrentNode.NodeType);
 
-            return new[]
+            List<P0RouteMapAction> actions = new List<P0RouteMapAction>
             {
                 new P0RouteMapAction(
                     P0RouteMapActionIds.EnterCurrentNode,
@@ -862,22 +884,37 @@ namespace TheCat.Gameplay
                     canEnter,
                     P0InputCommand.ContinueRoute,
                     startsBattle ? P0SceneFlow.GrayboxBattleSceneName : string.Empty,
-                    startsBattle ? "开始战斗" : "结算路线节点"),
+                    startsBattle ? "开始战斗" : "结算路线节点")
+            };
+
+            if (route != null && route.IsComplete)
+            {
+                actions.Add(new P0RouteMapAction(
+                    P0RouteMapActionIds.ReturnCatRoom,
+                    "返回猫房",
+                    true,
+                    P0InputCommand.ContinueRoute,
+                    P0SceneFlow.CatRoomSceneName,
+                    "把本轮路线结算带回猫房"));
+            }
+
+            actions.Add(
                 new P0RouteMapAction(
                     P0RouteMapActionIds.NewRun,
                     "新路线",
                     true,
                     P0InputCommand.RestartRun,
                     P0SceneFlow.RouteMapSceneName,
-                    "重开路线"),
+                    "重开路线"));
+            actions.Add(
                 new P0RouteMapAction(
                     P0RouteMapActionIds.MainMenu,
                     "返回主菜单",
                     true,
                     P0InputCommand.RestartRun,
                     P0SceneFlow.MainMenuSceneName,
-                    "返回主菜单")
-            };
+                    "返回主菜单"));
+            return actions.AsReadOnly();
         }
 
         private static string BuildStatusLabel(RunRouteState route)

@@ -79,6 +79,65 @@ namespace TheCat.Tests
             StringAssert.Contains("Chinese UI scale matrix", report.BuildDetailedSummary());
         }
 
+        [Test]
+        public void Classify_CleanProjectPassLog_IsStrictAndProjectOwnedClean()
+        {
+            P0UnityConsoleLogClassifierReport report = P0UnityConsoleLogClassifier.Classify(
+                "[TheCat] P0 batchmode acceptance passed 7 gate(s).\n"
+                + "[TheCat] P0 Play Mode acceptance batchmode passed.\n"
+                + "Defeat flow smoke passed with failed cat-room return verified.\n");
+
+            Assert.IsTrue(report.StrictClean, report.BuildDetailedSummary());
+            Assert.IsTrue(report.ProjectOwnedClean, report.BuildDetailedSummary());
+            Assert.AreEqual(0, report.ProjectFailureTokenCount);
+            Assert.AreEqual(0, report.UnknownBlockingTokenCount);
+            Assert.AreEqual(0, report.KnownEnvironmentNoiseCount);
+        }
+
+        [Test]
+        public void Classify_KnownEnvironmentNoise_IsProjectOwnedCleanButNotStrictClean()
+        {
+            P0UnityConsoleLogClassifierReport report = P0UnityConsoleLogClassifier.Classify(
+                "[TheCat] P0 batchmode acceptance passed 7 gate(s).\n"
+                + "[Licensing::Client] Error: noisy entitlement line\n"
+                + "Unity.AI.Tracing.ConsoleSink:LogToConsole (string,string,System.Exception)\n"
+                + "##utp:{\"type\":\"MemoryLeaks\",\"phase\":\"Immediate\"}\n");
+
+            Assert.IsFalse(report.StrictClean);
+            Assert.IsTrue(report.ProjectOwnedClean, report.BuildDetailedSummary());
+            Assert.AreEqual(0, report.ProjectFailureTokenCount);
+            Assert.AreEqual(0, report.UnknownBlockingTokenCount);
+            Assert.AreEqual(3, report.KnownEnvironmentNoiseCount);
+            StringAssert.Contains("KnownEnvironmentNoise", report.BuildDetailedSummary());
+        }
+
+        [Test]
+        public void Classify_UnknownError_BlocksProjectOwnedClean()
+        {
+            P0UnityConsoleLogClassifierReport report = P0UnityConsoleLogClassifier.Classify(
+                "SomePlugin Error: missing scene binding\n");
+
+            Assert.IsFalse(report.StrictClean);
+            Assert.IsFalse(report.ProjectOwnedClean);
+            Assert.AreEqual(0, report.ProjectFailureTokenCount);
+            Assert.AreEqual(1, report.UnknownBlockingTokenCount);
+            Assert.AreEqual(0, report.KnownEnvironmentNoiseCount);
+            StringAssert.Contains("UnknownBlocking", report.BuildDetailedSummary());
+        }
+
+        [Test]
+        public void Classify_ProjectFailureToken_BlocksProjectOwnedClean()
+        {
+            P0UnityConsoleLogClassifierReport report = P0UnityConsoleLogClassifier.Classify(
+                "[TheCat] P0 batchmode acceptance failed 1 of 7 gate(s).\n");
+
+            Assert.IsFalse(report.StrictClean);
+            Assert.IsFalse(report.ProjectOwnedClean);
+            Assert.AreEqual(1, report.ProjectFailureTokenCount);
+            Assert.AreEqual(0, report.UnknownBlockingTokenCount);
+            StringAssert.Contains("ProjectFailure", report.BuildDetailedSummary());
+        }
+
         private static void RemoveStep(List<P0UnityRuntimeValidationStep> steps, string stepId)
         {
             for (int i = steps.Count - 1; i >= 0; i--)

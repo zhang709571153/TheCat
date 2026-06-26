@@ -1,0 +1,9 @@
+bedroom_accent_badge
+cat_room_accent_badge
+dream_route_accent_badge
+battle_accent_badge
+reward_accent_badge
+shop_event_accent_badge
+settings_accent_badge
+locked_accent_badge
+unknown_accent_badge

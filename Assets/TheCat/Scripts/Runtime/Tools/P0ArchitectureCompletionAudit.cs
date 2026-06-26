@@ -101,6 +101,15 @@ namespace TheCat.Tools
             VisualAcceptance != null
             && VisualAcceptance.IsFinalP0VisualAcceptanceReady;
 
+        public bool IsP0DemoReleaseReady =>
+            IsReadyForSystematicAssetProduction
+            && ScreenshotFileEvidence != null
+            && ScreenshotFileEvidence.IsComplete
+            && VisualAcceptance != null
+            && VisualAcceptance.HasCompletePlayModeEvidence
+            && StarterCatFormalImport != null
+            && StarterCatFormalImport.IsGateValid;
+
         public bool RequiresUnityRuntimeValidation => !HasFinalUnityRuntimeEvidence;
 
         public bool IsFinalP0PlayableComplete =>
@@ -191,6 +200,11 @@ namespace TheCat.Tools
                 return "P0 architecture and Unity runtime evidence are complete for the current playable target.";
             }
 
+            if (IsP0DemoReleaseReady)
+            {
+                return "P0 demo release/readiness is green for the current baseline; final Unity runtime and formal visual install gates remain pending.";
+            }
+
             if (IsReadyForSystematicAssetProduction)
             {
                 return "P0 architecture is ready for systematic Codex-side asset production; final Unity runtime evidence remains pending.";
@@ -227,6 +241,7 @@ namespace TheCat.Tools
             builder.AppendLine("## Summary");
             builder.AppendLine();
             builder.AppendLine("- Ready for systematic Codex-side asset production: " + YesNo(IsReadyForSystematicAssetProduction));
+            builder.AppendLine("- Current P0 demo release/readiness: " + YesNo(IsP0DemoReleaseReady));
             builder.AppendLine("- Final P0 Unity runtime complete: " + YesNo(IsFinalP0PlayableComplete));
             builder.AppendLine("- Requires Unity runtime validation: " + YesNo(RequiresUnityRuntimeValidation));
             builder.AppendLine("- Gates: " + PassedGateCount + " passed, " + PendingUnityValidationGateCount + " pending Unity validation, " + FailedGateCount + " failed.");
@@ -407,7 +422,7 @@ namespace TheCat.Tools
                 assetProductionQueue == null ? "Asset production queue report is missing." : assetProductionQueue.BuildSummary());
             AddCodexUnityBoundaryGate(report, assetProductionQueue);
             AddStarterCatFormalImportGate(report, starterCatFormalImport);
-            AddPlayModeEvidenceGate(report, screenshotFileEvidence, playModeEvidence);
+            AddPlayModeEvidenceGate(report, screenshotFileEvidence, playModeEvidence, visualAcceptance);
             AddFinalRuntimeGate(report, visualAcceptance, starterCatFormalImport);
             return report;
         }
@@ -482,12 +497,23 @@ namespace TheCat.Tools
         private static void AddPlayModeEvidenceGate(
             P0ArchitectureCompletionAuditReport report,
             P0PlayModeScreenshotFileEvidenceReport screenshotFileEvidence,
-            P0PlayModeEvidenceReport playModeEvidence)
+            P0PlayModeEvidenceReport playModeEvidence,
+            P0VisualAcceptanceReport visualAcceptance)
         {
             bool complete = screenshotFileEvidence != null
                 && screenshotFileEvidence.IsComplete
-                && playModeEvidence != null
-                && playModeEvidence.IsComplete;
+                && (playModeEvidence != null && playModeEvidence.IsComplete
+                    || visualAcceptance != null && visualAcceptance.HasCompletePlayModeEvidence);
+
+            string message = playModeEvidence == null
+                ? "Play Mode evidence is missing."
+                : playModeEvidence.BuildSummary();
+            if (visualAcceptance != null
+                && visualAcceptance.PlayModeReportFileEvidence != null
+                && visualAcceptance.PlayModeReportFileEvidence.IsComplete)
+            {
+                message = visualAcceptance.PlayModeReportFileEvidence.BuildSummary();
+            }
 
             report.AddGate(
                 PlayModeEvidenceGateId,
@@ -495,9 +521,7 @@ namespace TheCat.Tools
                 complete
                     ? P0ArchitectureCompletionAuditGateState.Passed
                     : P0ArchitectureCompletionAuditGateState.PendingUnityValidation,
-                playModeEvidence == null
-                    ? "Play Mode evidence is missing."
-                    : playModeEvidence.BuildSummary());
+                message);
         }
 
         private static void AddFinalRuntimeGate(

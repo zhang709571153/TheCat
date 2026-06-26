@@ -25,9 +25,14 @@ namespace TheCat.Roguelite
                 BuildP0LayerOptions());
         }
 
-        public static RouteDefinition CreateEgyptPlaceholderRoute()
+        public static RouteDefinition CreateEgyptPlayableRoute()
         {
             return CreateTenLayerRoute(P0DreamMapCatalog.GetEgyptDreamMap());
+        }
+
+        public static RouteDefinition CreateEgyptPlaceholderRoute()
+        {
+            return CreateEgyptPlayableRoute();
         }
 
         private static RouteNodeDefinition[][] BuildP0LayerOptions()

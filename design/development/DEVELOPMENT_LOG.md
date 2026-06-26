@@ -3,6 +3,2385 @@
 Project: `D:\Unity Workspace\TheCat`
 Game: `猫眠所 / 梦境支配者`
 
+## 2026-06-26 - B27 Egypt Minimum Shared-Route Entry
+
+Status: completed a code/readiness slice that moves Egypt from disabled
+cat-room placeholder to minimum enterable P0 dream route. Egypt now starts an
+Egypt dream-map run through the cat-room action, while Bedroom remains the
+default route and the route/battle/reward rules remain shared.
+
+### Work Completed
+
+- Marked `P0DreamMapCatalog.GetEgyptDreamMap()` as P0 playable with copy that
+  states it is a minimum shared-route implementation.
+- Added `P0RouteCatalog.CreateEgyptPlayableRoute()` while keeping the old
+  placeholder helper as a compatibility alias.
+- Added `P0RunSession.EnsureDreamRun()` and `EnsureEgyptDreamRun()` so Bedroom
+  and Egypt entries can switch maps without losing the selected starter roster.
+- Added the cat-room `enter_egypt_dream` action and controller handler.
+- Updated cat-room, playable-readiness, route-map coverage, battle-start, and
+  command-router tests around the new shared-route Egypt contract.
+- Added a dedicated `P0PlayModeEgyptEntrySmoke` command-line evidence path
+  that captures cat-room Egypt entry, the Egypt dream route-map layer-one
+  surface, the Egypt-context layer-one battle HUD, the first shared-route battle
+  result, and the route-map return after that result.
+- Added route-map dream-context text near the top of the first viewport so the
+  Egypt route-map screenshot visibly names the active dream map, theme, target,
+  and playable state.
+- Retained the formal-install boundary: this does not add Egypt-specific map
+  art, enemies, waves, candidate binding, clean Console evidence, or human
+  approval.
+
+### Validation
+
+- Runtime MSBuild passed: `TheCat.Runtime.csproj`.
+- EditModeTests MSBuild passed: `TheCat.EditModeTests.csproj`.
+- Focused Unity EditMode TestRunner was attempted twice:
+  `Logs/B27_egypt_shared_route_entry_editmode_20260626.log` and
+  `Logs/B27_egypt_shared_route_entry_editmode_20260626_rerun.log`. Both
+  invocations returned `0` but produced no XML result file, so they are not
+  counted as passing TestRunner reports.
+- Offline acceptance passed in
+  `Logs/P0OfflineAcceptance_B27_egypt_shared_route_entry_20260626_final_rerun.log`.
+  Project-owned report: `Result: passed`, gate count `7`, failure count `0`,
+  `Formal install allowed: no`.
+- Dedicated normal Editor Play Mode Egypt-entry smoke passed in
+  `Logs/P0EgyptEntrySmoke_B27_20260626_editor_final.log`. Project-owned report:
+  `design/development/unity_batchmode/P0_EGYPT_ENTRY_SMOKE_REPORT.md`, result
+  `passed`, smoke state `Passed`, capture count `5/5`. The latest rerun with
+  first-battle-result and route-map-return evidence is logged in
+  `Logs/P0EgyptEntrySmoke_B27_20260626_editor_result_return.log`.
+- Dedicated screenshot evidence is in
+  `design/development/screenshots/p0-egypt-entry-smoke`:
+  `01-cat-room-egypt-entry.png`, `02-egypt-route-map-layer1.png`,
+  `03-egypt-battle-hud-layer1.png`, `04-egypt-battle-result-layer1.png`, and
+  `05-egypt-route-map-after-layer1.png`, all captured at `3840x2160` with
+  usable nonblank sampling.
+- Batchmode visual capture was attempted and is documented as unsupported for
+  this smoke in the current editor environment: `-quit` exited before Play
+  Mode, and batchmode screenshot paths produced no usable frame or timed out.
+  The smoke now fails safely instead of accepting black/single-color PNGs.
+
+### Remaining Gates
+
+- The dedicated B27 Play Mode evidence now proves cat-room
+  `enter_egypt_dream` -> route map shows Egypt map/theme/target as playable on
+  shared layer one -> `P0GrayboxBattle` starts with Egypt battle context ->
+  the first shared-route battle result succeeds -> `ContinueRoute` returns to
+  an Egypt-context route map at progress `1/10`.
+- This is not full Egypt route settlement, cat-room return, clean Console,
+  human approval, formal install, or Egypt-specific content evidence. The
+  result screenshot should be read together with the detailed log and the
+  route-map-return screenshot because the shared route still reuses Bedroom
+  node names.
+- A later Egypt validation slice can drive multi-node or full-route traversal
+  under Egypt context, but B27 has now closed the minimum shared-route entry,
+  first-battle-load, first-result, and route-map-return evidence.
+- Full Egypt unique content remains future work: no independent Egypt route
+  nodes, waves, enemies, or formal art install landed in this slice.
+
+## 2026-06-26 - B26 Batch 87 Formal Runtime Binding Decision Request Packet
+
+Status: completed a non-approval formal-runtime-binding decision request slice
+for the Batch 87 battle HUD candidate lane. The preflight runner now generates
+the binding-decision request beside the preflight and human-review request
+packets. This does not add Batch 87 to `P0VisualAssetCatalog`, does not alter
+the battle HUD scene/presenter/controller runtime path, does not create clean
+Console evidence, and does not create human approval evidence.
+
+### Work Completed
+
+- Added `P0BattleHudBatch87UnityPreflight.FormalRuntimeBindingDecisionRequestPath`.
+- Added
+  `P0BattleHudBatch87UnityPreflightReport.BuildFormalRuntimeBindingDecisionRequestMarkdown()`.
+- Updated the Batch 87 preflight runner so `writeReport` now writes three
+  request/report artifacts: main preflight report, human-review request, and
+  formal-runtime-binding decision request.
+- Updated generated preflight and human-review request markdown so both point
+  to the formal-runtime-binding decision request packet.
+- Added focused EditMode assertions proving the binding-decision request lists
+  candidate scope and keeps runtime binding unapproved.
+- Created:
+  `design/development/asset_review/BATCH87_BATTLE_HUD_FORMAL_RUNTIME_BINDING_DECISION_REQUEST_2026-06-26.md`.
+
+### Validation
+
+- Runtime MSBuild passed: `TheCat.Runtime.csproj`.
+- EditModeTests MSBuild passed: `TheCat.EditModeTests.csproj`.
+- Editor MSBuild passed with the existing `System.Numerics.Vectors` MSB3277
+  warning: `TheCat.Editor.csproj`.
+- Batch 87 preflight runner completed with:
+  `Logs/B26_batch87_formal_binding_decision_request_preflight_20260626.log`.
+- Focused Unity EditMode TestRunner invocation produced
+  `Logs/B26_batch87_formal_binding_decision_request_editmode_20260626.log` but
+  no XML result file; it is not counted as a passing TestRunner report.
+- Offline acceptance passed in:
+  `Logs/P0OfflineAcceptance_B26_batch87_formal_binding_decision_request_20260626.log`.
+- Project-owned offline report result: `passed`, gate count `7`, failure count
+  `0`, with `Formal install allowed: no`.
+
+### Remaining Gates
+
+- B26 is a decision request packet, not a formal runtime binding approval.
+- `console_clean_report.md` and `human_review_approval.md` remain missing.
+- Batch 87 candidate ids remain outside formal runtime bindings.
+- The current IMGUI battle HUD remains the playable runtime path.
+
+## 2026-06-26 - B25 Batch 87 Human Review Request Packet
+
+Status: completed a non-approval review-request slice for the Batch 87 battle
+HUD candidate lane. This creates a reusable human-review request packet and
+wires the Batch 87 preflight runner to regenerate it beside the main preflight
+report. It does not create `human_review_approval.md`, does not create
+`console_clean_report.md`, does not approve formal runtime binding, and does
+not install Batch 87 into the formal runtime catalog.
+
+### Work Completed
+
+- Added `P0BattleHudBatch87UnityPreflight.HumanReviewRequestPath`.
+- Added `P0BattleHudBatch87UnityPreflightReport.BuildHumanReviewRequestMarkdown()`.
+- Updated the Batch 87 preflight runner so `writeReport` writes both:
+  `BATCH87_BATTLE_HUD_UNITY_PREFLIGHT_REPORT_2026-06-25.md` and
+  `BATCH87_BATTLE_HUD_HUMAN_REVIEW_REQUEST_2026-06-26.md`.
+- Linked the human-review request packet from the generated Batch 87 preflight
+  report protected-runtime-state section.
+- Added focused EditMode assertions proving the request packet lists evidence,
+  keeps `Formal install allowed: no`, and does not contain the exact formal
+  approval pass token.
+- Created:
+  `design/development/asset_review/BATCH87_BATTLE_HUD_HUMAN_REVIEW_REQUEST_2026-06-26.md`.
+
+### Validation
+
+- Runtime MSBuild passed: `TheCat.Runtime.csproj`.
+- EditModeTests MSBuild passed: `TheCat.EditModeTests.csproj`.
+- Editor MSBuild passed with the existing `System.Numerics.Vectors` MSB3277
+  warning: `TheCat.Editor.csproj`.
+- Batch 87 preflight runner completed with:
+  `Logs/B25_batch87_human_review_request_preflight_20260626_rerun.log`.
+- Focused Unity EditMode TestRunner invocation produced
+  `Logs/B25_batch87_human_review_request_editmode_20260626.log` but no XML
+  result file; it is not counted as a passing TestRunner report.
+- Offline acceptance passed in:
+  `Logs/P0OfflineAcceptance_B25_batch87_human_review_request_20260626.log`.
+- Project-owned offline report result: `passed`, gate count `7`, failure count
+  `0`, with `Formal install allowed: no`.
+
+### Remaining Gates
+
+- B25 is a request packet, not approval evidence.
+- `human_review_approval.md` remains missing and must only be created after an
+  explicit human approval decision.
+- `console_clean_report.md` remains missing and must only be created from a
+  strict-clean Batch 87 runtime evidence log.
+- Formal runtime binding decision remains blocked.
+
+## 2026-06-26 - B24 Batch 87 Formal Gate Precision
+
+Status: completed a narrow Batch 87 validation-boundary hardening slice. The
+Battle HUD preflight report now separates `UnityEvidenceComplete` from
+`FormalInstallAllowed` and exposes the shared strict-clean Console classifier
+policy. No candidate art, screenshots, human approval files, clean Console
+reports, scene binding, formal runtime binding, or runtime catalog install were
+created.
+
+### Work Completed
+
+- Dispatched three read-only review agents:
+  - Poincare: validation/Console boundary review;
+  - Descartes: Batch 87 asset/design evidence review;
+  - Linnaeus: implementation-scope review.
+- Confirmed Batch 87 is suitable for the next hardening lane, but not for
+  formal install approval.
+- Added `UnityEvidenceComplete`, `FormalRuntimeBindingDecisionApproved`,
+  `SharedConsoleClassifierContractReady`, and `ConsoleClassifierPolicySummary`
+  to `P0BattleHudBatch87UnityPreflightReport`.
+- Kept `FormalInstallAllowed` false unless a future formal runtime binding
+  decision gate explicitly approves it.
+- Bound Batch 87 clean-Console evidence to the shared
+  `P0UnityConsoleLogClassifier` strict-clean policy in both detailed and
+  generated markdown reports.
+- Hardened the Batch 87 queue-entry check against wording drift while still
+  requiring Batch 87, battle HUD, candidate-backed evidence, clean Console, and
+  formal runtime binding decision terms.
+- Updated focused assertions so synthetic 8/8 evidence can complete Unity
+  evidence without approving formal install.
+- Regenerated:
+  `design/development/asset_review/BATCH87_BATTLE_HUD_UNITY_PREFLIGHT_REPORT_2026-06-25.md`.
+
+### Validation
+
+- Runtime MSBuild passed: `TheCat.Runtime.csproj`.
+- EditModeTests MSBuild passed: `TheCat.EditModeTests.csproj`.
+- Editor MSBuild passed with the existing `System.Numerics.Vectors` MSB3277
+  warning: `TheCat.Editor.csproj`.
+- Focused Unity EditMode TestRunner invocation produced
+  `Logs/B24_batch87_formal_gate_precision_editmode_20260626.log` but no XML
+  result file; it is documented as non-authoritative and not counted as a
+  passing TestRunner report.
+- Batch 87 preflight runner completed with:
+  `Logs/B24_batch87_classifier_gate_preflight_20260626_rerun.log`.
+- Batch 87 generated report now states:
+  `Ready for Unity preflight: yes`, `Runtime evidence: 6/8`,
+  `Unity evidence complete: no`, `Formal runtime binding decision approved: no`,
+  `Formal install allowed: no`, and `Shared Console classifier: active strict-clean contract`.
+- Offline acceptance passed in:
+  `Logs/P0OfflineAcceptance_B24_batch87_formal_gate_precision_20260626.log`.
+- Project-owned offline report result: `passed`, gate count `7`, failure count
+  `0`, with `P0 Formal Install Gate Matrix` still passed and formal install
+  still blocked.
+- Raw Unity logs still contain Licensing and Unity AI tracing noise. B24 does
+  not claim strict clean Console.
+
+### Remaining Gates
+
+- B24 does not create or count `console_clean_report.md`.
+- B24 does not create or count `human_review_approval.md`.
+- B24 does not add Batch 87 candidate ids to formal runtime bindings.
+- B24 does not approve Batch 87 formal runtime install, starter-cat body-art
+  replacement, candidate install, human review, or final P0 visual acceptance.
+
+## 2026-06-26 - B23 Formal Install Report Classifier Binding
+
+Status: completed a narrow report-binding slice so the formal-install blocker
+matrix now names the shared strict-clean Unity Console classifier contract. No
+gameplay, UI layout, scene binding, candidate art, screenshots, formal install
+approval, or human approval files were changed.
+
+### Work Completed
+
+- Added shared Console classifier policy fields to `P0FormalInstallGateReport`.
+- Bound `P0FormalInstallGate` to `P0UnityConsoleLogClassifier` with a focused
+  contract check proving:
+  - known Unity/environment noise is classified as project-owned clean but not
+    `StrictClean`;
+  - unknown plugin/project errors still block both strict and project-owned
+    clean states.
+- Increased the formal-install matrix coverage count from `7` to `8` so the
+  shared classifier contract is now part of the passed project-owned gate.
+- Updated the generated formal-install matrix markdown and offline report
+  details with:
+  - `Shared Console classifier: active strict-clean contract`;
+  - `Console classifier policy: StrictClean is required for formal clean-Console
+    evidence; known environment noise is classified but still blocks formal
+    clean-Console approval.`
+- Added focused EditMode assertions that the current matrix exposes the
+  classifier contract and policy while still blocking formal install.
+
+### Validation
+
+- Runtime MSBuild passed: `TheCat.Runtime.csproj`.
+- EditModeTests MSBuild passed: `TheCat.EditModeTests.csproj`.
+- Editor MSBuild passed with the existing `System.Numerics.Vectors` MSB3277
+  warning: `TheCat.Editor.csproj`.
+- Focused Unity EditMode TestRunner invocation produced
+  `Logs/B23_formal_install_classifier_contract_editmode_20260626.log` but no
+  XML result file; it is documented as non-authoritative and not counted as a
+  passing TestRunner report.
+- Offline acceptance passed in:
+  `Logs/P0OfflineAcceptance_B23_formal_install_classifier_contract_20260626.log`.
+- Project-owned offline report result: `passed`, gate count `7`, failure count
+  `0`, with `P0 Formal Install Gate Matrix` still passed.
+- The generated reports now include the shared classifier contract anchors:
+  `design/development/unity_batchmode/P0_OFFLINE_ACCEPTANCE_REPORT.md` and
+  `design/development/asset_review/P0_FORMAL_INSTALL_BLOCKER_EVIDENCE_MATRIX_2026-06-26.md`.
+- The raw Unity log still contains external Licensing and Unity AI tracing
+  noise. B23 records the classifier policy but does not claim strict clean
+  Console.
+
+### Remaining Gates
+
+- B23 does not approve Batch 83-90 formal runtime install.
+- B23 does not approve clean Console evidence for any formal-install lane.
+- B23 does not approve starter-cat formal body-art replacement.
+- B23 does not approve human review, scene/presenter binding, candidate install,
+  or final P0 visual acceptance.
+- The next actual single-lane formal-install hardening should use a fresh
+  validation-boundary review before narrowing to Batch 87 or another lane.
+
+## 2026-06-26 - B22 Console Classifier Preflight Migration
+
+Status: completed a narrow migration from per-batch duplicated Console token
+tables to the shared `P0UnityConsoleLogClassifier`. No gameplay, UI layout,
+scene binding, candidate art, screenshots, formal install approval, or human
+approval files were changed.
+
+### Work Completed
+
+- Migrated Batch 83-90 Unity preflight clean-log checks to
+  `P0UnityConsoleLogClassifier.Classify(logContent)`.
+- Formal clean-Console evidence still requires `StrictClean`; known environment
+  noise is classified, but still blocks a clean-Console claim.
+- Retired the duplicated private `FindConsoleFailureToken` token tables from:
+  - `P0LoadingStartBatch83UnityPreflight`;
+  - `P0ResultSettlementBatch84UnityPreflight`;
+  - `P0SettingsPauseBatch85UnityPreflight`;
+  - `P0DreamRouteBatch86UnityPreflight`;
+  - `P0BattleHudBatch87UnityPreflight`;
+  - `P0CharacterSelectBatch88UnityPreflight`;
+  - `P0SkillSelectionBatch89UnityPreflight`;
+  - `P0CatRoomBatch90UnityPreflight`.
+- Added `not strict clean` assertions to the existing dirty-log preflight tests
+  so the migrated gates prove they use the shared classifier semantics.
+- Expanded known environment noise coverage for Unity AI tracing stack lines
+  such as `Unity.AI.Tracing...System.Exception`.
+
+### Validation
+
+- Runtime MSBuild passed: `TheCat.Runtime.csproj`.
+- EditModeTests MSBuild passed: `TheCat.EditModeTests.csproj`.
+- Editor MSBuild passed with the existing `System.Numerics.Vectors` MSB3277
+  warning: `TheCat.Editor.csproj`.
+- Focused Unity EditMode TestRunner invocation produced
+  `Logs/B22_unity_console_classifier_preflight_migration_editmode_20260626.log`
+  but no XML result file; it is documented as non-authoritative and not counted
+  as a passing TestRunner report.
+- Offline acceptance passed in:
+  `Logs/P0OfflineAcceptance_B22_console_classifier_preflight_migration_20260626.log`.
+- Project-owned offline report result: `passed`, gate count `7`, failure count
+  `0`, with `P0 Formal Install Gate Matrix` still passed.
+- The raw Unity log still contains external Licensing, Unity AI tracing, D3D,
+  MemoryLeaks, and StackAllocator noise. B22 routes those categories through
+  the classifier but does not claim a strict clean Console.
+
+### Remaining Gates
+
+- B22 does not approve Batch 83-90 formal runtime install.
+- B22 does not approve starter-cat formal body-art replacement.
+- B22 does not bind classifier output into standalone runtime-evidence report
+  files yet.
+- The next validation blocker should expose classifier summaries in generated
+  reports/matrices before any single-lane formal install hardening.
+
+## 2026-06-26 - B21 Shared Unity Console Log Classifier
+
+Status: completed a validation-infrastructure slice so Unity log review can
+separate strict Console cleanliness from project-owned pass/fail state and
+known environment noise. No gameplay, UI layout, runtime scene binding,
+candidate art, screenshots, formal install approval, or human approval files
+were changed.
+
+### Work Completed
+
+- Added `P0UnityConsoleLogClassifier` and
+  `P0UnityConsoleLogClassifierReport` beside the existing runtime validation
+  plan.
+- The classifier reports:
+  - `StrictClean`, requiring zero project failures, zero unknown blockers, and
+    zero known environment noise;
+  - `ProjectOwnedClean`, allowing known environment noise only when no project
+    failure or unknown blocking token is present;
+  - `KnownEnvironmentNoise` signals for Unity-side noise such as Licensing,
+    Unity AI tracing, D3D upload-buffer messages, MemoryLeaks payloads, and
+    StackAllocator shutdown messages;
+  - `UnknownBlocking` signals for unrecognized Error/Exception/FAILED tokens;
+  - `ProjectFailure` signals for TheCat acceptance/runtime-evidence failures.
+- Added focused EditMode assertions for clean project pass logs, known
+  environment noise, unknown plugin errors, and project failure tokens.
+- Kept the classifier conservative: known environment noise prevents
+  `StrictClean` and must not be used as a final clean-Console approval.
+
+### Validation
+
+- Runtime MSBuild passed: `TheCat.Runtime.csproj`.
+- EditModeTests MSBuild passed: `TheCat.EditModeTests.csproj`.
+- Editor MSBuild passed with the existing `System.Numerics.Vectors` MSB3277
+  warning: `TheCat.Editor.csproj`.
+- Focused Unity EditMode TestRunner invocation produced
+  `Logs/B21_unity_console_classifier_editmode_20260626.log` but no XML result
+  file; it is documented as non-authoritative and not counted as a passing
+  TestRunner report.
+- Offline acceptance passed in:
+  `Logs/P0OfflineAcceptance_B21_unity_console_classifier_20260626.log`.
+- Project-owned offline report result: `passed`, gate count `7`, failure count
+  `0`, with `P0 Formal Install Gate Matrix` still passed.
+- The raw Unity log still contains external Licensing, Unity AI tracing, D3D,
+  MemoryLeaks, and StackAllocator noise. B21 classifies these categories; it
+  does not claim a strict clean Console.
+
+### Remaining Gates
+
+- B21 does not approve Batch 83-90 formal runtime install.
+- B21 does not approve starter-cat formal body-art replacement.
+- B21 does not replace the per-batch preflight log readers yet.
+- The next validation blocker should bind classifier output to
+  runtime-evidence reports, then migrate the formal-install lanes toward this
+  shared Console/log contract.
+
+## 2026-06-26 - B20 Formal Install Blocker Matrix
+
+Status: completed a narrow release-blocker gate so Batch 83-90 runtime-evidence
+lanes can be shown as `6/8` current-demo evidence while formal runtime install
+remains blocked. No candidate art, scene/presenter binding, Console-clean
+claim, human approval, formal runtime binding, gameplay, or screenshots were
+changed.
+
+### Work Completed
+
+- Added `P0FormalInstallGate` and `P0FormalInstallGateReport` as a read-only
+  matrix over the existing asset-production queue.
+- The matrix records:
+  - `8` runtime-evidence `6/8` lanes for Batch 83-90;
+  - `14` candidate packs still pending Unity review;
+  - `5` Unity-blocked queue items;
+  - scene/Console blockers and explicit human-approval blockers;
+  - zero ready-for-formal-install rows;
+  - starter-cat formal import still blocked.
+- Added row-level checks so each runtime-evidence `6/8` lane must keep its own
+  scene/Console and human-approval blocker; unrelated rows cannot mask a missing
+  blocker.
+- Added EditMode assertions covering the current blocked matrix and a forged
+  Batch 87 missing-human-approval case.
+- Added the matrix to offline acceptance as a seventh project-owned gate.
+- Offline acceptance now writes:
+  `design/development/asset_review/P0_FORMAL_INSTALL_BLOCKER_EVIDENCE_MATRIX_2026-06-26.md`.
+
+### Agent Review
+
+- Newton completed a read-only B19/B20 architecture review and confirmed B19 is
+  a clear demo-readiness middle state. Newton recommended Batch 87 as the
+  narrowest future single-lane formal-install hardening target.
+- Bernoulli completed a read-only asset/formal-install blocker review and
+  recommended the unified formal-install blocker matrix before attempting any
+  single-lane install decision.
+- Averroes completed a read-only validation/Console review and recommended the
+  next blocker work focus on a project-owned Console/log classifier plus
+  runtime-evidence report binding before any release packet claims final
+  readiness.
+
+### Validation
+
+- Runtime MSBuild passed: `TheCat.Runtime.csproj`.
+- EditModeTests MSBuild passed: `TheCat.EditModeTests.csproj`.
+- Editor MSBuild passed with the existing `System.Numerics.Vectors` MSB3277
+  warning: `TheCat.Editor.csproj`.
+- Focused Unity EditMode TestRunner invocation exited `0` but produced no XML
+  result file; it is documented as non-authoritative and not counted as a
+  passing TestRunner report.
+- Final offline acceptance passed in:
+  `Logs/P0OfflineAcceptance_B20_formal_install_matrix_report_final_20260626.log`.
+- Project-owned offline report result: `passed`, gate count `7`, failure count
+  `0`, with `P0 Formal Install Gate Matrix` passed.
+- Matrix decision: `Formal install allowed: no`, `Formal install blocked: yes`,
+  `Runtime evidence 6/8 items: 8`.
+
+### Remaining Gates
+
+- B20 does not approve Batch 83-90 formal runtime install.
+- B20 does not approve starter-cat formal body-art replacement.
+- B20 does not create or count clean Console reports or human approval files.
+- The next validation blocker should be a shared Console/log classifier and
+  runtime-evidence report binding layer before any formal install packet is
+  allowed to turn green.
+
+## 2026-06-26 - B19 Demo Release Readiness Gate Sync
+
+Status: completed a narrow validation/reporting pass so the current B18
+baseline can be called demo-release ready for the present code baseline without
+claiming final Unity runtime visual install, clean Console, human art approval,
+or starter-cat formal body-art replacement. No gameplay, scene flow, UI layout,
+candidate art, screenshots, or runtime bindings were changed.
+
+### Work Completed
+
+- Added `P0PlayModeReportFileEvidence` so the visual-acceptance report can
+  validate the project-owned Play Mode report structurally instead of accepting
+  a generic "passed" string.
+- Hardened the report evidence parser to require:
+  - `Result: passed`;
+  - `Smoke state: Passed`;
+  - `8` passed evidence checks and `0` pending warnings;
+  - passed screenshot smoke with `11` screenshots;
+  - `[Passed] Screenshot File Evidence`;
+  - `11/11` expected validated captures;
+  - the expected screenshot output directory;
+  - active-cat capture filenames for Saiban, Nephthys, and Suzune;
+  - route-flow markers for cat-room return, RestNest, DreamEvent, and Shop;
+  - defeat-flow markers for failed settlement and failed cat-room return.
+- Added the explicit middle-state gate
+  `P0VisualAcceptanceReport.IsP0DemoVisualEvidenceReady`.
+- Added the explicit architecture gate
+  `P0ArchitectureCompletionAudit.IsP0DemoReleaseReady`.
+- Updated focused tests so the current project can report demo readiness while
+  final P0 visual acceptance and final Unity runtime gates remain blocked.
+
+### Agent Review
+
+- Kierkegaard completed a read-only architecture-boundary review and confirmed
+  B19 needed a named current-demo readiness state instead of reusing final
+  acceptance.
+- Mendel completed a read-only validation-boundary review and confirmed the
+  parser should require concrete report and screenshot evidence anchors, while
+  keeping starter-cat/formal install gates blocked.
+
+### Validation
+
+- Runtime MSBuild passed: `TheCat.Runtime.csproj`.
+- EditModeTests MSBuild passed: `TheCat.EditModeTests.csproj`.
+- Editor MSBuild passed with the existing `System.Numerics.Vectors` MSB3277
+  warning: `TheCat.Editor.csproj`.
+- Focused Unity EditMode TestRunner invocation exited `0` but produced no XML
+  result file; this was treated as non-authoritative and not counted as a
+  passing TestRunner report.
+- Final offline acceptance passed in:
+  `Logs/P0OfflineAcceptance_B19_demo_readiness_gate_final_20260626.log`.
+- Project-owned offline report result: `passed`, failure count `0`, code smoke
+  suite passed `28` checks, route-map surface coverage remained `21` checks,
+  and battle-result coverage remained `7` checks.
+- No Unity process remained after the final offline run.
+
+### Remaining Gates
+
+- B19 does not approve starter-cat formal body-art replacement.
+- B19 does not approve Batch 83-90 candidate formal runtime install.
+- B19 does not provide a clean Console/scene/prefab/Sprite-settings/human-review
+  final visual acceptance package.
+- The correct current claim is: demo release/readiness is green for the current
+  B18 baseline evidence; final Unity runtime and formal visual acceptance remain
+  pending.
+
+## 2026-06-26 - B18 Route Settlement Readability
+
+Status: completed a narrow route-settlement presentation pass so the player can
+read route outcome, progress, battle record, resources, final core, cat vitals,
+and safe next actions before detailed telemetry. No route rules, rewards,
+completion semantics, action ids, scene targets, or candidate result/settlement
+art were changed.
+
+### Work Completed
+
+- Added `P0SettlementPresenter.BuildPlayerFocusRows()` so the route-map surface
+  has a stable player-facing settlement summary:
+  - result;
+  - route progress;
+  - battle record and duration;
+  - route-state resources, roster, and blessings;
+  - final core values;
+  - final cat-life summary.
+- Added `P0RouteMapSurface.SettlementFocusRows` for UI and coverage without
+  changing existing `SettlementRows`, banner, or action contracts.
+- Reworked completed-route drawing in `RouteMapController` into a focused
+  settlement card plus primary `返回猫房` CTA and secondary route controls.
+- Folded long settlement details, route history, and resource/team rows behind
+  `显示结算明细` by default.
+- Hardened route-map settlement coverage so cleared and failed settlements
+  require focus rows plus `return_cat_room` label/detail/command/scene target.
+
+### Agent Review
+
+- Chandrasekhar completed a read-only route-settlement code-boundary review and
+  confirmed B18 should stay in completed-route drawing plus surface assertions
+  while preserving `return_cat_room`, `new_run`, `main_menu`, route completion,
+  and cat-room return semantics.
+- Ohm completed a read-only validation-boundary review and confirmed validation
+  should remain action/surface driven rather than coordinate-click driven, with
+  visual review focused on `11-settlement.png` and B17 regression review on
+  `10-battle-result-layer1.png`.
+
+### Validation
+
+- Runtime MSBuild passed:
+  - `TheCat.Runtime.csproj`
+- EditMode test assembly MSBuild passed:
+  - `TheCat.EditModeTests.csproj`
+- Editor MSBuild passed with the existing `System.Numerics.Vectors` MSB3277
+  warning:
+  - `TheCat.Editor.csproj`
+- Offline acceptance runner exit code: `0`.
+- Final offline log:
+  `Logs/P0OfflineAcceptance_B18_route_settlement_readability_final_20260626.log`.
+- Offline report result: `passed`, failure count `0`, route-map surface coverage
+  `21` surface check(s), battle-result coverage `7` result check(s).
+- Validation note: an intermediate offline rerun caught route-map surface
+  coverage at `20/21` after the cleared settlement surface gate was coupled to
+  full battle telemetry from a synthetic route state. The surface gate was
+  narrowed back to player focus rows plus `return_cat_room`
+  label/detail/command/scene target, while `P0SettlementPresenterTests` and
+  Play Mode route-flow smoke continue to own full settlement telemetry.
+- First normal Editor visual attempt opened a Unity `Error!` window before the
+  runner entered project code and was terminated; it produced no updated report
+  or screenshots.
+- Normal Editor Play Mode retry passed; final Play Mode log:
+  `Logs/P0PlayModeAcceptanceVisual_B18_route_settlement_readability_final_20260626.log`.
+- Play Mode report result: `passed`.
+- Screenshot evidence: `11/11` validated captures refreshed at 2026-06-26
+  08:34 +08:00.
+- Route-flow evidence still reports `nodes 10/10`, `boss observed`,
+  RestNest/DreamEvent/Shop bed-patch next-battle evidence, and cat-room return.
+- Defeat-flow evidence still reports failed settlement and failed cat-room
+  return.
+- Visual check:
+  `design/development/screenshots/p0-playmode-smoke/11-settlement.png` now shows
+  a focused route-settlement card, player summary rows, primary `返回猫房`, and
+  folded details. `10-battle-result-layer1.png` remains the B17 focused result
+  card.
+
+### Remaining Gates
+
+- B18 is presentation/readability only. It does not approve Batch 84
+  result/settlement candidate formal install.
+- B18 does not add coordinate-click validation; the route/defeat smokes still
+  validate semantic commands, actions, and target scenes.
+- Raw Unity logs still contain external Unity AI Assistant/licensing/MCP noise,
+  but the project-owned offline and Play Mode reports are passed.
+
+## 2026-06-26 - B17 Battle Result Readability
+
+Status: completed a narrow battle-result presentation pass so the player can
+read outcome, reward, next step, and safe actions before any detailed metrics.
+No battle rules, route completion semantics, action ids, scene targets, route
+rewards, or candidate result/settlement art were changed.
+
+### Work Completed
+
+- Reworked the non-diagnostic battle-result HUD into a single focused result
+  card:
+  - outcome banner and prompt;
+  - route result, reward, next node, route progress, and owner-sleep summary;
+  - primary `继续路线` CTA with detail text;
+  - secondary `返回猫房` and `重开路线` actions;
+  - folded `查看详细结算` metrics section.
+- Stopped drawing ordinary cat/skill/interaction controls after battle
+  resolution in non-diagnostic HUD mode.
+- Hid the post-result feedback visual card in non-diagnostic result state so
+  runtime asset/debug text no longer appears beneath the player-facing result.
+- Kept diagnostic HUD density available for developer inspection.
+- Fixed battle-result shortcut labels to match real input bindings:
+  `继续路线 [Enter]`, `重开路线 [N]`, and no fake `返回猫房 [C]` shortcut.
+- Added `P0BattleResultPresenter.BuildPlayerFocusRows()` for the player-facing
+  result summary without changing `P0BattleResultSurface` fields or action ids.
+- Hardened `P0BattleResultCoverage` so coverage now requires player-facing
+  focus rows and shortcut labels that match `P0KeyboardInputMap`.
+
+### Agent Review
+
+- Turing completed a read-only battle-result code-boundary review and confirmed
+  B17 should stay in `GrayboxBattleController` drawing plus result-surface
+  assertions while preserving `continue_route`, `return_cat_room`,
+  `restart_run`, route completion, and post-battle route-map semantics.
+- Socrates completed a read-only validation-boundary review and confirmed the
+  Play Mode smoke matrix should remain command/surface driven rather than
+  coordinate-click driven, with visual review focused on
+  `10-battle-result-layer1.png` and `11-settlement.png`.
+
+### Validation
+
+- Runtime MSBuild passed:
+  - `TheCat.Runtime.csproj`
+- EditMode test assembly MSBuild passed:
+  - `TheCat.EditModeTests.csproj`
+- Editor MSBuild passed with the existing `System.Numerics.Vectors` MSB3277
+  warning:
+  - `TheCat.Editor.csproj`
+- Offline acceptance runner exit code: `0`.
+- Final offline log:
+  `Logs/P0OfflineAcceptance_B17_battle_result_readability_final_20260626.log`.
+- Offline report result: `passed`, failure count `0`, battle-result coverage
+  `7` result check(s), route-map surface coverage `21` surface check(s).
+- Normal Editor Play Mode acceptance runner exit code: `0`.
+- Final Play Mode log:
+  `Logs/P0PlayModeAcceptanceVisual_B17_battle_result_readability_final_20260626.log`.
+- Play Mode report result: `passed`.
+- Screenshot evidence: `11/11` validated captures.
+- Route-flow evidence still reports `nodes 10/10`, `boss observed`,
+  RestNest/DreamEvent/Shop bed-patch next-battle evidence, and cat-room return.
+- Defeat-flow evidence still reports failed settlement and failed cat-room
+  return.
+- Visual check:
+  `design/development/screenshots/p0-playmode-smoke/10-battle-result-layer1.png`
+  now shows a focused result card and player CTAs without the old dense report
+  stack or debug feedback card.
+
+### Remaining Gates
+
+- B17 is presentation/readability only. It does not approve Batch 84
+  result/settlement candidate formal install.
+- `11-settlement.png` remains a separate readability debt; B17 did not change
+  route settlement layout.
+- Raw Unity logs still contain external Unity AI Assistant/licensing/MCP noise,
+  but the project-owned offline and Play Mode reports are passed.
+
+## 2026-06-26 - B16 Route Map Readability
+
+Status: completed a narrow route-map presentation pass so the player can read
+the current node and primary route action before seeing route-history and
+resource detail panels. No route rules, command routing, action ids, scene flow,
+or candidate UI art were changed.
+
+### Work Completed
+
+- Reordered `RouteMapController` IMGUI so the route-map first viewport now
+  shows:
+  - title, progress, and status;
+  - a focused current-node card with icon, layer, node type, risk, reward, and
+    detail text;
+  - current route/reward/cat-upgrade choices when present;
+  - the primary `进入当前节点` or `返回猫房` CTA;
+  - secondary `新路线` and `返回主菜单` actions;
+  - collapsed `路线回顾` and `资源与队伍` detail sections.
+- Widened the non-settlement route-map panel to the same readability range as
+  the newer menu/cat-room passes.
+- Kept the route-map public contracts unchanged:
+  - `RouteMapController.RouteMapSceneName`;
+  - `ExecuteInputCommand`;
+  - `BuildRouteMapSurfaceForSmoke`;
+  - `EnterCurrentNode`;
+  - `ReturnToCatRoom`;
+  - `P0RouteMapActionIds` and `P0RouteMapCommandRouter` semantics.
+- Hardened route-map coverage so layer-one surface evidence now requires
+  player-facing current-node text, one current timeline row, selected-node
+  identity, CTA command/target/detail, and no internal developer tokens in the
+  visible current-node summary.
+
+### Agent Review
+
+- Gauss completed a read-only route-map code-boundary review and confirmed B16
+  should stay in `RouteMapController` presentation plus surface assertions,
+  preserving route state, action ids, and command/router contracts.
+- Einstein completed a read-only validation-boundary review and confirmed the
+  Play Mode route and screenshot smokes should remain command/surface driven,
+  not coordinate-click driven. It recommended the normal Editor acceptance
+  matrix used below.
+
+### Validation
+
+- Runtime MSBuild passed:
+  - `TheCat.Runtime.csproj`
+- EditMode test assembly MSBuild passed:
+  - `TheCat.EditModeTests.csproj`
+- Editor MSBuild passed with the existing `System.Numerics.Vectors` MSB3277
+  warning:
+  - `TheCat.Editor.csproj`
+- Normal Editor Play Mode acceptance runner exit code: `0`.
+- Log:
+  `Logs/P0PlayModeAcceptanceVisual_B16_route_map_readability_20260626.log`.
+- Report result: `passed`.
+- Evidence gate: `8` passed check(s), `0` warning(s), `0` failure(s).
+- Screenshot evidence: `11/11` validated captures.
+- Offline acceptance runner exit code: `0`.
+- Offline log:
+  `Logs/P0OfflineAcceptance_B16_route_map_readability_20260626.log`.
+- Offline report result: `passed`, failure count `0`, route-map surface coverage
+  `21` check(s).
+- Route-flow evidence still reports `nodes 10/10`, `boss observed`,
+  RestNest/DreamEvent/Shop bed-patch next-battle evidence, and cat-room return.
+- Defeat-flow evidence still reports failed settlement and failed cat-room
+  return.
+- Visual check:
+  `design/development/screenshots/p0-playmode-smoke/03-route-map-layer1.png`
+  now shows the current-node card, primary `进入当前节点` CTA, and collapsed
+  route/resource detail buttons in the first viewport.
+
+### Remaining Gates
+
+- B16 is presentation/readability only. It does not approve Batch 65 route-map
+  readability candidate formal install.
+- B16 does not add coordinate-click validation; current Play Mode validation is
+  intentionally surface/command driven.
+- Raw Unity log still contains external Unity AI Assistant/licensing/MCP noise,
+  but the project-owned smoke report is passed with no evidence warnings or
+  failures.
+
+## 2026-06-26 - B15 Main Menu Player Path Readability
+
+Status: completed a narrow main-menu presentation pass so the opening player
+path is clearer without changing start APIs, scene flow, or candidate art
+bindings.
+
+### Work Completed
+
+- Reordered `MainMenuController` IMGUI so the player sees:
+  - title/path summary;
+  - starter-cat selection cards;
+  - the main `进入猫房准备` path;
+  - a collapsed graybox validation/tools section.
+- Widened the main-menu panel to match the newer cat-room readability pass.
+- Changed starter selection from dense toggle lines into compact cards with
+  HUD avatar, name, role, readiness badge, role hint, authority/attribute, and
+  skill preview.
+- Kept `MainMenuController.StartP0Run()` default behavior unchanged so route
+  and defeat smokes can still call it directly and enter `P0RouteMap`.
+- Kept D1 action semantics unchanged:
+  - `EnterCatRoom` remains the only `PlayerPrimary` action.
+  - route starts remain `DevRouteHelper`.
+  - quick battle remains `GrayboxBattleHelper`.
+  - empty selection still disables selected/quick starts and cat-room entry.
+- Added `P0MainMenuCoverageTests` assertions for the visible starter-card
+  fields now used by the IMGUI layout.
+
+### Agent Review
+
+- Singer completed a read-only main-menu boundary review and confirmed the
+  slice should stay in `MainMenuController` presentation, preserving all action
+  ids, targets, categories, and `StartP0Run()` defaults.
+- Huygens completed a read-only validation review and confirmed Play Mode smoke
+  verifies the main-menu surface contract and direct controller start APIs
+  rather than depending on button coordinates. It recommended keeping focused
+  `P0MainMenuCoverage`/`P0PlayableReadiness` coverage and refreshing normal
+  Editor screenshot evidence.
+
+### Validation
+
+- Runtime MSBuild passed:
+  - `TheCat.Runtime.csproj`
+- EditMode test assembly MSBuild passed:
+  - `TheCat.EditModeTests.csproj`
+- Editor MSBuild passed with the existing `System.Numerics.Vectors` MSB3277
+  warning:
+  - `TheCat.Editor.csproj`
+- Normal Editor Play Mode acceptance runner exit code: `0`.
+- Log:
+  `Logs/P0PlayModeAcceptanceVisual_B15_main_menu_readability_20260626.log`.
+- Report result: `passed`.
+- Evidence gate: `8` passed check(s), `0` warning(s), `0` failure(s).
+- Screenshot evidence: `11/11` validated captures.
+- Visual check: `design/development/screenshots/p0-playmode-smoke/01-main-menu.png`
+  now shows the starter cards, cat-room primary CTA, and a collapsed graybox
+  validation entry in the first viewport.
+- Focused Unity EditMode attempt:
+  - filter:
+    `TheCat.Tests.P0MainMenuCoverageTests;TheCat.Tests.P0PlayableReadinessTests;TheCat.Tests.P0PlayModeScreenshotSmokeTests;TheCat.Tests.P0PlayModeEvidenceChecklistTests;TheCat.Tests.P0PlayModeAcceptanceSmokeTests`
+  - log: `Logs/b15_main_menu_readability_editmode_20260626.log`
+  - result: Unity reached AssetDatabase refresh/domain reload and exited with
+    return code `0`, but did not write
+    `Logs/b15_main_menu_readability_editmode_20260626.xml`; this is not counted
+    as a passing Unity TestRunner result.
+
+### Remaining Gates
+
+- B15 is presentation/readability only. It does not approve Batch 88
+  character-select candidate formal runtime binding.
+- B15 does not add real mouse-click coordinate validation; current Play Mode
+  smoke verifies the surface contract and direct controller start APIs.
+- Focused Unity TestRunner XML generation remains unreliable and should be
+  treated as a validation tooling follow-up, not as B15 gameplay failure.
+- Formal starter-cat body-art replacement remains blocked pending explicit
+  colored-turnaround comparison approval notes.
+
+## 2026-06-26 - B14 Cat-Room Dream Choice Readability
+
+Status: completed a narrow presentation/readability pass for the cat-room dream
+choice block without changing dream routing, scene targets, or asset bindings.
+
+### Work Completed
+
+- Moved the cat-room `梦境主题` block immediately after return feedback and
+  placed the action buttons directly after the dream choices, so the player
+  reads `选择梦境 -> 进入/占位按钮` as one block.
+- Added dream-choice header formatting in `CatRoomController`:
+  - Bedroom shows as `可进入当前Demo路线`.
+  - Egypt shows as `占位，不可进入，无跳转`.
+- Kept the B12 gameplay boundary intact:
+  - Bedroom remains the only enabled playable route through `enter_dream`.
+  - Egypt remains disabled, no-target, and uses `preview_egypt_dream`.
+- Shortened presenter copy so Egypt says `占位，不可进入` and explicitly states
+  it has no P0 playable route, map, enemy, or visual-evidence binding.
+- Updated `P0PlayableReadiness` and `P0CatRoomPresenterTests` to lock the new
+  no-route/no-target placeholder wording instead of the older long-form
+  placeholder copy.
+
+### Agent Review
+
+- McClintock completed a read-only B14 visual/code review and flagged one P0
+  readability issue: the Bedroom and Egypt dream cards were too similar at a
+  glance, and the disabled Egypt button still looked like an actionable option.
+- The review also recommended moving dream choices closer to actions and
+  shortening repeated Egypt placeholder copy. Both recommendations were
+  addressed in this slice.
+
+### Validation
+
+- Runtime MSBuild passed:
+  - `TheCat.Runtime.csproj`
+- EditMode test assembly MSBuild passed:
+  - `TheCat.EditModeTests.csproj`
+  - warning: Unity pdb copy retries because another process held the files.
+- Editor MSBuild passed with the existing `System.Numerics.Vectors` MSB3277
+  warning:
+  - `TheCat.Editor.csproj`
+- Normal Editor Play Mode acceptance runner exit code: `0`.
+- Log: `Logs/P0PlayModeAcceptanceVisual_B14_catroom_readability_final_20260626.log`.
+- Report result: `passed`.
+- Evidence gate: `8` passed check(s), `0` warning(s), `0` failure(s).
+- Screenshot evidence: `11/11` validated captures.
+- Visual check: `design/development/screenshots/p0-playmode-smoke/02-cat-room.png`
+  now shows the dream choice block at the top of the cat-room panel with a
+  green Bedroom route and gray Egypt placeholder/no-jump state.
+
+### Remaining Gates
+
+- B14 is presentation/readability only. It does not approve Batch 90 cat-room
+  candidate formal runtime binding.
+- Egypt remains a registered placeholder/readiness target. No dedicated Egypt
+  map, enemy, combat branch, or scene route was added.
+- Formal starter-cat body-art replacement remains blocked pending explicit
+  colored-turnaround comparison approval notes.
+
+## 2026-06-26 - B13 Play Mode Acceptance Refresh After Dream Choice
+
+Status: refreshed normal Editor Play Mode acceptance evidence after B12 added
+cat-room dream theme choices.
+
+### Work Completed
+
+- Ran the project-owned Play Mode acceptance runner through normal Editor mode:
+  `TheCat.EditorTools.P0PlayModeEvidenceBatchmodeRunner.RunPlayModeAcceptanceSmokeForBatchmode`.
+- Refreshed `design/development/unity_batchmode/P0_PLAYMODE_ACCEPTANCE_SMOKE_REPORT.md`.
+- Refreshed the 11 screenshot files under
+  `design/development/screenshots/p0-playmode-smoke`.
+- Confirmed `02-cat-room.png` now captures the cat-room surface with `dreams 2`
+  and visible Bedroom/Egypt theme rows.
+
+### Validation
+
+- A first visual attempt incorrectly used `-batchmode`; it ran the logic smoke
+  but produced 11 single-color gray screenshots that the screenshot file
+  evidence gate correctly rejected as `11 unusable`. Superseded by the normal
+  Editor run below.
+- Normal Editor runner exit code: `0`.
+- Log: `Logs/P0PlayModeAcceptanceVisual_B12_normal_20260626.log`.
+- Report result: `passed`.
+- Smoke state: `Passed`.
+- Evidence gate: `8` passed check(s), `0` warning(s), `0` failure(s).
+- Screenshot evidence: `11/11` validated captures.
+- Route-flow evidence still includes all structure-backed markers:
+  - `RestNest next-battle recovery verified`
+  - `DreamEvent catnip next-battle modifier verified`
+  - `Shop bed-patch next-battle sleep verified`
+  - `cat-room return verified`
+
+### Remaining Gates
+
+- The refreshed Play Mode screenshots are baseline runtime evidence only.
+  They do not approve Batch 90 formal runtime binding, Egypt-specific content,
+  or starter-cat body-art replacement.
+- The cat-room IMGUI text remains visually dense; future visual polish should
+  treat this as UI presentation debt, not a blocker to the B12/B13 contract.
+
+## 2026-06-26 - B12 Cat-Room Dream Theme Choice Boundary
+
+Status: added the cat-room dream theme choice surface while keeping Bedroom as
+the only playable P0 demo route and Egypt as a disabled placeholder.
+
+### Work Completed
+
+- Added `P0CatRoomDreamChoice` to `P0CatRoomPresenter` and built the choice
+  list from `P0DreamMapCatalog.CreateP0DreamMaps()`.
+- Cat room now displays two dream themes:
+  - Bedroom dream: `P0可进入`, enabled when dream entry is unlocked, action
+    `enter_dream`, target `P0RouteMap`.
+  - Egypt dream: `占位，不可进入`, not playable, disabled, action
+    `preview_egypt_dream`, empty scene target.
+- Updated cat-room copy so the dream entrance says Bedroom enters the current
+  demo route and Egypt only displays placeholder status.
+- Added `P0RunSession.EnsureBedroomDreamRun()` and changed
+  `CatRoomController.EnterDream()` to preserve an active Bedroom run and the
+  selected roster instead of always restarting the default trio.
+- Disabled placeholder actions now render as `占位展示，不可进入`, so Egypt is not
+  described as a normal locked-but-existing route.
+- Strengthened `P0PlayableReadiness.EntryCharacterSelectCheckId` so readiness
+  requires Bedroom enabled, Egypt disabled, and the Egypt action to have no
+  target scene.
+- Added focused test coverage for Bedroom/Egypt dream choices and the
+  `EnsureBedroomDreamRun()` roster-preservation boundary.
+
+### Agent Review
+
+- Hume reviewed the gameplay/session boundary and flagged that the first B12
+  draft would reset the selected starter roster by calling
+  `StartNewRun(GetBedroomDreamMap())`. Addressed by
+  `EnsureBedroomDreamRun()`.
+- Locke reviewed the UI/docs boundary and flagged stale cat-room copy,
+  mojibake in the visible title, and the risk of Egypt looking like an
+  unlockable finished route. Addressed by updated copy, the `梦境主题` title, and
+  the disabled placeholder label.
+
+### Validation
+
+- Runtime MSBuild passed:
+  - `TheCat.Runtime.csproj`
+- EditMode test assembly MSBuild passed:
+  - `TheCat.EditModeTests.csproj`
+- Editor MSBuild passed with the existing `System.Numerics.Vectors` MSB3277
+  warning:
+  - `TheCat.Editor.csproj`
+- Focused Unity EditMode attempts:
+  - filters:
+    `TheCat.Tests.P0CatRoomPresenterTests;TheCat.Tests.RouteStateTests;TheCat.Tests.P0PlayableReadinessTests`
+  - logs:
+    `Logs/p0_b12_cat_room_dream_choices_editmode_20260626.log`
+    `Logs/p0_b12_cat_room_dream_choices_editmode_retry_20260626.log`
+  - result: both attempts reached AssetDatabase refresh/domain reload and
+    exited with return code `0`, but neither produced a TestRunner XML file;
+    they are not counted as passing Unity TestRunner results.
+
+### Remaining Gates
+
+- Egypt still has no dedicated combat branch, unique map content, or playable
+  route. It remains a visible placeholder/readiness target only.
+- No Batch 90 cat-room candidate art was promoted into formal runtime bindings.
+- A future visual pass should capture the cat-room dream choice surface in Play
+  Mode after the next acceptance-refresh slice.
+
+## 2026-06-26 - B11 Starter-Cat Missing-Screenshot Blocker Retirement
+
+Status: retired stale starter-cat missing-screenshot blocker wording without
+unlocking formal starter-cat body-art replacement.
+
+### Work Completed
+
+- Removed the legacy missing-screenshot block phrase from
+  `P0StarterCatFormalImportReadiness`; explicit block notes now must use the
+  current phrase:
+  `formal starter-cat import remains blocked pending active-cat screenshot comparison approval`.
+- Reworked the dedicated formal-import test so legacy
+  `active-cat Play Mode screenshots are still missing` notes produce an
+  invalid gate instead of a valid blocked import state.
+- Updated `P0AssetReviewPacket`, `P0AssetProductionReadiness`, and
+  `P0AssetProductionQueueCatalog` text so generated packets say registered
+  active-cat screenshots exist, but formal import remains blocked pending
+  explicit colored-turnaround comparison approval.
+- Updated current control docs and packets:
+  - `P0_RUNTIME_VISUAL_REVIEW_PACKET.md`
+  - Batch05 starter-cat README
+  - `P0_SYSTEMATIC_ART_PRODUCTION_TOTAL_DESIGN_2026-06-25.md`
+  - `P0_SYSTEMATIC_ART_ASSET_MASTER_LEDGER_2026-06-25.md`
+  - `P0_BLOCKERS_AND_RETIREMENT_LOG_2026-06-24.md`
+  - `UNITY_VALIDATION_BACKLOG.md`
+  - `P0_DEVELOPMENT_ARCHITECTURE.md`
+  - `P0_DEVELOPMENT_ARCHITECTURE_2026-06-25.md`
+  - `P0_IMPLEMENTATION_TASK_BREAKDOWN.md`
+- Current unified rule:
+  registered active-cat screenshots prove the current runtime sprites are
+  captured for review; they do not approve formal starter-cat body-art
+  replacement until each cat receives explicit colored-turnaround comparison
+  approval notes.
+
+### Agent Review
+
+- Pauli completed a docs/ledger stale-wording review and found no reason to
+  unlock formal starter-cat import. It recommended retiring `0/3`,
+  `3/10`, and `full offline not green` wording from current control surfaces.
+- Pascal completed a code/gate review and confirmed the current gate should
+  keep the strict block phrase, reject legacy missing-screenshot notes, and
+  keep next-batch work scoped outside `Assets`.
+
+### Validation
+
+- Runtime MSBuild passed:
+  - `TheCat.Runtime.csproj`
+- EditMode test assembly MSBuild passed:
+  - `TheCat.EditModeTests.csproj`
+- Editor MSBuild passed with the existing `System.Numerics.Vectors` MSB3277
+  warning:
+  - `TheCat.Editor.csproj`
+- Focused Unity EditMode attempt:
+  - filter:
+    `TheCat.Tests.P0StarterCatFormalImportReadinessTests;TheCat.Tests.P0AssetProductionReadinessTests;TheCat.Tests.P0AssetReviewPacketTests;TheCat.Tests.P0VisualAcceptanceReportTests`
+  - log: `Logs/p0_b11_starter_cat_gate_editmode_20260626.log`
+  - result: Unity reached script compilation/domain reload and exited with
+    return code `0`, but did not write
+    `Logs/p0_b11_starter_cat_gate_editmode_20260626.xml`; this is not counted
+    as a passing Unity TestRunner result.
+- `git diff --check` passed for the B11 code and document files, with only
+  existing CRLF normalization warnings on Markdown files.
+
+### Remaining Gates
+
+- Formal starter-cat body-art replacement remains blocked.
+- The next valid path is explicit per-cat colored-turnaround comparison review
+  and approval-note replacement, not another screenshot-existence check.
+
+## 2026-06-26 - B10 Play Mode Acceptance Refresh After Shop Gate
+
+Status: refreshed the normal Editor Play Mode acceptance evidence after the B9
+Shop bed-patch route-flow gate.
+
+### Work Completed
+
+- Ran the project-owned Play Mode acceptance runner:
+  `TheCat.EditorTools.P0PlayModeEvidenceBatchmodeRunner.RunPlayModeAcceptanceSmokeForBatchmode`.
+- Refreshed `design/development/unity_batchmode/P0_PLAYMODE_ACCEPTANCE_SMOKE_REPORT.md`.
+- Refreshed the 11 screenshot files under
+  `design/development/screenshots/p0-playmode-smoke`.
+
+### Validation
+
+- Runner exit code: `0`.
+- Log: `Logs/P0PlayModeAcceptanceVisual_B9_20260626.log`.
+- Report result: `passed`.
+- Smoke state: `Passed`.
+- Evidence gate: `8` passed check(s), `0` warning(s), `0` failure(s).
+- Screenshot evidence: `11/11` validated captures.
+- Route-flow evidence now includes all structure-backed markers:
+  - `RestNest next-battle recovery verified`
+  - `DreamEvent catnip next-battle modifier verified`
+  - `Shop bed-patch next-battle sleep verified`
+  - `cat-room return verified`
+- Defeat-flow evidence includes `failed cat-room return verified`.
+
+### Remaining Gates
+
+- Focused Unity TestRunner XML is still not refreshing through `-runTests`;
+  the B9 focused EditMode attempts exited after script compilation/domain reload
+  without result XML. Normal Editor Play Mode acceptance is current and green.
+- Candidate import/binding approval remains separate from this baseline smoke.
+
+## 2026-06-26 - B9 Shop Bed-Patch Next-Battle Evidence Gate
+
+Status: completed a narrow gameplay/evidence hardening slice so the route-flow
+smoke must prove a concrete Shop purchase (`shop_bed_patch`) restores owner
+sleep and carries that restored value into the next battle before route-flow
+evidence is accepted.
+
+### Work Completed
+
+- Extended `P0PlayModeRouteFlowSmoke` to seed a deterministic owner sleep value
+  before the layer 5 midnight-kibble Shop, buy the default `shop_bed_patch`
+  supply, verify fish spending, verify the route-level sleep restore, and then
+  verify the next battle starts with the restored owner sleep value.
+- Added a structure-backed route-flow flag for
+  `Shop bed-patch next-battle sleep verified`; `P0PlayModeEvidenceChecklist`
+  now requires this flag alongside RestNest, DreamEvent, and final cat-room
+  return evidence.
+- Added command-router coverage proving layer 5 Shop `ContinueRoute` buys
+  `shop_bed_patch` by default, spends 3 fish treats, restores sleep by 20, and
+  advances the route.
+- Tightened the B8 DreamEvent smoke after Faraday review: `RouteMapController`
+  now returns `P0RouteMapCommandResult`, the smoke asserts the selected reward
+  is exactly `dream_event_catnip_residue`, and the next-battle modifier evidence
+  requires a single pending source with exact expected multipliers.
+- Independent read-only reviewer:
+  - Faraday reviewed the DreamEvent/route-flow evidence chain and found only
+    P3 precision risks around selected reward identity and exact modifier
+    source/count checks. Both were addressed in this slice.
+
+### Validation
+
+- MSBuild passed for:
+  - `TheCat.Runtime.csproj`
+  - `TheCat.EditModeTests.csproj`
+  - `TheCat.Editor.csproj` with the existing `System.Numerics.Vectors`
+    MSB3277 warning
+- `git diff --check` passed for the changed B8/B9 runtime, test, and doc files.
+- Focused Unity EditMode attempts for
+  `TheCat.Tests.P0RouteMapCommandRouterTests;TheCat.Tests.P0PlayModeEvidenceChecklistTests;TheCat.Tests.P0PlayableReadinessTests;TheCat.Tests.P0VisualAcceptanceReportTests`
+  reached script compilation/domain reload and exited successfully but did not
+  produce test-results XML, so they are not counted as passing Unity tests.
+  Logs:
+  - `Logs/p0_b9_shop_evidence_editmode_20260626.log`
+  - `Logs/p0_b9_shop_evidence_editmode_20260626_rerun.log`
+- Unity Play Mode report refresh landed in B10.
+
+### Remaining Gates
+
+- A later Unity Play Mode run still needs to generate fresh route-flow,
+  screenshot-smoke, defeat-flow, and evidence reports with the new structured
+  Shop/RestNest/DreamEvent/cat-room flags.
+- A focused Unity EditMode run should refresh test-results XML for the route
+  command-router, evidence-checklist, playable-readiness, and visual-acceptance
+  tests once batchmode test execution is producing XML again.
+
+## 2026-06-26 - B8 DreamEvent Next-Battle Evidence Gate
+
+Status: completed a narrow gameplay/evidence hardening slice so the route-flow
+smoke must prove `dream_event_catnip_residue` carries into the next battle
+config before Play Mode route-flow evidence is accepted.
+
+### Work Completed
+
+- Extended `P0PlayModeRouteFlowSmoke` to force the first soft-rain DreamEvent
+  onto `dream_event_catnip_residue` inside the smoke path only, without changing
+  default player reward selection.
+- Added `P0BattleModifierEvidence` to `GrayboxBattleController` so smoke can
+  read the battle-start skill damage multiplier and poop-growth tuning after
+  pending modifiers are consumed.
+- The next battle now verifies skill damage `x1.2`, poop growth `x1.5`, and
+  that `RunPendingBattleModifiers` is consumed at battle start.
+- Route-flow evidence now carries structure-backed flags for RestNest recovery,
+  DreamEvent catnip modifier, and final cat-room return instead of trusting
+  summary marker text.
+- Defeat-flow evidence now carries a structure-backed failed cat-room return
+  flag.
+- Fixed the B6 RestNest readiness sample so hunger starts below the RestNest
+  safe line and can catch `RestoreHungerToSafeLine` regressions.
+- Hardened settlement screenshot failure cleanup so a failed `11-settlement.png`
+  capture releases the paused route-flow runner.
+- Added focused command-router and evidence-checklist tests for the DreamEvent
+  catnip path and the new structure-backed evidence gate.
+- Independent read-only reviewers:
+  - Ramanujan reviewed B6/B7 and found the RestNest hunger sample, summary-marker
+    evidence risk, and screenshot-pause cleanup gap.
+  - Euler mapped the DreamEvent catnip smoke path and confirmed the modifier must
+    be verified from battle-start config/evidence after pending consumption.
+
+### Validation
+
+- MSBuild passed for:
+  - `TheCat.Runtime.csproj`
+  - `TheCat.EditModeTests.csproj`
+  - `TheCat.Editor.csproj` with the existing `System.Numerics.Vectors`
+    MSB3277 warning
+- `git diff --check` passed for the changed B8 runtime, test, and doc files.
+- Focused Unity EditMode attempts for
+  `TheCat.Tests.P0RouteMapCommandRouterTests;TheCat.Tests.P0PlayModeEvidenceChecklistTests;TheCat.Tests.P0PlayableReadinessTests;TheCat.Tests.P0VisualAcceptanceReportTests`
+  only reached AssetDatabase refresh/domain reload and did not produce
+  test-results XML, so they are not counted as passing Unity tests. Logs:
+  - `Logs/p0_b8_dreamevent_evidence_editmode_20260626.log`
+  - `Logs/p0_b8_dreamevent_evidence_editmode_20260626_rerun.log`
+
+### Remaining Gates
+
+- A later Unity Play Mode run still needs to generate fresh route-flow,
+  screenshot-smoke, defeat-flow, and evidence reports with the new structured
+  DreamEvent/RestNest/cat-room flags.
+
+## 2026-06-26 - B7 RestNest Next-Battle Evidence Gate
+
+Status: completed a narrow Play Mode smoke/evidence hardening slice so
+RestNest recovery must be visible in the next battle HUD before route-flow
+evidence is accepted.
+
+### Work Completed
+
+- Extended `P0PlayModeRouteFlowSmoke` to seed a deterministic low-HP weak cat
+  before the RestNest node in the smoke runner.
+- After RestNest resolves, the smoke now verifies the run-level cat vital
+  snapshot reaches the RestNest safe HP line and clears weak state.
+- On the next battle node, the smoke now checks `BuildCatHudCardsForSmoke()`
+  and verifies the same cat starts recovered in the battle HUD.
+- Route-flow pass summaries now include
+  `RestNest next-battle recovery verified`.
+- Hardened `P0PlayModeEvidenceChecklist` so passed route-flow summaries must
+  include both `RestNest next-battle recovery verified` and
+  `cat-room return verified`.
+- Updated Play Mode evidence and visual acceptance tests for the new marker.
+
+### Validation
+
+- MSBuild passed for:
+  - `TheCat.Runtime.csproj`
+  - `TheCat.EditModeTests.csproj`
+  - `TheCat.Editor.csproj` with the existing `System.Numerics.Vectors`
+    MSB3277 warning
+- `git diff --check` passed for the changed files.
+
+### Remaining Gates
+
+- A later Unity Play Mode run still needs to generate fresh route-flow,
+  screenshot-smoke, and evidence reports with the new RestNest marker. B8
+  supersedes the marker-only evidence acceptance with structure-backed flags.
+
+## 2026-06-26 - B5 Independent Review Follow-Up
+
+Status: addressed the independent gameplay/validation review findings on the
+route-settlement cat-room return slice.
+
+### Work Completed
+
+- Added a settlement-screenshot pause/release path to
+  `P0PlayModeRouteFlowSmoke` so `P0PlayModeScreenshotSmoke` can still capture
+  `11-settlement.png` before the route-flow runner verifies the final cat-room
+  return.
+- Kept the default route-flow smoke strict: it still must finish with
+  `cat-room return verified`.
+- Extended forced-defeat Play Mode smoke so failed settlement must expose the
+  cat-room return action, execute it, verify `P0CatRoom`, verify
+  `RouteFailed`, and close the active run.
+- Hardened `P0PlayModeEvidenceChecklist` so passed defeat-flow summaries must
+  include `failed cat-room return verified`.
+- Added a direct guard to `RouteMapController.ReturnToCatRoom()` so unfinished
+  routes cannot be moved to cat room through the public method.
+- Added failed-route command/surface test coverage for `ContinueRoute` ->
+  `ReturnCatRoom` and the failed settlement `return_cat_room` action command.
+
+### Validation
+
+- MSBuild passed for:
+  - `TheCat.Runtime.csproj`
+  - `TheCat.EditModeTests.csproj`
+
+### Remaining Gates
+
+- A later Unity Play Mode run still needs to produce fresh route-flow,
+  screenshot-smoke, and defeat-flow evidence with the new final-return markers.
+
+## 2026-06-26 - B6 Route Choice Effect Readiness Gate
+
+Status: completed a narrow code/readiness slice proving route choices affect
+later play without changing route reward tuning, route selection defaults, or
+candidate art lanes.
+
+### Work Completed
+
+- Added `P0PlayableReadiness.RouteChoiceEffectsCheckId`.
+- Added a RestNest readiness sample that starts with damaged run core values
+  and a weak low-HP cat, applies the RestNest choice, and requires sleep, poop,
+  hunger, cat HP, weak-state clearing, and `RestNestUses` to update.
+- Added a DreamEvent readiness sample that applies
+  `dream_event_catnip_residue`, consumes the pending next-battle modifier,
+  verifies skill-damage and poop-growth multipliers, and starts a
+  `BattleSimulation` with the modified config.
+- Updated `P0PlayableReadinessTests` so the prototype build and detailed
+  summary include the new `Route Choice Effects` gate.
+- Registered B6 in `P0_IMPLEMENTATION_TASK_BREAKDOWN.md`.
+
+### Validation
+
+- MSBuild passed for:
+  - `TheCat.Runtime.csproj`
+  - `TheCat.EditModeTests.csproj`
+
+### Remaining Gates
+
+- B7/B8 added Play Mode smoke coverage for RestNest and DreamEvent effects; a
+  later Unity run still needs to refresh the generated evidence reports.
+- No candidate UI art, reward tuning, default route choice, or scene flow was
+  changed in this slice.
+
+## 2026-06-26 - M2 Route Settlement Cat-Room Return Hardening
+
+Status: completed a narrow code slice that closes the route-map settlement
+return path into the cat room without importing art candidates or replacing the
+existing route, battle, reward, or cat-room session systems.
+
+### Work Completed
+
+- Added route-map `return_cat_room` action metadata that appears only when the
+  route is complete.
+- Connected route-map settlement UI to `P0CatRoomSession.RecordRouteReturn`
+  and `P0SceneFlow.CatRoomSceneName`.
+- Hardened route-map surface coverage so cleared and failed settlement surfaces
+  must expose the enabled cat-room return action.
+- Added focused EditMode coverage for cleared-run settlement return metadata
+  and for cat-room route-return state closing the active run.
+- Added `P0PlayableReadiness.RouteSettlementReturnCheckId` so the overall P0
+  readiness report now requires route-map settlement return metadata, Continue
+  input routing, and closed cat-room return state.
+- Extended `P0PlayModeRouteFlowSmoke` so a passing smoke must drive completed
+  route settlement back to `P0CatRoom`, verify `P0CatRoomController`, and add
+  `cat-room return verified` to the pass summary.
+- Hardened `P0PlayModeEvidenceChecklist` so an old route-flow `Passed` state
+  without final cat-room return evidence is treated as failed.
+
+### Validation
+
+- MSBuild passed for:
+  - `TheCat.Runtime.csproj`
+  - `TheCat.EditModeTests.csproj`
+  - `TheCat.Editor.csproj` with the existing `System.Numerics.Vectors`
+    MSB3277 warning
+- `git diff --check` passed for the changed runtime, tool, and EditMode test
+  files.
+- Focused Unity EditMode attempts for
+  `TheCat.Tests.P0RouteMapSurfaceCoverageTests;TheCat.Tests.P0RouteMapCommandRouterTests;TheCat.Tests.P0CatRoomPresenterTests`
+  reached project refresh/domain reload or licensing handshake errors and did
+  not produce a test-results XML, so they are not counted as a passing Unity
+  test result for this slice. Logs:
+  - `Logs/p0_route_catroom_return_editmode_20260626.log`
+  - `Logs/p0_route_catroom_return_editmode_20260626_rerun.log`
+  - `Logs/p0_route_catroom_return_editmode_20260626_final.log`
+
+### Remaining Gates
+
+- A later Play Mode pass should drive main menu -> cat room -> route -> final
+  route settlement -> cat room and capture the returned cat-room state. The
+  smoke path and evidence gate now require this, but no Unity test-results XML
+  was produced in the current batchmode environment.
+- Candidate-backed UI lanes remain at runtime evidence `6/8` and still require
+  their formal manual gates before runtime binding.
+
+## 2026-06-26 - Batch 87-90 Runtime Evidence State Retirement
+
+Status: retired stale Batch 87-90 queue/task wording that still treated
+completed candidate-backed Unity screenshot evidence as open after those lanes
+had already reached `Runtime evidence: 6/8`. Formal install remains blocked by
+the proper manual gates: scene/presenter binding where required, clean Console
+evidence, explicit human approval, and formal runtime binding decisions.
+
+### Work Completed
+
+- Updated `P0AssetProductionQueueCatalog` entries for Batch 87, 88, 89, and
+  90 so their required evidence and next actions point at the existing 6/8
+  runtime-evidence baselines instead of re-requesting screenshot matrices.
+- Added `L1 Batch 87 Battle HUD Runtime Evidence` to
+  `P0_IMPLEMENTATION_TASK_BREAKDOWN.md`, linking the existing Batch 87 runtime
+  evidence report, four Unity screenshots, automatic reviews, and focused
+  EditMode guard coverage.
+- Retired stale `0/8` or screenshot-pending wording in the Batch 89/90
+  task sections, Batch 87/90 preflight report summaries,
+  `P0_RUNTIME_VISUAL_REVIEW_PACKET.md`,
+  `P0_ASSET_MEMORY_TODO_LEDGER.md`, and
+  `F1_UI_CANDIDATE_IMPORT_ORDER_GATE_2026-06-25.md`.
+
+### Validation
+
+- MSBuild passed for:
+  - `TheCat.Runtime.csproj`
+  - `TheCat.EditModeTests.csproj`
+  - `TheCat.Editor.csproj` with the existing `System.Numerics.Vectors`
+    MSB3277 warning
+- `git diff --check` passed with only existing CRLF/LF normalization warnings.
+- Targeted stale-state scans no longer find Batch 87-90 current-state wording
+  that asks for already-completed candidate-backed screenshot evidence.
+- Focused Unity EditMode attempts for
+  `TheCat.Tests.P0AssetProductionQueueCoverageTests` only reached script
+  compilation/assembly reload and did not produce a test-results XML, so they
+  are not counted as a passing test result for this slice.
+
+### Remaining Gates
+
+- Batch 83-90 all remain review-only at runtime evidence `6/8`.
+- Formal install still requires clean scene/presenter/Console evidence, explicit
+  human approval, and formal runtime binding decisions.
+
+## 2026-06-26 - M5 Batch 85 Settings Pause Runtime Evidence
+
+Status: Batch 85 advanced from candidate-only Unity preflight import to
+candidate-backed runtime screenshot evidence at `Runtime evidence: 6/8`.
+Formal install remains blocked by the combined scene/presenter/Console report,
+explicit human approval, and formal runtime binding decision.
+
+### Work Completed
+
+- Added `P0SettingsPauseBatch85RuntimeEvidence` and
+  `P0SettingsPauseBatch85RuntimeEvidenceBatchmodeRunner`.
+- Hardened Batch 85 screenshot evidence so screenshots count only when
+  `runtime_evidence_report.md` confirms all screenshot paths, nonblank visual
+  content, `6/6` candidate frame draws, fallback-free candidate rendering,
+  settings main/audio states, pause overlay state, key-hint readability, and
+  settings/pause click targets.
+- Captured four candidate-backed Unity screenshots:
+  - `design/development/screenshots/batch_85_settings_pause_unity_preflight/01-settings-pause-batch85-settings-main-1920x1080.png`
+  - `design/development/screenshots/batch_85_settings_pause_unity_preflight/02-settings-pause-batch85-settings-audio-1365x768.png`
+  - `design/development/screenshots/batch_85_settings_pause_unity_preflight/03-settings-pause-batch85-pause-overlay-1280x720.png`
+  - `design/development/screenshots/batch_85_settings_pause_unity_preflight/04-settings-pause-batch85-settings-compact-1024x768.png`
+- Wrote automatic review evidence:
+  - `design/development/asset_review/batch_85_settings_pause_unity_preflight/text_replacement_key_hint_readability_review.md`
+  - `design/development/asset_review/batch_85_settings_pause_unity_preflight/settings_controls_click_target_review.md`
+- Wrote runtime evidence:
+  `design/development/asset_review/batch_85_settings_pause_unity_preflight/runtime_evidence_report.md`.
+- Refreshed `BATCH85_SETTINGS_PAUSE_UNITY_PREFLIGHT_REPORT_2026-06-26.md`
+  to `Runtime evidence: 6/8`.
+
+### Validation
+
+- MSBuild passed for:
+  - `TheCat.Runtime.csproj`
+  - `TheCat.Editor.csproj` with existing `System.Numerics.Vectors` MSB3277
+    warning
+  - `TheCat.EditModeTests.csproj`
+- Runtime evidence runner passed:
+  `Logs/batch85_settings_pause_runtime_evidence_20260626_02.log`.
+- Unity preflight runner refreshed the report:
+  `Logs/batch85_settings_pause_unity_preflight_20260626_03.log`.
+- Focused Unity EditMode passed `15/15`:
+  `Logs/batch85_settings_pause_preflight_editmode_20260626_04.xml`.
+
+### Remaining Gates
+
+- `scene_binding_console_clean_report.md` remains intentionally absent because
+  current Unity logs contain licensing, Unity AI/MCP, and `Curl error` noise.
+- `human_review_approval.md` remains absent by design.
+- Batch 85 candidate ids remain outside `P0VisualAssetCatalog` formal runtime
+  bindings.
+
+## 2026-06-26 - M4 Batch 84 Result Settlement Runtime Evidence
+
+Status: Batch 84 advanced from candidate-only Unity preflight import to
+candidate-backed runtime screenshot evidence at `Runtime evidence: 6/8`.
+Formal install remains blocked by the combined scene/presenter/Console report,
+explicit human approval, and formal runtime binding decision.
+
+### Work Completed
+
+- Added `P0ResultSettlementBatch84RuntimeEvidence` and
+  `P0ResultSettlementBatch84RuntimeEvidenceBatchmodeRunner`.
+- Hardened Batch 84 screenshot evidence so screenshots count only when
+  `runtime_evidence_report.md` confirms all screenshot paths, nonblank visual
+  content, `7/7` candidate frame draws, fallback-free candidate rendering,
+  battle victory/defeat states, run clear/fail settlement states, reward/stat
+  readability, and result/settlement click targets.
+- Captured four candidate-backed Unity screenshots:
+  - `design/development/screenshots/batch_84_result_settlement_unity_preflight/01-result-settlement-batch84-battle-victory-1920x1080.png`
+  - `design/development/screenshots/batch_84_result_settlement_unity_preflight/02-result-settlement-batch84-battle-defeat-1920x1080.png`
+  - `design/development/screenshots/batch_84_result_settlement_unity_preflight/03-result-settlement-batch84-run-cleared-1365x768.png`
+  - `design/development/screenshots/batch_84_result_settlement_unity_preflight/04-result-settlement-batch84-run-failed-1024x768.png`
+- Wrote automatic review evidence:
+  - `design/development/asset_review/batch_84_result_settlement_unity_preflight/text_replacement_reward_readability_review.md`
+  - `design/development/asset_review/batch_84_result_settlement_unity_preflight/outcome_actions_click_target_review.md`
+- Wrote runtime evidence:
+  `design/development/asset_review/batch_84_result_settlement_unity_preflight/runtime_evidence_report.md`.
+- Refreshed `BATCH84_RESULT_SETTLEMENT_UNITY_PREFLIGHT_REPORT_2026-06-26.md`
+  to `Runtime evidence: 6/8`.
+
+### Validation
+
+- MSBuild passed for:
+  - `TheCat.Runtime.csproj`
+  - `TheCat.Editor.csproj` with existing `System.Numerics.Vectors` MSB3277
+    warning
+  - `TheCat.EditModeTests.csproj`
+- Runtime evidence runner passed:
+  `Logs/batch84_result_settlement_runtime_evidence_20260626_02.log`.
+- Unity preflight runner refreshed the report:
+  `Logs/batch84_result_settlement_unity_preflight_20260626_02.log`.
+- Focused Unity EditMode passed `15/15`:
+  `Logs/batch84_result_settlement_preflight_editmode_20260626_02.xml`.
+
+### Remaining Gates
+
+- `scene_binding_console_clean_report.md` remains intentionally absent because
+  current Unity logs contain licensing, Unity AI, and `Curl error` noise.
+- `human_review_approval.md` remains absent by design.
+- Batch 84 candidate ids remain outside `P0VisualAssetCatalog` formal runtime
+  bindings.
+
+## 2026-06-26 - M3 Batch 83 Loading Start Runtime Evidence
+
+Status: Batch 83 advanced from candidate-only Unity preflight import to
+candidate-backed runtime screenshot evidence at `Runtime evidence: 6/8`.
+Formal install remains blocked by the combined scene/presenter/Console report,
+explicit human approval, and formal runtime binding decision.
+
+### Work Completed
+
+- Added `P0LoadingStartBatch83RuntimeEvidence` and
+  `P0LoadingStartBatch83RuntimeEvidenceBatchmodeRunner`.
+- Hardened Batch 83 screenshot evidence so screenshots count only when
+  `runtime_evidence_report.md` confirms all screenshot paths, nonblank visual
+  content, `4/4` candidate frame draws, fallback-free candidate rendering, the
+  loading/start surface, spinner/placeholder states, progress readability, and
+  start/continue click targets.
+- Captured four candidate-backed Unity screenshots:
+  - `design/development/screenshots/batch_83_loading_start_unity_preflight/01-loading-start-batch83-1920x1080.png`
+  - `design/development/screenshots/batch_83_loading_start_unity_preflight/02-loading-start-batch83-1365x768.png`
+  - `design/development/screenshots/batch_83_loading_start_unity_preflight/03-loading-start-batch83-1280x720.png`
+  - `design/development/screenshots/batch_83_loading_start_unity_preflight/04-loading-start-batch83-1024x768.png`
+- Wrote the runtime evidence report:
+  `design/development/asset_review/batch_83_loading_start_unity_preflight/runtime_evidence_report.md`.
+- Wrote automatic review docs for spinner/placeholder text-density and
+  progress/crowding click-target evidence under
+  `design/development/asset_review/batch_83_loading_start_unity_preflight/`.
+- Refreshed `BATCH83_LOADING_START_UNITY_PREFLIGHT_REPORT_2026-06-26.md` to
+  `Runtime evidence: 6/8`.
+
+### Validation
+
+- MSBuild passed for:
+  - `TheCat.Runtime.csproj`
+  - `TheCat.Editor.csproj` with the existing `System.Numerics.Vectors`
+    MSB3277 warning
+  - `TheCat.EditModeTests.csproj`
+- Batch 83 runtime evidence runner produced the screenshot/review report:
+  `Logs/batch83_loading_start_runtime_evidence_20260626_01.log`.
+- Batch 83 Unity preflight report refresh passed:
+  `Logs/batch83_loading_start_unity_preflight_20260626_01.log`.
+- Focused Unity EditMode passed `15/15`:
+  `Logs/batch83_loading_start_preflight_editmode_20260626_03.xml`.
+- Intermediate focused Unity EditMode `_02` exposed a queue-entry text probe
+  regression after the Batch 83 next-action wording was updated; the
+  `Unity-rendered loading/start` review-ready wording was restored while
+  keeping formal install blocked, and `_03` passed.
+
+### Remaining Gates
+
+- No `scene_binding_console_clean_report.md` or `human_review_approval.md` was
+  generated. Batch 83 stays candidate-backed review evidence only.
+- The runtime evidence log includes Unity AI/licensing noise, so it is not a
+  clean Console report and must not unlock formal install.
+- Batch 83 candidate ids remain outside `P0VisualAssetCatalog` formal runtime
+  bindings.
+
+## 2026-06-26 - L5 Batch 86 Dream Route Runtime Evidence
+
+Status: completed at `Runtime evidence: 6/8`. Batch 86 dream-route remains a
+candidate-backed Unity preflight lane only; formal install is still blocked by
+`scene_binding_console_clean_report.md` and `human_review_approval.md`.
+
+### Work Completed
+
+- Added `P0DreamRouteBatch86RuntimeEvidence` and
+  `P0DreamRouteBatch86RuntimeEvidenceBatchmodeRunner`.
+- Captured four candidate-backed Unity screenshots under
+  `design/development/screenshots/batch_86_dream_route_unity_preflight/`.
+- Wrote automatic review docs for text/reward replacement, node/path
+  semantics, route-card density, boss-gate scale, and route-choice click
+  targets under
+  `design/development/asset_review/batch_86_dream_route_unity_preflight/`.
+- Wrote `runtime_evidence_report.md` confirming `6/6` candidate frame draws,
+  fallback-free candidate rendering, route-state semantics, boss-gate scale,
+  Chinese route labels/rewards, and click-target evidence.
+- Refreshed `BATCH86_DREAM_ROUTE_UNITY_PREFLIGHT_REPORT_2026-06-26.md` to
+  `Runtime evidence: 6/8`.
+
+### Validation
+
+- MSBuild passed for:
+  - `TheCat.Runtime.csproj`
+  - `TheCat.EditModeTests.csproj`
+  - `TheCat.Editor.csproj` with the existing `System.Numerics.Vectors`
+    MSB3277 warning
+- Batch 86 runtime evidence runner produced the screenshot/review report:
+  `Logs/batch86_dream_route_runtime_evidence_20260626_l2.log`.
+- Batch 86 Unity preflight report refresh passed:
+  `Logs/batch86_dream_route_unity_preflight_20260626_l6.log`.
+- Focused Unity EditMode passed `15/15`:
+  `Logs/batch86_dream_route_preflight_editmode_20260626_l7.xml`.
+
+### Remaining Gates
+
+- The current runtime evidence log still cannot be promoted into a clean
+  scene/presenter/Console report because the Unity environment produced
+  licensing/Unity-service noise.
+- Batch 86 candidate ids remain outside `P0VisualAssetCatalog` formal runtime
+  bindings.
+- Do not create `human_review_approval.md` until the user explicitly approves
+  this lane for formal install.
+
+## 2026-06-26 - K8 Batch 86 Dream Route Unity Preflight Import
+
+Status: K8 is complete as a candidate-only Unity preflight import. It proves
+the six Batch 86 dream-route component sprites can live under the declared
+Unity preflight root with P0 Sprite import settings and isolated preflight
+bindings. It does not approve formal runtime installation.
+
+### Work Completed
+
+- Added `P0DreamRouteBatch86CandidateCatalog`,
+  `P0DreamRouteBatch86UnityPreflight`,
+  `P0DreamRouteBatch86UnityPreflightRunner`, and
+  `P0DreamRouteBatch86UnityPreflightTests`.
+- Copied six Batch 86 transparent component PNGs into
+  `Assets/TheCat/Art/UI/DreamRoute` for candidate-only Unity preflight.
+- Unity generated six `.png.meta` files and
+  `P0AssetImportSettingsValidator` validated 6 generated/imported asset(s)
+  with 0 warning(s).
+- Wrote the Batch 86 Unity preflight report:
+  `design/development/asset_review/BATCH86_DREAM_ROUTE_UNITY_PREFLIGHT_REPORT_2026-06-26.md`.
+
+### Validation
+
+- MSBuild passed for:
+  - `TheCat.Runtime.csproj`
+  - `TheCat.Editor.csproj` with the existing `System.Numerics.Vectors`
+    MSB3277 warning
+  - `TheCat.EditModeTests.csproj`
+- Batch 86 Unity preflight runner passed:
+  `Logs/batch86_dream_route_unity_preflight_20260626_l4.log`.
+- Focused Unity EditMode passed `11/11` after evidence-gate hardening:
+  `Logs/batch86_dream_route_preflight_editmode_20260626_l6.xml`.
+
+### Remaining Gates
+
+- At K8 completion, Unity-rendered runtime evidence had not yet been captured.
+  The later L5 pass advances Batch 86 to `Runtime evidence: 6/8`; only
+  scene/presenter/Console clean evidence and human approval remain absent by
+  design.
+- Batch 86 candidate ids remain outside `P0VisualAssetCatalog` formal runtime
+  bindings.
+
+## 2026-06-26 - K7 Batch 85 Settings Pause Unity Preflight Import
+
+Status: K7 is complete as a candidate-only Unity preflight import. It proves
+the six Batch 85 settings/pause component sprites can live under the declared
+Unity preflight root with P0 Sprite import settings and isolated preflight
+bindings. It does not approve formal runtime installation.
+
+### Work Completed
+
+- Added `P0SettingsPauseBatch85CandidateCatalog`,
+  `P0SettingsPauseBatch85UnityPreflight`,
+  `P0SettingsPauseBatch85UnityPreflightRunner`, and
+  `P0SettingsPauseBatch85UnityPreflightTests`.
+- Copied six Batch 85 transparent component PNGs into
+  `Assets/TheCat/Art/UI/SettingsPause` for candidate-only Unity preflight.
+- Unity generated six `.png.meta` files and
+  `P0AssetImportSettingsValidator` validated 6 generated/imported asset(s)
+  with 0 warning(s).
+- Wrote the Batch 85 Unity preflight report:
+  `design/development/asset_review/BATCH85_SETTINGS_PAUSE_UNITY_PREFLIGHT_REPORT_2026-06-26.md`.
+
+### Validation
+
+- MSBuild passed for:
+  - `TheCat.Runtime.csproj`
+  - `TheCat.Editor.csproj` with the existing `System.Numerics.Vectors`
+    MSB3277 warning
+  - `TheCat.EditModeTests.csproj`
+- Batch 85 Unity preflight runner passed:
+  `Logs/batch85_settings_pause_unity_preflight_20260626_m2.log`.
+- Focused Unity EditMode passed `8/8`:
+  `Logs/batch85_settings_pause_preflight_editmode_20260626_m1.xml`.
+
+### Remaining Gates
+
+- The preflight report records `Runtime evidence: 0/8`; Unity-rendered
+  settings main, settings audio, pause overlay, and compact settings
+  screenshots, text/key-hint readability review, settings-control/click-target
+  review, scene/presenter/Console clean report, and human approval remain
+  absent by design.
+- Batch 85 candidate ids remain outside `P0VisualAssetCatalog` formal runtime
+  bindings.
+
+## 2026-06-26 - K6 Batch 84 Result Settlement Unity Preflight Import
+
+Status: K6 is complete as a candidate-only Unity preflight import. It proves
+the seven Batch 84 result/settlement component sprites can live under the
+declared Unity preflight root with P0 Sprite import settings and isolated
+preflight bindings. It does not approve formal runtime installation.
+
+### Work Completed
+
+- Added `P0ResultSettlementBatch84CandidateCatalog`,
+  `P0ResultSettlementBatch84UnityPreflight`,
+  `P0ResultSettlementBatch84UnityPreflightRunner`, and
+  `P0ResultSettlementBatch84UnityPreflightTests`.
+- Copied seven Batch 84 transparent component PNGs into
+  `Assets/TheCat/Art/UI/ResultSettlement` for candidate-only Unity preflight.
+- Unity generated seven `.png.meta` files and
+  `P0AssetImportSettingsValidator` validated 7 generated/imported asset(s)
+  with 0 warning(s).
+- Wrote the Batch 84 Unity preflight report:
+  `design/development/asset_review/BATCH84_RESULT_SETTLEMENT_UNITY_PREFLIGHT_REPORT_2026-06-26.md`.
+
+### Validation
+
+- MSBuild passed for:
+  - `TheCat.Runtime.csproj`
+  - `TheCat.Editor.csproj` with the existing `System.Numerics.Vectors`
+    MSB3277 warning
+  - `TheCat.EditModeTests.csproj`
+- Batch 84 Unity preflight runner passed:
+  `Logs/batch84_result_settlement_unity_preflight_20260626_m1.log`.
+- Focused Unity EditMode passed `8/8`:
+  `Logs/batch84_result_settlement_preflight_editmode_20260626_m3.xml`.
+
+### Remaining Gates
+
+- The K6 preflight initially recorded `Runtime evidence: 0/8`; the later M4
+  runtime evidence pass advanced the same lane to `Runtime evidence: 6/8` with
+  battle-victory, battle-defeat, run-cleared, and run-failed screenshots plus
+  text/reward readability and outcome/action reviews.
+- Scene/presenter/Console clean report, explicit human approval, and formal
+  runtime binding decision remain absent by design.
+- Batch 84 candidate ids remain outside `P0VisualAssetCatalog` formal runtime
+  bindings.
+
+## 2026-06-26 - K5 Batch 83 Loading Start Unity Preflight Import
+
+Status: K5 is complete as a candidate-only Unity preflight import. It proves
+the four Batch 83 loading/start component sprites can live under the declared
+Unity preflight root with P0 Sprite import settings and isolated preflight
+bindings. It does not approve formal runtime installation.
+
+### Work Completed
+
+- Added `P0LoadingStartBatch83CandidateCatalog`,
+  `P0LoadingStartBatch83UnityPreflight`,
+  `P0LoadingStartBatch83UnityPreflightRunner`, and
+  `P0LoadingStartBatch83UnityPreflightTests`.
+- Copied four Batch 83 transparent component PNGs into
+  `Assets/TheCat/Art/UI/LoadingStart` for candidate-only Unity preflight.
+- Unity generated four `.png.meta` files and
+  `P0AssetImportSettingsValidator` validated 4 generated/imported asset(s)
+  with 0 warning(s).
+- Wrote the Batch 83 Unity preflight report:
+  `design/development/asset_review/BATCH83_LOADING_START_UNITY_PREFLIGHT_REPORT_2026-06-26.md`.
+
+### Validation
+
+- MSBuild passed for:
+  - `TheCat.Runtime.csproj`
+  - `TheCat.Editor.csproj`
+  - `TheCat.EditModeTests.csproj`
+- Batch 83 Unity preflight runner passed:
+  `Logs/batch83_loading_start_unity_preflight_20260626_k5.log`.
+- Focused Unity EditMode passed `8/8`:
+  `Logs/batch83_loading_start_preflight_editmode_20260626_k5.xml`.
+
+### Remaining Gates
+
+- K5 initially recorded `Runtime evidence: 0/8`; the later M3 runtime evidence
+  pass advanced the same lane to `Runtime evidence: 6/8` with four
+  Unity-rendered loading/start screenshots, spinner/placeholder/text-density
+  review, and progress/crowding/click-target review.
+- Scene/presenter/Console clean report, explicit human approval, and formal
+  runtime binding decision remain absent by design.
+- Batch 83 candidate ids remain outside `P0VisualAssetCatalog` formal runtime
+  bindings.
+
+## 2026-06-26 - L4 Batch 89 Skill Selection Runtime Evidence
+
+Status: Batch 89 advanced from candidate-only import preflight to
+candidate-backed runtime screenshot evidence at `Runtime evidence: 6/8`.
+Formal install remains blocked by the combined scene/presenter/Console report
+and explicit human approval.
+
+### Work Completed
+
+- Added `P0SkillSelectionBatch89RuntimeEvidence` and
+  `P0SkillSelectionBatch89RuntimeEvidenceBatchmodeRunner`.
+- Hardened Batch 89 screenshot evidence so screenshots count only when
+  `runtime_evidence_report.md` confirms all screenshot paths, `8/8` candidate
+  frame draws, fallback-free candidate rendering, the skill-selection surface,
+  selected/ready/disabled/locked states, cooldown/low-resource/no-target
+  semantics, Chinese labels/values, and click-target evidence.
+- Captured four candidate-backed Unity screenshots:
+  - `design/development/screenshots/batch_89_skill_selection_unity_preflight/01-skill-selection-batch89-1920x1080.png`
+  - `design/development/screenshots/batch_89_skill_selection_unity_preflight/02-skill-selection-batch89-1365x768.png`
+  - `design/development/screenshots/batch_89_skill_selection_unity_preflight/03-skill-selection-batch89-1280x720.png`
+  - `design/development/screenshots/batch_89_skill_selection_unity_preflight/04-skill-selection-batch89-1024x768.png`
+- Wrote automatic state/text-density and cooldown/low-resource click-target
+  reviews:
+  - `design/development/asset_review/batch_89_skill_selection_unity_preflight/state_semantics_text_density_review.md`
+  - `design/development/asset_review/batch_89_skill_selection_unity_preflight/cooldown_low_resource_click_target_review.md`
+- Refreshed the Batch 89 Unity preflight report to `Runtime evidence: 6/8`:
+  `design/development/asset_review/BATCH89_SKILL_SELECTION_UNITY_PREFLIGHT_REPORT_2026-06-26.md`.
+
+### Validation
+
+- MSBuild passed for:
+  - `TheCat.Runtime.csproj`
+  - `TheCat.Editor.csproj`
+  - `TheCat.EditModeTests.csproj`
+- Runtime evidence runner passed without `-nographics`, because GameView
+  screenshot capture needs a graphics device:
+  `Logs/batch89_skill_selection_runtime_evidence_20260626_l4.log`.
+- Batch 89 Unity preflight runner refreshed the report to `6/8`:
+  `Logs/batch89_skill_selection_unity_preflight_20260626_l6.log`.
+- Focused Unity EditMode passed `19/19`:
+  `Logs/batch89_skill_selection_preflight_editmode_20260626_l8.xml`.
+
+### Remaining Gates
+
+- `scene_binding_console_clean_report.md` remains absent. A future clean report
+  must reference a passing Batch 89 runtime-evidence log and reject dirty logs.
+- `human_review_approval.md` remains absent by design.
+- Batch 89 candidate ids remain outside `P0VisualAssetCatalog` formal runtime
+  bindings.
+
+## 2026-06-26 - L3 Batch 90 Cat Room Runtime Evidence
+
+Status: Batch 90 advanced from candidate-only import preflight to
+candidate-backed runtime screenshot evidence at `Runtime evidence: 6/8`.
+Formal install remains blocked by the combined scene/presenter/Console report
+and explicit human approval.
+
+### Work Completed
+
+- Added `P0CatRoomBatch90RuntimeEvidence` and
+  `P0CatRoomBatch90RuntimeEvidenceBatchmodeRunner`.
+- Hardened Batch 90 screenshot evidence so screenshots count only when
+  `runtime_evidence_report.md` confirms all screenshot paths, `6/6` candidate
+  frame draws, `fallback=0`, cat-room surface capture, bed/feeder/litter/dream
+  entrance states, and hover/disabled/blocked/range states.
+- Captured four candidate-backed Unity screenshots:
+  - `design/development/screenshots/batch_90_cat_room_unity_preflight/01-cat-room-batch90-1920x1080.png`
+  - `design/development/screenshots/batch_90_cat_room_unity_preflight/02-cat-room-batch90-1365x768.png`
+  - `design/development/screenshots/batch_90_cat_room_unity_preflight/03-cat-room-batch90-1280x720.png`
+  - `design/development/screenshots/batch_90_cat_room_unity_preflight/04-cat-room-batch90-1024x768.png`
+- Wrote automatic interaction/text-density and click-target/prop-scale reviews:
+  - `design/development/asset_review/batch_90_cat_room_unity_preflight/interaction_state_text_density_review.md`
+  - `design/development/asset_review/batch_90_cat_room_unity_preflight/click_target_prop_scale_review.md`
+- Refreshed the Batch 90 Unity preflight report to `Runtime evidence: 6/8`:
+  `design/development/asset_review/BATCH90_CAT_ROOM_UNITY_PREFLIGHT_REPORT_2026-06-26.md`.
+
+### Validation
+
+- MSBuild passed for:
+  - `TheCat.Runtime.csproj`
+  - `TheCat.Editor.csproj`
+  - `TheCat.EditModeTests.csproj`
+- Runtime evidence runner passed:
+  `Logs/batch90_cat_room_runtime_evidence_20260626_l2.log`.
+- Batch 90 Unity preflight runner refreshed the report to `6/8`:
+  `Logs/p0_batch90_cat_room_unity_preflight_20260626_l2_after_runtime.log`.
+- Focused Unity EditMode passed `15/15`:
+  `Logs/p0_batch90_cat_room_preflight_editmode_20260626_l4.xml`.
+- `git diff --check` reported only existing line-ending normalization warnings
+  in unrelated asset-review files.
+
+### Remaining Gates
+
+- `scene_binding_console_clean_report.md` remains absent because current Unity
+  logs include licensing/Unity AI entitlement noise; a clean Console report
+  must reference a passing Batch 90 runtime-evidence log and reject dirty logs.
+- `human_review_approval.md` remains absent by design.
+- Batch 90 candidate ids remain outside `P0VisualAssetCatalog` formal runtime
+  bindings.
+
+## 2026-06-26 - K4 Batch 90 Cat Room Unity Preflight Import
+
+Status: K4 is complete as a candidate-only Unity preflight import. It proves
+the six Batch 90 cat-room component sprites can live under the declared Unity
+preflight root with P0 Sprite import settings and isolated preflight bindings.
+It does not approve formal runtime installation.
+
+### Work Completed
+
+- Added `P0CatRoomBatch90CandidateCatalog`,
+  `P0CatRoomBatch90UnityPreflight`,
+  `P0CatRoomBatch90UnityPreflightRunner`, and
+  `P0CatRoomBatch90UnityPreflightTests`.
+- Copied six Batch 90 transparent component PNGs into
+  `Assets/TheCat/Art/UI/CatRoom` for candidate-only Unity preflight.
+- Unity generated six `.png.meta` files and
+  `P0AssetImportSettingsValidator` validated 6 generated/imported asset(s)
+  with 0 warning(s).
+- Wrote the Batch 90 Unity preflight report:
+  `design/development/asset_review/BATCH90_CAT_ROOM_UNITY_PREFLIGHT_REPORT_2026-06-26.md`.
+
+### Validation
+
+- Batch 90 local candidate validator passed:
+  `design/development/tools/validate_ui_cat_room_preflight_candidates.ps1`.
+- MSBuild passed for:
+  - `TheCat.Runtime.csproj`
+  - `TheCat.Editor.csproj`
+  - `TheCat.EditModeTests.csproj`
+- Batch 90 Unity preflight runner passed:
+  `Logs/p0_batch90_cat_room_unity_preflight_20260626_k4_rerun.log`.
+- Focused Unity EditMode passed `11/11`:
+  `Logs/p0_batch90_cat_room_preflight_editmode_20260626_k4.xml`.
+
+### Remaining Gates
+
+- The preflight report records `Runtime evidence: 0/8`; the four
+  Unity-rendered candidate-backed cat-room screenshots, interaction-state/text
+  density review, click-target/prop-scale review, scene/presenter/Console
+  clean report, and human approval remain absent by design.
+- Existing `02-cat-room.png` proves only current runtime surface reachability;
+  it is not Batch 90 candidate import, binding, or interaction-state
+  acceptance.
+- Current Unity logs contain licensing and Unity AI entitlement noise, so no
+  clean Console report was created.
+- Batch 90 candidate ids remain outside `P0VisualAssetCatalog` formal runtime
+  bindings.
+
+## 2026-06-26 - K3 Batch 89 Skill Selection Unity Preflight Import
+
+Status: K3 is complete as a candidate-only Unity preflight import. It proves
+the eight Batch 89 skill-selection component sprites can live under the
+declared Unity preflight root with P0 Sprite import settings and isolated
+preflight bindings. It does not approve formal runtime installation.
+
+### Work Completed
+
+- Added `P0SkillSelectionBatch89CandidateCatalog`,
+  `P0SkillSelectionBatch89UnityPreflight`,
+  `P0SkillSelectionBatch89UnityPreflightRunner`, and
+  `P0SkillSelectionBatch89UnityPreflightTests`.
+- Copied eight Batch 89 transparent component PNGs into
+  `Assets/TheCat/Art/UI/SkillSelection` for candidate-only Unity preflight.
+- Unity generated eight `.png.meta` files and
+  `P0AssetImportSettingsValidator` validated 8 generated/imported asset(s)
+  with 0 warning(s).
+- Wrote the Batch 89 Unity preflight report:
+  `design/development/asset_review/BATCH89_SKILL_SELECTION_UNITY_PREFLIGHT_REPORT_2026-06-26.md`.
+
+### Validation
+
+- Batch 89 local candidate validator passed:
+  `design/development/tools/validate_ui_skill_selection_preflight_candidates.ps1`.
+- MSBuild passed for:
+  - `TheCat.Runtime.csproj`
+  - `TheCat.Editor.csproj`
+  - `TheCat.EditModeTests.csproj`
+- Batch 89 Unity preflight runner passed:
+  `Logs/p0_batch89_skill_selection_unity_preflight_20260626_k3_gatefix_rerun.log`.
+- Focused Unity EditMode passed `11/11`:
+  `Logs/p0_batch89_skill_selection_preflight_editmode_20260626_k3_gatefix.xml`.
+
+### Remaining Gates
+
+- The preflight report records `Runtime evidence: 0/8`; the four
+  Unity-rendered screenshots, state/text-density review,
+  cooldown/low-resource/no-target click-target review, scene/presenter/Console
+  clean report, and human approval remain absent by design.
+- Current Unity logs contain licensing and CDN/Curl noise, including
+  `Curl error 42`, so no clean Console report was created.
+- Batch 89 candidate ids remain outside `P0VisualAssetCatalog` formal runtime
+  bindings.
+
+## 2026-06-26 - L2 Batch 88 Character Select Runtime Evidence
+
+Status: Batch 88 advanced from candidate-only import preflight to
+candidate-backed runtime screenshot evidence at `Runtime evidence: 6/8`.
+Formal install remains blocked by the combined scene/presenter/Console report
+and explicit human approval.
+
+### Console Gate Hardening Addendum
+
+- Hardened `scene_binding_console_clean_report.md` validation so the report
+  must name an existing Batch 88 runtime evidence log, the log must contain the
+  Batch 88 runtime pass token, and known Console/failure tokens block clean
+  acceptance.
+- Added focused tests for missing-log and dirty-log clean-report attempts.
+- Added blocker documentation:
+  `design/development/asset_review/BATCH88_CHARACTER_SELECT_UNITY_PREFLIGHT_CONSOLE_BLOCKERS_2026-06-26.md`.
+- Current logs still contain licensing, Unity AI Assistant tracing, and network
+  callback noise, including `Curl error 42`; therefore no clean Console report
+  was created.
+
+### Work Completed
+
+- Added `P0CharacterSelectBatch88RuntimeEvidence` and
+  `P0CharacterSelectBatch88RuntimeEvidenceBatchmodeRunner`.
+- Captured four real-dimension candidate-backed Unity screenshots:
+  - `design/development/screenshots/batch_88_character_select_unity_preflight/01-character-select-batch88-1920x1080.png`
+  - `design/development/screenshots/batch_88_character_select_unity_preflight/02-character-select-batch88-1365x768.png`
+  - `design/development/screenshots/batch_88_character_select_unity_preflight/03-character-select-batch88-1280x720.png`
+  - `design/development/screenshots/batch_88_character_select_unity_preflight/04-character-select-batch88-1024x768.png`
+- Wrote automatic review evidence:
+  - `design/development/asset_review/batch_88_character_select_unity_preflight/source_locked_avatar_consistency_review.md`
+  - `design/development/asset_review/batch_88_character_select_unity_preflight/chinese_text_density_click_target_review.md`
+- The first visual pass caught the current IMGUI main-menu character-select
+  covering the candidate overlay; the runner now suppresses that legacy IMGUI
+  path during candidate capture.
+- The runtime evidence report confirms `6/6` candidate textures drawn,
+  `fallback=0`, source-locked HUD avatars visible, and selected plus idle card
+  states visible:
+  `design/development/asset_review/batch_88_character_select_unity_preflight/runtime_evidence_report.md`.
+
+### Validation
+
+- MSBuild passed for:
+  - `TheCat.Runtime.csproj`
+  - `TheCat.Editor.csproj`
+  - `TheCat.EditModeTests.csproj`
+- Runtime evidence runner passed:
+  `Logs/batch88_character_select_runtime_evidence_20260625_l2_overlay_only.log`.
+- Batch 88 Unity preflight report refreshed to `Runtime evidence: 6/8`:
+  `Logs/p0_batch88_character_select_unity_preflight_20260625_runtime_evidence_l2.log`.
+- Focused Unity EditMode passed `13/13`:
+  `Logs/p0_batch88_character_select_preflight_editmode_20260625_runtime_evidence_l3.xml`.
+- Focused Unity EditMode passed `15/15` after clean-report hardening:
+  `Logs/p0_batch88_character_select_preflight_editmode_20260626_console_gate_hardening_noquit.xml`.
+- Batch 88 Unity preflight stayed at `Runtime evidence: 6/8` after the
+  hardening rerun:
+  `Logs/p0_batch88_character_select_unity_preflight_20260626_console_gate_hardening.log`.
+
+### Remaining Gates
+
+- `design/development/asset_review/batch_88_character_select_unity_preflight/scene_binding_console_clean_report.md`
+  remains absent until scene/presenter binding and clean Console evidence are
+  verified together.
+- `design/development/asset_review/batch_88_character_select_unity_preflight/human_review_approval.md`
+  remains absent until explicit formal install approval is given.
+- Batch 88 candidate ids remain outside `P0VisualAssetCatalog` formal runtime
+  bindings.
+
+## 2026-06-25 - K2 Batch 88 Character Select Unity Preflight Import
+
+Status: K2 is complete as a candidate-only Unity preflight import. It proves
+the six Batch 88 character-select component sprites can live under the declared
+Unity preflight root with P0 Sprite import settings and isolated preflight
+bindings. It does not approve formal runtime installation.
+
+### Engineering
+
+- Added `P0CharacterSelectBatch88CandidateCatalog`,
+  `P0CharacterSelectBatch88UnityPreflight`,
+  `P0CharacterSelectBatch88UnityPreflightRunner`, and
+  `P0CharacterSelectBatch88UnityPreflightTests`.
+- Copied the six Batch 88 transparent character-select component PNGs into
+  `Assets/TheCat/Art/UI/CharacterSelect` for candidate-only Unity preflight.
+- Unity generated six `.png.meta` files, and
+  `P0AssetImportSettingsApplier` applied P0 import settings to 6 importer(s).
+- `P0AssetImportSettingsValidator` validated 6 generated/imported asset(s)
+  with 0 warning(s).
+- Preflight report:
+  `design/development/asset_review/BATCH88_CHARACTER_SELECT_UNITY_PREFLIGHT_REPORT_2026-06-25.md`.
+- At K2 close, the report showed `Ready for Unity preflight: yes`,
+  `Runtime evidence: 0/8`, and `Formal install allowed: no`. The later L2
+  runtime evidence section above supersedes the screenshot/source-lock/text and
+  click-target blockers.
+- Independent review findings from Cicero/Tesla were fixed:
+  - screenshot evidence now rejects visually blank/incomplete PNGs;
+  - screenshots must be confirmed by a Batch 88 runtime evidence report with
+    candidate-drawn, no-fallback, source-locked-avatar, and selected/idle-state
+    tokens;
+  - source-lock and Chinese text/density/click-target reviews require
+    Batch88-specific pass tokens instead of generic `PASS` text;
+  - the CSV requirements row now keeps formal runtime scene/presenter binding
+    open.
+
+### Validation
+
+- Batch 88 local candidate validator passed:
+  `validate_ui_character_select_preflight_candidates.ps1`, 10 rows.
+- Unity preflight runner passed after evidence-gate hardening:
+  `Logs/p0_batch88_character_select_unity_preflight_20260625_hardened2.log`.
+- Focused Unity EditMode passed `10/10`:
+  `Logs/p0_batch88_character_select_preflight_editmode_20260625_hardened2.xml`.
+- Batchmode logs still include Unity licensing / AI Assistant entitlement noise,
+  so a clean Batch 88 Console report has not been written and remains a formal
+  install blocker.
+
+### Boundary
+
+- Batch 88 candidate ids do not enter `P0VisualAssetCatalog` formal runtime
+  bindings.
+- Current IMGUI main-menu character-select remains the playable runtime path
+  until the remaining L2 scene/presenter/Console and human approval gates pass.
+- K2 retires only the Batch 88 Sprite import-settings and candidate preflight
+  binding blockers.
+
+## 2026-06-25 - M2 Batch 87 Evidence Gate Hardening
+
+Status: M2 keeps Batch 87 candidate-only while hardening the evidence gate
+against forged markdown, stale reports, and missing candidate texture draws.
+Batch 87 is Unity-import preflight ready with `Runtime evidence: 6/8`, but it
+is still not eligible for formal install.
+
+### Work Completed
+
+- Added candidate texture resolution and per-capture Repaint draw auditing to
+  `P0BattleHudBatch87RuntimeEvidence`; every target screenshot must now prove
+  `6/6` candidate component textures were drawn with `fallback=0`.
+- Added runtime report tokens for `Candidate frame draws: 6/6` and
+  `No candidate texture fallback: yes`; screenshot evidence no longer counts
+  unless the report contains those tokens.
+- Hardened `console_clean_report.md` validation so a self-asserted markdown
+  file is not enough: the report must reference an existing runtime evidence
+  log, the log must contain the Batch 87 pass token, and known error/failure
+  strings block Console-clean acceptance.
+- Tightened the 1024x768 and 1365x768 overlay layout after independent review
+  found internal text crowding; threat/status/party labels now use shorter
+  dark chips and panel bounds validate before evidence is written.
+
+### Validation Results
+
+- Focused Unity EditMode passed `17/17`:
+  `Logs/p0_batch87_battle_hud_preflight_editmode_20260625_m2_gate_hardening_noquit.xml`.
+- MSBuild passed:
+  - `TheCat.Runtime.csproj`
+  - `TheCat.EditModeTests.csproj`
+- Runtime evidence runner passed:
+  `Logs/batch87_battle_hud_runtime_evidence_20260625_m2_visual_retry.log`.
+- Batch 87 Unity preflight passed import/settings validation and reports
+  `Runtime evidence: 6/8`:
+  `Logs/p0_batch87_battle_hud_unity_preflight_20260625_m2_gate_hardening.log`.
+
+### Remaining Gates
+
+- `console_clean_report.md` remains intentionally absent because the current
+  Unity logs still contain licensing / Unity service noise and other Console
+  blockers.
+- `human_review_approval.md` remains intentionally absent until the user gives
+  explicit formal install approval.
+- Batch 87 candidate ids remain outside `P0VisualAssetCatalog`.
+
+## 2026-06-25 - M1 Batch 87 Runtime Evidence GameView Override
+
+Status: M1 advances Batch 87 from a screenshot-dimension blocker to a
+candidate-backed Unity screenshot evidence pass. Batch 87 remains
+candidate-only and is still blocked from formal install by the clean Console
+and explicit human approval gates.
+
+### Work Completed
+
+- Added an editor GameView custom-size override for the Batch 87 evidence
+  runner so Play Mode captures use `1920x1080`, `1365x768`, `1280x720`, and
+  `1024x768` instead of the local batchmode `640x480` fallback.
+- Added screenshot visual-content validation so blank or flat captures cannot
+  satisfy the runtime evidence gate.
+- Suppressed the legacy battle HUD panel during Batch 87 candidate capture
+  after runtime HUD data has been verified, so candidate panels are not
+  occluded by the existing IMGUI HUD.
+- Added target-layout non-overlap validation before writing automatic review
+  evidence.
+- Adjusted the compact 1024x768 candidate overlay so status/runtime chips sit
+  above the skill tray rather than overlapping it.
+
+### Validation Results
+
+- Focused Unity EditMode passed `14/14`:
+  `Logs/p0_batch87_battle_hud_preflight_editmode_20260625_m1_layout_guard.xml`.
+- MSBuild passed:
+  - `TheCat.Runtime.csproj`
+  - `TheCat.EditModeTests.csproj`
+- Runtime evidence runner passed:
+  `Logs/batch87_battle_hud_runtime_evidence_20260625_m1_final_noquit.log`.
+- Batch 87 preflight now reports `Runtime evidence: 6/8` in
+  `design/development/asset_review/BATCH87_BATTLE_HUD_UNITY_PREFLIGHT_REPORT_2026-06-25.md`.
+
+### Remaining Gates
+
+- Do not create `console_clean_report.md` until the Unity log blockers are
+  reviewed and a clean Batch 87 validation log is available.
+- Do not create `human_review_approval.md` until a human explicitly approves
+  formal Batch 87 install.
+- Batch 87 candidate ids remain outside `P0VisualAssetCatalog`.
+
+## 2026-06-25 - L1 Batch 87 Runtime Evidence Dimension Guard
+
+Status: L1 is complete as a runtime-evidence hardening slice. It adds a
+candidate-backed Battle HUD Play Mode evidence runner and proves the current
+local Unity batchmode path cannot yet produce the required four target
+resolutions. Batch 87 remains candidate-only and blocked from formal install.
+
+### Work Completed
+
+- Added `P0BattleHudBatch87RuntimeEvidence` and
+  `P0BattleHudBatch87RuntimeEvidenceBatchmodeRunner`.
+- Added focused tests for the runtime evidence plan and automatic review
+  markdown boundary.
+- Added preflight screenshot dimension validation so named evidence PNGs do not
+  count unless their actual PNG dimensions match `1920x1080`, `1365x768`,
+  `1280x720`, and `1024x768`.
+- Tried single-resolution Unity Play Mode evidence runs with
+  `-screen-width/-screen-height` and `-batch87TargetIndex`.
+
+### Validation Results
+
+- Focused Unity EditMode passed `11/11`:
+  `Logs/p0_batch87_battle_hud_preflight_editmode_20260625_l1_reviewfix2_rerun.xml`.
+- MSBuild passed:
+  - `TheCat.Runtime.csproj`
+  - `TheCat.EditModeTests.csproj`
+- Batch 87 preflight report now blocks the four generated PNGs because Unity
+  captured them at `640x480` instead of the target sizes.
+
+### Blocker
+
+- Unity Editor batchmode currently locks Play Mode capture to `640x480` in
+  this environment, even when launched with `-screen-width/-screen-height`.
+- Do not create `text_and_skill_state_review.md`,
+  `telegraph_occlusion_click_target_review.md`, `console_clean_report.md`, or
+  `human_review_approval.md` from these 640x480 captures.
+- Next path should use a real GameView-size override, a verified non-batchmode
+  capture path, or a dedicated render-target screenshot runner before claiming
+  Batch 87 screenshot evidence.
+
+## 2026-06-25 - K1 Batch 87 Battle HUD Unity Preflight Import
+
+Status: K1 is complete as a candidate-only Unity preflight import. It proves
+the six Batch 87 battle HUD component sprites can live under the declared
+Unity preflight root with P0 Sprite import settings, but it does not approve a
+formal Battle HUD install, runtime binding, clean Console, or final visual
+acceptance.
+
+### Work Completed
+
+- Added `P0BattleHudBatch87CandidateCatalog`,
+  `P0BattleHudBatch87UnityPreflight`, the editor menu/batchmode runner, and
+  focused EditMode tests.
+- Copied the six Batch 87 transparent HUD component candidates into
+  `Assets/TheCat/Art/UI/BattleHUD` as candidate-only Unity preflight imports.
+- Kept the source candidate packet under
+  `design/development/asset_candidates/ui/battle_hud/batch_87_battle_hud_preflight_2026-06-25`
+  as the review authority and verified those source PNGs still have no Unity
+  `.meta` files.
+- Ran the Batch 87 Unity preflight runner, which generated `.meta` files,
+  applied P0 import settings to 6 importer(s), validated 6 generated/imported
+  asset(s) with 0 warning(s), and wrote
+  `design/development/asset_review/BATCH87_BATTLE_HUD_UNITY_PREFLIGHT_REPORT_2026-06-25.md`.
+- Added
+  `design/development/asset_review/BATCH87_BATTLE_HUD_UNITY_PREFLIGHT_CONSOLE_BLOCKERS_2026-06-25.md`
+  so the current Unity log noise is documented without creating a false clean
+  Console pass.
+- Followed independent code-boundary review findings by tightening the gate:
+  Unity editor import validation now participates in preflight readiness,
+  formal install is recalculated after all checks are covered, and markdown
+  review/approval evidence requires explicit pass/approval tokens.
+
+### Validation Results
+
+- Unity batchmode preflight passed:
+  `Logs/batch87_battle_hud_unity_preflight_20260625_k1_fix.log`.
+- Focused Unity EditMode passed `7/7`:
+  `Logs/p0_batch87_battle_hud_preflight_editmode_20260625_k1_fix.xml`.
+- No Unity process was left running after validation.
+
+### Independent Review
+
+- Aquinas confirmed the Unity import/apply/validation evidence chain is real,
+  the focused EditMode run executed the Batch 87 tests, and Console clean
+  cannot pass due to licensing, D3D, and memory/stack allocator log noise.
+- Hooke confirmed no Batch 87 candidate leak into formal
+  `P0VisualAssetCatalog` runtime bindings, then flagged gate-semantics risks;
+  those risks are fixed in K1 before final validation.
+
+### Boundary
+
+- Batch 87 imports are candidate-only preflight assets, not formal runtime
+  visual bindings.
+- `P0VisualAssetCatalog.P0RuntimeVisualBindingCount` remains protected from
+  Batch 87 candidate ids.
+- Formal install remains blocked by four candidate-backed screenshots,
+  text/value replacement proof, 1024x768 four-gauge proof, skill-state
+  readability, telegraph/click-target review, clean Console, and explicit
+  human approval.
+
+## 2026-06-25 - J1 Batch 87 Battle HUD Evidence Triage
+
+Status: J1 is complete as a conservative Batch 87 entry triage. It confirms the
+candidate packet and current I1 battle-HUD baseline are ready for a
+candidate-backed Unity validation slice, but it does not approve import,
+binding, or final visual acceptance.
+
+### Work Completed
+
+- Added
+  `design/development/asset_review/BATCH87_BATTLE_HUD_UNITY_EVIDENCE_TRIAGE_2026-06-25.md`.
+- Re-ran `design/development/tools/validate_ui_battle_hud_preflight_candidates.ps1`;
+  it passed with 10 manifest rows.
+- Confirmed the Batch 87 candidate folder has no Unity `.meta` files.
+- Inspected the dense local mockup
+  `thecat_ui_battle_hud_battle_hud_dense_1024x768_local_mockup_v001.png`;
+  it is `1024x768` and still shows all four core gauges.
+- Inspected the current I1 Play Mode screenshots
+  `04-battle-hud-layer1.png` and `09-call-tyrant-warning-vfx.png`;
+  both are `1920x1080` baseline evidence, not Batch 87 candidate-backed
+  screenshots.
+- Tightened queue/checklist/matrix wording so Batch 87 requires
+  candidate-backed Unity evidence, not generic battle-HUD screenshots.
+- Updated `P0AssetReviewPacket` so its queue table includes candidate
+  directories, related batch slugs, and required evidence; this keeps future
+  review packets from hiding the exact candidate batch behind a generic queue
+  row.
+- Updated stale tests that still expected `0` active-cat screenshots; the
+  current baseline has 3 active-cat screenshots but formal starter-cat import
+  remains blocked.
+
+### Validation Results
+
+- Runtime MSBuild passed.
+- EditModeTests MSBuild passed.
+- Batch 87 validator passed with `10` manifest rows.
+- P0 non-cat candidate validation matrix passed with `38` passed, `0` failed.
+- Unity EditMode asset queue/checklist/readiness/review packet audit passed
+  `36/36`:
+  `Logs/p0_j1_batch87_asset_queue_editmode_final2_20260625.xml`.
+
+### Boundary
+
+- Batch 87 remains `candidate_complete_pending_unity_review`.
+- No Batch 87 PNGs were imported into `Assets/`.
+- No Sprite import settings, scene/prefab binding, Console acceptance, or formal
+  install decision was claimed.
+- The local 1024x768 mockup is valid as local layout proof only; Unity still
+  needs candidate-backed 1024x768 proof.
+
+### Independent Review
+
+- Euclid found no P0 issue and confirmed the triage does not mix current runtime
+  baseline screenshots with Batch 87 candidate-backed evidence.
+- Hubble found no P0/P1 boundary issue and recommended tightening generic
+  screenshot wording to candidate-backed evidence; that wording is now applied
+  to the queue catalog, Unity checklist, validation matrix, and ledgers.
+
+### Next Evidence
+
+- Create a candidate-backed Unity validation slice under the declared future
+  import root `Assets/TheCat/Art/UI/BattleHUD`.
+- Apply/verify Sprite import settings, bind the candidate frames/trays to a
+  validation surface, capture `1920x1080`, `1365x768`, `1280x720`, and
+  `1024x768` screenshots, and run Console/click-target/telegraph checks before
+  any install wording changes.
+
 ## 2026-06-25 - I1 Battle World Label And Overlay Hierarchy Fix
 
 Status: I1 is complete for the G1 battle-world label safe-area / overlay
@@ -188,8 +2567,10 @@ accepted by this slice.
 - No candidate `.meta` files were generated.
 - No Sprite/import settings, runtime binding, formal install row, or Console
   acceptance was claimed.
-- Fresh Play Mode screenshots remain required before Batch 83 or Batch 85 can
-  move from hook-ready to import-review evidence.
+- Fresh Play Mode screenshots remain required before Batch 85 can move from
+  hook-ready to import-review evidence. Batch 83 later advanced through K5/M3
+  to candidate-backed runtime evidence 6/8, with manual scene/Console and
+  human approval gates still open.
 - The Play Mode screenshot smoke plan remains 11 captures; H1 validates hooks
   only and does not add dedicated loading/settings captures yet.
 
@@ -197,8 +2578,8 @@ accepted by this slice.
 
 - Continue G1 screenshot parity first for Batch 87, Batch 88, Batch 86, and
   Batch 84.
-- Then capture Batch 85 full settings and Batch 83 loading/start screenshots
-  against the new H1 hooks before any import decision.
+- Then capture Batch 85 full settings screenshots against the new H1 hook
+  before any import decision.
 
 ## 2026-06-25 - F1 UI Candidate Import-Order Gate
 
@@ -237,8 +2618,9 @@ approve Unity import, binding, runtime use, or starter-cat body-art replacement.
 - G1 should refresh Play Mode screenshot parity for ready surfaces in this
   order: Batch 87, Batch 88, Batch 86, Batch 84.
 - H1 has added the follow-up Batch 85 settings-screen and Batch 83
-  loading/start hooks; import-review screenshots and Unity evidence remain
-  pending.
+  loading/start hooks. Batch 83 later advanced through K5/M3 to candidate-backed
+  runtime evidence 6/8; Batch 85 import-review screenshots and Unity evidence
+  remain pending.
 
 ## 2026-06-25 - E1 Bedroom Battle Readability Contract
 

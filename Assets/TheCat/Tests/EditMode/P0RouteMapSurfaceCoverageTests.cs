@@ -2,6 +2,7 @@ using NUnit.Framework;
 using TheCat.Data;
 using TheCat.Data.Catalogs;
 using TheCat.Gameplay;
+using TheCat.Inputs;
 using TheCat.Roguelite;
 using TheCat.Tools;
 
@@ -18,9 +19,17 @@ namespace TheCat.Tests
             Assert.AreEqual("进度：0/10", surface.ProgressLabel);
             Assert.AreEqual(P0RouteCatalog.LayerOneDefenseId, surface.CurrentNode.NodeId);
             Assert.IsTrue(surface.CurrentNode.RequiresBattle);
+            Assert.AreEqual("守床", surface.CurrentNode.NodeTypeToken);
+            Assert.IsFalse(string.IsNullOrWhiteSpace(surface.CurrentNode.Title));
+            Assert.IsFalse(string.IsNullOrWhiteSpace(surface.CurrentNode.Detail));
+            Assert.IsFalse(string.IsNullOrWhiteSpace(surface.CurrentNode.RiskHint));
+            Assert.IsFalse(string.IsNullOrWhiteSpace(surface.CurrentNode.RewardHint));
+            StringAssert.Contains(surface.CurrentNode.NodeTypeToken, surface.CurrentNode.BuildSummary());
+            StringAssert.Contains(surface.CurrentNode.RewardHint, surface.CurrentNode.BuildSummary());
             Assert.AreEqual(P0VisualAssetCatalog.DefenseRouteNodeIconId, surface.CurrentNode.VisualAsset.AssetId);
             Assert.AreEqual(10, surface.LayerRows.Count);
             Assert.IsTrue(surface.TryGetAction(P0RouteMapActionIds.EnterCurrentNode, out P0RouteMapAction enter));
+            StringAssert.Contains("战斗", enter.Detail);
             Assert.AreEqual(P0SceneFlow.GrayboxBattleSceneName, enter.TargetSceneName);
             Assert.IsTrue(P0UiShellPresenter.HasP0UiShellSurface(surface.UiShell));
             Assert.AreEqual(P0VisualAssetCatalog.DreamGlassPanelId, surface.UiShell.DreamGlassPanel.AssetId);
@@ -31,23 +40,26 @@ namespace TheCat.Tests
             StringAssert.DoesNotContain("柔雨窗台", surface.LayerRows[1].OptionPreview);
             StringAssert.DoesNotContain("午夜猫粮商店", surface.LayerRows[1].OptionPreview);
             Assert.IsTrue(Contains(surface.SummaryRows, "旧梦地图：未持有"));
+            P0RouteMapAction returnCatRoom;
+            Assert.IsFalse(surface.TryGetAction(P0RouteMapActionIds.ReturnCatRoom, out returnCatRoom));
         }
 
         [Test]
-        public void BuildSurface_ShowsDreamMapContextForEgyptPlaceholder()
+        public void BuildSurface_ShowsDreamMapContextForEgyptSharedRoute()
         {
             DreamMapDefinition egypt = P0DreamMapCatalog.GetEgyptDreamMap();
             RunProgressionState run = new RunProgressionState(
-                P0RouteCatalog.CreateEgyptPlaceholderRoute(),
+                P0RouteCatalog.CreateEgyptPlayableRoute(),
                 P0RunSession.CreateDefaultStarterCatIds());
 
             P0RouteMapSurface surface = P0RouteMapPresenter.BuildSurface(run, "埃及梦境登记。");
 
-            Assert.IsTrue(Contains(surface.SummaryRows, "梦境主题：埃及梦境 / 月砂遗迹 / 守护 月砂祭坛 / 占位"));
+            Assert.IsTrue(Contains(surface.SummaryRows, "梦境主题：埃及梦境 / 月砂遗迹 / 守护 月砂祭坛 / 可玩"));
             Assert.IsTrue(Contains(surface.SummaryRows, egypt.DisplayName));
             Assert.IsTrue(Contains(surface.SummaryRows, egypt.ThemeLabel));
             Assert.IsTrue(Contains(surface.SummaryRows, egypt.DefenseTargetLabel));
-            Assert.IsTrue(egypt.IsPlaceholder);
+            Assert.IsTrue(egypt.IsPlayableInP0);
+            Assert.IsFalse(egypt.IsPlaceholder);
             Assert.AreEqual(P0DreamMapCatalog.EgyptDreamMapId, run.DreamMap.Id);
             Assert.IsTrue(P0RouteMapPresenter.HasP0RouteMapSurface(surface));
         }
@@ -258,8 +270,40 @@ namespace TheCat.Tests
             Assert.IsTrue(Contains(surface.SettlementRows, "路线：1/10 节点"));
             Assert.IsTrue(Contains(surface.SettlementRows, "战斗：0胜 / 1负"));
             Assert.IsTrue(Contains(surface.SettlementRows, "最终核心："));
+            Assert.IsTrue(Contains(surface.SettlementFocusRows, "结算：路线失败"));
+            Assert.IsTrue(Contains(surface.SettlementFocusRows, "路线：1/10 节点"));
+            Assert.IsTrue(Contains(surface.SettlementFocusRows, "路线状态：梦屑"));
+            Assert.IsTrue(Contains(surface.SettlementFocusRows, "最终核心："));
             Assert.IsTrue(surface.TryGetAction(P0RouteMapActionIds.NewRun, out P0RouteMapAction restart));
             Assert.IsTrue(restart.IsEnabled);
+            Assert.IsTrue(surface.TryGetAction(P0RouteMapActionIds.ReturnCatRoom, out P0RouteMapAction returnCatRoom));
+            Assert.IsTrue(returnCatRoom.IsEnabled);
+            Assert.AreEqual(P0SceneFlow.CatRoomSceneName, returnCatRoom.TargetSceneName);
+            Assert.AreEqual(P0InputCommand.ContinueRoute, returnCatRoom.Command);
+            StringAssert.Contains("猫房", returnCatRoom.Label);
+            StringAssert.Contains("结算", returnCatRoom.Detail);
+        }
+
+        [Test]
+        public void BuildSurface_ClearedRunExposesCatRoomReturnAction()
+        {
+            RunProgressionState run = CreateClearedRun();
+
+            P0RouteMapSurface surface = P0RouteMapPresenter.BuildSurface(run, "路线通关。");
+
+            Assert.IsTrue(P0RouteMapPresenter.HasP0RouteMapSurface(surface));
+            Assert.IsTrue(surface.IsRouteComplete);
+            Assert.IsTrue(surface.IsRouteCleared);
+            Assert.IsTrue(Contains(surface.SettlementFocusRows, "结算：路线通关"));
+            Assert.IsTrue(Contains(surface.SettlementFocusRows, "路线：10/10 节点"));
+            Assert.IsTrue(Contains(surface.SettlementFocusRows, "路线状态：梦屑"));
+            Assert.IsTrue(Contains(surface.SettlementFocusRows, "最终猫咪生命："));
+            Assert.IsTrue(surface.TryGetAction(P0RouteMapActionIds.ReturnCatRoom, out P0RouteMapAction returnCatRoom));
+            Assert.IsTrue(returnCatRoom.IsEnabled);
+            Assert.AreEqual(P0InputCommand.ContinueRoute, returnCatRoom.Command);
+            Assert.AreEqual(P0SceneFlow.CatRoomSceneName, returnCatRoom.TargetSceneName);
+            StringAssert.Contains("猫房", returnCatRoom.Label);
+            StringAssert.Contains("结算", returnCatRoom.Detail);
         }
 
         [Test]
@@ -285,7 +329,7 @@ namespace TheCat.Tests
             Assert.AreEqual(P0RouteMapSurfaceCoverage.ExpectedCoveredCheckCount, report.CoveredChecks.Count);
             Assert.AreEqual(0, report.FailureCount);
             StringAssert.Contains("route map surface coverage complete", report.BuildSummary());
-            StringAssert.Contains("Egypt placeholder surface", report.BuildDetailedSummary());
+            StringAssert.Contains("Egypt shared-route surface", report.BuildDetailedSummary());
             StringAssert.Contains("settlement surface", report.BuildDetailedSummary());
             StringAssert.Contains("UI shell", report.BuildDetailedSummary());
             StringAssert.Contains("route choice icons", report.BuildDetailedSummary());
@@ -329,6 +373,29 @@ namespace TheCat.Tests
             metrics.RecordInteractionBlockedByRange();
             metrics.Complete(NodeResult.Failure, 18f, 0f);
             run.Route.CompleteCurrentNode(NodeResult.Failure);
+            return run;
+        }
+
+        private static RunProgressionState CreateClearedRun()
+        {
+            RunProgressionState run = CreateRun();
+            int safety = 0;
+            while (!run.Route.IsComplete && safety < 20)
+            {
+                var node = run.Route.CurrentNode;
+                if (RouteNodeResolver.RequiresBattle(node.NodeType))
+                {
+                    P0RouteRewardResolver.ApplyBattleReward(node, run);
+                    run.Route.CompleteCurrentNode(NodeResult.Success);
+                }
+                else
+                {
+                    RouteNodeResolver.ResolveCurrentNode(run);
+                }
+
+                safety++;
+            }
+
             return run;
         }
 

@@ -1,0 +1,9 @@
+map_legend_entry_token
+map_legend_path_token
+map_legend_obstacle_token
+map_legend_safe_zone_token
+map_legend_hazard_token
+map_overlay_pin_selected
+map_overlay_pin_available
+map_overlay_pin_locked
+map_overlay_info_foldout_frame

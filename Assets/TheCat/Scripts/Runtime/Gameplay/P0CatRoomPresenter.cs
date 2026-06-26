@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TheCat.Roguelite;
 
 namespace TheCat.Gameplay
 {
@@ -17,6 +18,7 @@ namespace TheCat.Gameplay
         public const string FeedCats = "cat_room_feeder_feedback";
         public const string CleanLitter = "cat_room_litter_feedback";
         public const string EnterDream = "enter_dream";
+        public const string EnterEgyptDream = "enter_egypt_dream";
         public const string ReturnMainMenu = "return_main_menu";
     }
 
@@ -208,6 +210,54 @@ namespace TheCat.Gameplay
         }
     }
 
+    public readonly struct P0CatRoomDreamChoice
+    {
+        public P0CatRoomDreamChoice(
+            string mapId,
+            string label,
+            string themeLabel,
+            string targetLabel,
+            string actionId,
+            bool isPlayable,
+            bool isEnabled,
+            string statusLabel,
+            string detail)
+        {
+            MapId = mapId ?? string.Empty;
+            Label = label ?? string.Empty;
+            ThemeLabel = themeLabel ?? string.Empty;
+            TargetLabel = targetLabel ?? string.Empty;
+            ActionId = actionId ?? string.Empty;
+            IsPlayable = isPlayable;
+            IsEnabled = isEnabled;
+            StatusLabel = statusLabel ?? string.Empty;
+            Detail = detail ?? string.Empty;
+        }
+
+        public string MapId { get; }
+
+        public string Label { get; }
+
+        public string ThemeLabel { get; }
+
+        public string TargetLabel { get; }
+
+        public string ActionId { get; }
+
+        public bool IsPlayable { get; }
+
+        public bool IsEnabled { get; }
+
+        public string StatusLabel { get; }
+
+        public string Detail { get; }
+
+        public string BuildSummary()
+        {
+            return Label + " / " + StatusLabel + " / " + Detail;
+        }
+    }
+
     public readonly struct P0CatRoomAction
     {
         public P0CatRoomAction(string actionId, string label, string targetSceneName, bool isEnabled, string detail)
@@ -231,7 +281,14 @@ namespace TheCat.Gameplay
 
         public string BuildButtonLabel()
         {
-            return IsEnabled ? Label : Label + "（未解锁）";
+            if (IsEnabled)
+            {
+                return Label;
+            }
+
+            return string.IsNullOrEmpty(TargetSceneName)
+                ? Label + "（占位展示，不可进入）"
+                : Label + "（未解锁）";
         }
     }
 
@@ -244,6 +301,7 @@ namespace TheCat.Gameplay
             P0UiShellSurface uiShell,
             IEnumerable<P0CatRoomValueRow> valueRows,
             IEnumerable<P0CatRoomResourceRow> resourceRows,
+            IEnumerable<P0CatRoomDreamChoice> dreamChoices,
             IEnumerable<P0CatRoomHotspot> hotspots,
             IEnumerable<P0CatRoomAction> actions)
         {
@@ -257,6 +315,9 @@ namespace TheCat.Gameplay
             ResourceRows = resourceRows == null
                 ? Array.Empty<P0CatRoomResourceRow>()
                 : new List<P0CatRoomResourceRow>(resourceRows).AsReadOnly();
+            DreamChoices = dreamChoices == null
+                ? Array.Empty<P0CatRoomDreamChoice>()
+                : new List<P0CatRoomDreamChoice>(dreamChoices).AsReadOnly();
             Hotspots = hotspots == null
                 ? Array.Empty<P0CatRoomHotspot>()
                 : new List<P0CatRoomHotspot>(hotspots).AsReadOnly();
@@ -276,6 +337,8 @@ namespace TheCat.Gameplay
         public IReadOnlyList<P0CatRoomValueRow> ValueRows { get; }
 
         public IReadOnlyList<P0CatRoomResourceRow> ResourceRows { get; }
+
+        public IReadOnlyList<P0CatRoomDreamChoice> DreamChoices { get; }
 
         public IReadOnlyList<P0CatRoomHotspot> Hotspots { get; }
 
@@ -310,6 +373,21 @@ namespace TheCat.Gameplay
             action = default(P0CatRoomAction);
             return false;
         }
+
+        public bool TryGetDreamChoice(string mapId, out P0CatRoomDreamChoice choice)
+        {
+            for (int i = 0; i < DreamChoices.Count; i++)
+            {
+                if (DreamChoices[i].MapId == mapId)
+                {
+                    choice = DreamChoices[i];
+                    return true;
+                }
+            }
+
+            choice = default(P0CatRoomDreamChoice);
+            return false;
+        }
     }
 
     public static class P0CatRoomPresenter
@@ -323,6 +401,7 @@ namespace TheCat.Gameplay
                 P0UiShellPresenter.BuildSurface(),
                 BuildValueRows(state),
                 BuildResourceRows(state),
+                BuildDreamChoices(state),
                 BuildHotspots(state),
                 BuildActions(state));
         }
@@ -345,9 +424,14 @@ namespace TheCat.Gameplay
                 && surface.TryGetHotspot(P0CatRoomHotspotIds.DreamEntrance, out P0CatRoomHotspot dreamEntrance)
                 && !dreamEntrance.IsFeedbackOnly
                 && dreamEntrance.ActionId == P0CatRoomActionIds.EnterDream
+                && HasDreamChoice(surface, P0DreamMapCatalog.BedroomDreamMapId, true, P0CatRoomActionIds.EnterDream)
+                && HasDreamChoice(surface, P0DreamMapCatalog.EgyptDreamMapId, true, P0CatRoomActionIds.EnterEgyptDream)
                 && surface.TryGetAction(P0CatRoomActionIds.EnterDream, out P0CatRoomAction enterDream)
                 && dreamEntrance.IsEnabled == enterDream.IsEnabled
                 && enterDream.TargetSceneName == P0SceneFlow.RouteMapSceneName
+                && surface.TryGetAction(P0CatRoomActionIds.EnterEgyptDream, out P0CatRoomAction egyptDream)
+                && dreamEntrance.IsEnabled == egyptDream.IsEnabled
+                && egyptDream.TargetSceneName == P0SceneFlow.RouteMapSceneName
                 && surface.TryGetAction(P0CatRoomActionIds.ReturnMainMenu, out P0CatRoomAction returnMainMenu)
                 && returnMainMenu.IsEnabled
                 && returnMainMenu.TargetSceneName == P0SceneFlow.MainMenuSceneName;
@@ -364,6 +448,8 @@ namespace TheCat.Gameplay
                 + surface.ValueRows.Count
                 + " resources "
                 + surface.ResourceRows.Count
+                + " dreams "
+                + surface.DreamChoices.Count
                 + " hotspots "
                 + surface.Hotspots.Count
                 + " actions "
@@ -393,6 +479,32 @@ namespace TheCat.Gameplay
             };
         }
 
+        private static IReadOnlyList<P0CatRoomDreamChoice> BuildDreamChoices(P0CatRoomState state)
+        {
+            IReadOnlyList<DreamMapDefinition> maps = P0DreamMapCatalog.CreateP0DreamMaps();
+            List<P0CatRoomDreamChoice> choices = new List<P0CatRoomDreamChoice>();
+            for (int i = 0; i < maps.Count; i++)
+            {
+                DreamMapDefinition map = maps[i];
+                bool isPlayable = map.IsPlayableInP0;
+                bool isEnabled = isPlayable && state.DreamEntryUnlocked;
+                choices.Add(new P0CatRoomDreamChoice(
+                    map.Id,
+                    map.DisplayName,
+                    map.ThemeLabel,
+                    map.DefenseTargetLabel,
+                    GetDreamChoiceActionId(map.Id),
+                    isPlayable,
+                    isEnabled,
+                    isPlayable ? "P0可进入" : "占位，不可进入",
+                    isPlayable
+                        ? map.RoutePurposeLabel
+                        : "已登记主题；未绑定P0可玩路线、地图、敌人和视觉证据。"));
+            }
+
+            return choices.AsReadOnly();
+        }
+
         private static IReadOnlyList<P0CatRoomHotspot> BuildHotspots(P0CatRoomState state)
         {
             return new[]
@@ -400,7 +512,7 @@ namespace TheCat.Gameplay
                 new P0CatRoomHotspot(P0CatRoomHotspotIds.Bed, P0CatRoomActionIds.UseBed, "床铺", BuildBedFeedback(state), true, true),
                 new P0CatRoomHotspot(P0CatRoomHotspotIds.Feeder, P0CatRoomActionIds.FeedCats, "食盆", BuildFeederFeedback(state), true, true),
                 new P0CatRoomHotspot(P0CatRoomHotspotIds.LitterBox, P0CatRoomActionIds.CleanLitter, "猫砂盆", BuildLitterFeedback(state), true, true),
-                new P0CatRoomHotspot(P0CatRoomHotspotIds.DreamEntrance, P0CatRoomActionIds.EnterDream, "梦境入口", "卧室梦境可进入；埃及梦境仍在占位验证。", state.DreamEntryUnlocked, false)
+                new P0CatRoomHotspot(P0CatRoomHotspotIds.DreamEntrance, P0CatRoomActionIds.EnterDream, "梦境入口", "选择卧室梦境或埃及梦境进入当前Demo路线；埃及先共享现有路线和战斗。", state.DreamEntryUnlocked, false)
             };
         }
 
@@ -409,8 +521,32 @@ namespace TheCat.Gameplay
             return new[]
             {
                 new P0CatRoomAction(P0CatRoomActionIds.EnterDream, "进入卧室梦境", P0SceneFlow.RouteMapSceneName, state.DreamEntryUnlocked, "守护中心床，进入当前Demo可玩路线"),
+                new P0CatRoomAction(P0CatRoomActionIds.EnterEgyptDream, "进入埃及梦境", P0SceneFlow.RouteMapSceneName, state.DreamEntryUnlocked, "守护月砂祭坛，进入共享十层Demo路线"),
                 new P0CatRoomAction(P0CatRoomActionIds.ReturnMainMenu, "返回标题", P0SceneFlow.MainMenuSceneName, true, "回到主菜单")
             };
+        }
+
+        private static string GetDreamChoiceActionId(string mapId)
+        {
+            return mapId == P0DreamMapCatalog.EgyptDreamMapId
+                ? P0CatRoomActionIds.EnterEgyptDream
+                : P0CatRoomActionIds.EnterDream;
+        }
+
+        private static bool HasDreamChoice(
+            P0CatRoomSurface surface,
+            string mapId,
+            bool expectedPlayable,
+            string expectedActionId)
+        {
+            return surface.TryGetDreamChoice(mapId, out P0CatRoomDreamChoice choice)
+                && choice.IsPlayable == expectedPlayable
+                && choice.ActionId == expectedActionId
+                && !string.IsNullOrWhiteSpace(choice.Label)
+                && !string.IsNullOrWhiteSpace(choice.ThemeLabel)
+                && !string.IsNullOrWhiteSpace(choice.TargetLabel)
+                && !string.IsNullOrWhiteSpace(choice.StatusLabel)
+                && !string.IsNullOrWhiteSpace(choice.Detail);
         }
 
         private static bool HasFeedbackHotspot(P0CatRoomSurface surface, string hotspotId, string actionId)

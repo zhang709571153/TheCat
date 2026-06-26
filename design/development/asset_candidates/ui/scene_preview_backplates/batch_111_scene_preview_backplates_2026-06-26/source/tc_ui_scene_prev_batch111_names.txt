@@ -1,0 +1,9 @@
+bedroom_preview_backplate
+cat_room_preview_backplate
+dream_route_preview_backplate
+battle_preview_backplate
+reward_preview_backplate
+shop_event_preview_backplate
+settings_preview_backplate
+locked_preview_backplate
+unknown_preview_backplate

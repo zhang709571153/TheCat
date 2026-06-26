@@ -204,6 +204,40 @@ namespace TheCat.Gameplay
                 + surface.Actions.Count;
         }
 
+        public static IReadOnlyList<string> BuildPlayerFocusRows(P0BattleResultSurface surface)
+        {
+            if (surface == null)
+            {
+                return Array.Empty<string>();
+            }
+
+            List<string> rows = new List<string>();
+            AddFirstRowContaining(surface.RouteRows, rows, "路线结果：");
+            AddFirstRowContaining(surface.RouteRows, rows, "奖励：");
+            AddFirstRowContaining(surface.RouteRows, rows, "路线状态：");
+            AddFirstRowContaining(surface.RouteRows, rows, "下一节点：");
+            AddFirstRowContaining(surface.RouteRows, rows, "路线进度：");
+            AddFirstRowContaining(surface.CoreRows, rows, "主人睡眠度");
+            return rows.AsReadOnly();
+        }
+
+        private static void AddFirstRowContaining(IReadOnlyList<string> source, List<string> target, string token)
+        {
+            if (source == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < source.Count; i++)
+            {
+                if (!string.IsNullOrWhiteSpace(source[i]) && source[i].Contains(token))
+                {
+                    target.Add(source[i]);
+                    return;
+                }
+            }
+        }
+
         private static string BuildTitle(BattleOutcome outcome)
         {
             switch (outcome)
@@ -342,7 +376,7 @@ namespace TheCat.Gameplay
                     P0InputCommand.ContinueRoute,
                     "继续路线",
                     "返回路线图并应用节点结果。",
-                    "Enter",
+                    GetInputLabel(P0InputCommand.ContinueRoute),
                     P0SceneFlow.RouteMapSceneName,
                     isResolved,
                     "战斗结束后可用"),
@@ -351,7 +385,7 @@ namespace TheCat.Gameplay
                     P0InputCommand.ContinueRoute,
                     "返回猫房",
                     "把本场结果带回猫房，整理状态后再选择梦境。",
-                    "C",
+                    string.Empty,
                     P0SceneFlow.CatRoomSceneName,
                     isResolved,
                     "战斗结束后可用"),
@@ -360,10 +394,17 @@ namespace TheCat.Gameplay
                     P0InputCommand.RestartRun,
                     "重开路线",
                     "立即开始新的第一层战斗。",
-                    "R",
+                    GetInputLabel(P0InputCommand.RestartRun),
                     P0SceneFlow.GrayboxBattleSceneName,
                     true)
             };
+        }
+
+        private static string GetInputLabel(P0InputCommand command)
+        {
+            return P0KeyboardInputMap.TryGetBinding(command, out P0InputBinding binding)
+                ? binding.PrimaryKeyLabel
+                : string.Empty;
         }
     }
 }

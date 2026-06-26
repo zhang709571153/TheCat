@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using TheCat.Combat;
+using TheCat.Data;
 using TheCat.Data.Catalogs;
 using TheCat.Data.Definitions;
 using TheCat.Gameplay;
@@ -252,6 +253,787 @@ namespace TheCat.Tools
             }
 
             return false;
+        }
+    }
+
+    public enum P0PlayModeEgyptEntrySmokeState
+    {
+        Idle,
+        Running,
+        Passed,
+        Failed
+    }
+
+    public static class P0PlayModeEgyptEntrySmoke
+    {
+        private const string RunnerObjectName = "__TheCat_P0PlayModeEgyptEntrySmoke";
+        public const int ExpectedCaptureCount = 5;
+        public const string DefaultScreenshotDirectory = "design/development/screenshots/p0-egypt-entry-smoke";
+        public const string CatRoomCaptureFileName = "01-cat-room-egypt-entry.png";
+        public const string RouteMapCaptureFileName = "02-egypt-route-map-layer1.png";
+        public const string BattleHudCaptureFileName = "03-egypt-battle-hud-layer1.png";
+        public const string BattleResultCaptureFileName = "04-egypt-battle-result-layer1.png";
+        public const string RouteMapReturnCaptureFileName = "05-egypt-route-map-after-layer1.png";
+
+        private static readonly List<string> capturedPaths = new List<string>();
+        private static readonly string[] expectedCaptureFileNames =
+        {
+            CatRoomCaptureFileName,
+            RouteMapCaptureFileName,
+            BattleHudCaptureFileName,
+            BattleResultCaptureFileName,
+            RouteMapReturnCaptureFileName
+        };
+
+        private static P0PlayModeEgyptEntrySmokeRunner activeRunner;
+
+        public static P0PlayModeEgyptEntrySmokeState State { get; private set; }
+
+        public static string LastSummary { get; private set; } = "P0 Egypt entry smoke has not run.";
+
+        public static string LastDetailedLog { get; private set; } = string.Empty;
+
+        public static string LastOutputDirectory { get; private set; } = string.Empty;
+
+        public static IReadOnlyList<string> CapturedPaths => capturedPaths.AsReadOnly();
+
+        public static IReadOnlyList<string> ExpectedCaptureFileNames => Array.AsReadOnly(expectedCaptureFileNames);
+
+        public static bool IsRunning => State == P0PlayModeEgyptEntrySmokeState.Running;
+
+        public static bool IsFinished => State == P0PlayModeEgyptEntrySmokeState.Passed
+            || State == P0PlayModeEgyptEntrySmokeState.Failed;
+
+        public static string DefaultOutputDirectory
+        {
+            get
+            {
+                return Path.GetFullPath(Path.Combine(
+                    Application.dataPath,
+                    "..",
+                    "design",
+                    "development",
+                    "screenshots",
+                    "p0-egypt-entry-smoke"));
+            }
+        }
+
+        public static bool HasEgyptEntryCapturePlan()
+        {
+            return expectedCaptureFileNames.Length == ExpectedCaptureCount
+                && expectedCaptureFileNames[0] == CatRoomCaptureFileName
+                && expectedCaptureFileNames[1] == RouteMapCaptureFileName
+                && expectedCaptureFileNames[2] == BattleHudCaptureFileName
+                && expectedCaptureFileNames[3] == BattleResultCaptureFileName
+                && expectedCaptureFileNames[4] == RouteMapReturnCaptureFileName
+                && DefaultScreenshotDirectory == "design/development/screenshots/p0-egypt-entry-smoke";
+        }
+
+        public static bool StartDefaultEgyptEntrySmoke(string outputDirectory = null)
+        {
+            if (!Application.isPlaying)
+            {
+                Complete(
+                    P0PlayModeEgyptEntrySmokeState.Failed,
+                    "P0 Egypt entry smoke requires Play Mode.",
+                    "StartDefaultEgyptEntrySmoke was called outside Play Mode.",
+                    null,
+                    Array.Empty<string>());
+                return false;
+            }
+
+            if (activeRunner != null)
+            {
+                UnityEngine.Object.Destroy(activeRunner.gameObject);
+                activeRunner = null;
+            }
+
+            State = P0PlayModeEgyptEntrySmokeState.Running;
+            LastSummary = "P0 Egypt entry smoke running.";
+            LastDetailedLog = LastSummary;
+            LastOutputDirectory = string.IsNullOrWhiteSpace(outputDirectory)
+                ? DefaultOutputDirectory
+                : Path.GetFullPath(outputDirectory);
+            capturedPaths.Clear();
+
+            GameObject runnerObject = new GameObject(RunnerObjectName);
+            UnityEngine.Object.DontDestroyOnLoad(runnerObject);
+            activeRunner = runnerObject.AddComponent<P0PlayModeEgyptEntrySmokeRunner>();
+            activeRunner.Begin(LastOutputDirectory);
+            return true;
+        }
+
+        internal static void Complete(
+            P0PlayModeEgyptEntrySmokeState state,
+            string summary,
+            string detailedLog,
+            string outputDirectory,
+            IReadOnlyList<string> paths)
+        {
+            State = state;
+            LastSummary = string.IsNullOrWhiteSpace(summary) ? state.ToString() : summary;
+            LastDetailedLog = detailedLog ?? string.Empty;
+            LastOutputDirectory = outputDirectory ?? string.Empty;
+            capturedPaths.Clear();
+            if (paths != null)
+            {
+                capturedPaths.AddRange(paths);
+            }
+
+            activeRunner = null;
+        }
+    }
+
+    internal sealed class P0PlayModeEgyptEntrySmokeRunner : MonoBehaviour
+    {
+        private const float SceneLoadTimeoutSeconds = 8f;
+        private const float ScreenshotTimeoutSeconds = 5f;
+        private const int MaxBattleResultTicks = 1600;
+        private const int BattleResultTicksPerFrame = 16;
+        private const float BattleResultTickDeltaSeconds = 0.25f;
+        private const int StarterCatCount = 3;
+        private const int P0SkillSlotCount = 3;
+        private const int MinimumDistinctSampleColors = 8;
+
+        private readonly List<string> lines = new List<string>();
+        private readonly List<string> screenshots = new List<string>();
+
+        private string outputDirectory;
+        private bool failed;
+
+        public void Begin(string outputDirectoryPath)
+        {
+            outputDirectory = outputDirectoryPath;
+            StartCoroutine(Run());
+        }
+
+        private IEnumerator Run()
+        {
+            lines.Clear();
+            screenshots.Clear();
+            failed = false;
+
+            if (string.IsNullOrWhiteSpace(outputDirectory))
+            {
+                Fail("Egypt entry screenshot output directory is missing.");
+                yield break;
+            }
+
+            Directory.CreateDirectory(outputDirectory);
+            ClearExistingPngEvidence();
+            Add("Screenshot output: " + outputDirectory);
+
+            P0RunSession.Clear();
+            P0RunSession.StartNewRun(new[]
+            {
+                P0PrototypeCatalog.SaibanId,
+                P0PrototypeCatalog.NephthysId,
+                P0PrototypeCatalog.SuzuneId
+            });
+            P0CatRoomSession.RecordFreshStart(P0RunSession.CurrentRun);
+
+            yield return LoadScene(P0SceneFlow.CatRoomSceneName);
+            if (failed)
+            {
+                yield break;
+            }
+
+            CatRoomController catRoom = UnityEngine.Object.FindAnyObjectByType<CatRoomController>();
+            if (catRoom == null)
+            {
+                Fail("P0CatRoom is missing CatRoomController.");
+                yield break;
+            }
+
+            P0CatRoomSurface catRoomSurface = catRoom.BuildCatRoomSurfaceForSmoke();
+            if (!HasEgyptEntryCatRoomSurface(catRoomSurface, out string catRoomFailure))
+            {
+                Fail(catRoomFailure);
+                yield break;
+            }
+
+            Add("Cat room Egypt entry verified: " + P0CatRoomPresenter.BuildCompactSummary(catRoomSurface));
+            yield return Capture(P0PlayModeEgyptEntrySmoke.CatRoomCaptureFileName, "cat room Egypt entry");
+            if (failed)
+            {
+                yield break;
+            }
+
+            catRoom.EnterEgyptDream();
+            yield return WaitForScene(P0SceneFlow.RouteMapSceneName);
+            if (failed)
+            {
+                yield break;
+            }
+
+            if (P0RunSession.CurrentRun == null
+                || P0RunSession.CurrentRun.DreamMap.Id != P0DreamMapCatalog.EgyptDreamMapId)
+            {
+                Fail("Egypt entry did not create an active Egypt dream run.");
+                yield break;
+            }
+
+            RouteMapController routeMap = UnityEngine.Object.FindAnyObjectByType<RouteMapController>();
+            if (routeMap == null)
+            {
+                Fail("P0RouteMap is missing RouteMapController after Egypt entry.");
+                yield break;
+            }
+
+            P0RouteMapSurface routeMapSurface = routeMap.BuildRouteMapSurfaceForSmoke();
+            if (!HasEgyptRouteMapSurface(routeMapSurface, out string routeMapFailure))
+            {
+                Fail(routeMapFailure);
+                yield break;
+            }
+
+            Add("Egypt route map verified: " + P0RouteMapPresenter.BuildCompactSummary(routeMapSurface));
+            yield return Capture(P0PlayModeEgyptEntrySmoke.RouteMapCaptureFileName, "Egypt route map layer 1");
+            if (failed)
+            {
+                yield break;
+            }
+
+            routeMap.ExecuteInputCommand(P0InputCommand.ContinueRoute);
+            yield return WaitForScene(P0SceneFlow.GrayboxBattleSceneName);
+            if (failed)
+            {
+                yield break;
+            }
+
+            GrayboxBattleController battleController = UnityEngine.Object.FindAnyObjectByType<GrayboxBattleController>();
+            if (battleController == null)
+            {
+                Fail("P0GrayboxBattle is missing GrayboxBattleController after Egypt route continue.");
+                yield break;
+            }
+
+            if (!HasEgyptBattleHudSurface(battleController, out string battleFailure))
+            {
+                Fail(battleFailure);
+                yield break;
+            }
+
+            yield return Capture(P0PlayModeEgyptEntrySmoke.BattleHudCaptureFileName, "Egypt battle HUD layer 1");
+            if (failed)
+            {
+                yield break;
+            }
+
+            yield return ResolveEgyptFirstBattleResult(battleController);
+            if (failed)
+            {
+                yield break;
+            }
+
+            string summary = "P0 Egypt entry smoke passed with "
+                + screenshots.Count
+                + " screenshot(s) in "
+                + outputDirectory
+                + ".";
+            Add(summary);
+            Complete(P0PlayModeEgyptEntrySmokeState.Passed, summary);
+        }
+
+        private static bool HasEgyptEntryCatRoomSurface(P0CatRoomSurface surface, out string failure)
+        {
+            failure = string.Empty;
+            if (!P0CatRoomPresenter.HasP0CatRoomSurface(surface))
+            {
+                failure = "P0CatRoom is missing required cat-room surface: " + P0CatRoomPresenter.BuildCompactSummary(surface);
+                return false;
+            }
+
+            if (!surface.TryGetDreamChoice(P0DreamMapCatalog.EgyptDreamMapId, out P0CatRoomDreamChoice egypt)
+                || !egypt.IsPlayable
+                || !egypt.IsEnabled
+                || egypt.ActionId != P0CatRoomActionIds.EnterEgyptDream)
+            {
+                failure = "P0CatRoom does not expose an enabled Egypt dream choice.";
+                return false;
+            }
+
+            if (!surface.TryGetAction(P0CatRoomActionIds.EnterEgyptDream, out P0CatRoomAction action)
+                || !action.IsEnabled
+                || action.TargetSceneName != P0SceneFlow.RouteMapSceneName)
+            {
+                failure = "P0CatRoom does not expose an enabled enter_egypt_dream route-map action.";
+                return false;
+            }
+
+            return true;
+        }
+
+        private static bool HasEgyptRouteMapSurface(P0RouteMapSurface surface, out string failure)
+        {
+            failure = string.Empty;
+            if (!P0RouteMapPresenter.HasP0RouteMapSurface(surface))
+            {
+                failure = "P0RouteMap is missing required route map surface: " + P0RouteMapPresenter.BuildCompactSummary(surface);
+                return false;
+            }
+
+            DreamMapDefinition egypt = P0DreamMapCatalog.GetEgyptDreamMap();
+            if (P0RunSession.CurrentRun == null
+                || P0RunSession.CurrentRun.DreamMap.Id != egypt.Id
+                || P0RunSession.CurrentRoute == null
+                || P0RunSession.CurrentRoute.Route.DreamMap.Id != egypt.Id)
+            {
+                failure = "Active route is not bound to the Egypt dream map.";
+                return false;
+            }
+
+            if (!surface.HasCurrentNode
+                || surface.CurrentNode.NodeId != P0RouteCatalog.LayerOneDefenseId
+                || !surface.CurrentNode.RequiresBattle)
+            {
+                failure = "Egypt route map did not expose the shared layer-one battle node.";
+                return false;
+            }
+
+            bool hasEgyptSummary = false;
+            for (int i = 0; i < surface.SummaryRows.Count; i++)
+            {
+                string row = surface.SummaryRows[i] ?? string.Empty;
+                if (row.Contains(egypt.DisplayName)
+                    && row.Contains(egypt.ThemeLabel)
+                    && row.Contains(egypt.DefenseTargetLabel))
+                {
+                    hasEgyptSummary = true;
+                    break;
+                }
+            }
+
+            if (!hasEgyptSummary)
+            {
+                failure = "Egypt route map summary does not show the Egypt dream-map identity.";
+                return false;
+            }
+
+            return true;
+        }
+
+        private IEnumerator ResolveEgyptFirstBattleResult(GrayboxBattleController battleController)
+        {
+            if (battleController == null || battleController.Battle == null)
+            {
+                Fail("Cannot resolve Egypt first battle because battle controller state is missing.");
+                yield break;
+            }
+
+            int completedBefore = P0RunSession.CurrentRoute == null
+                ? -1
+                : P0RunSession.CurrentRoute.CompletedCount;
+            int ticks = 0;
+            while (battleController.Battle.Outcome == BattleOutcome.InProgress && ticks < MaxBattleResultTicks)
+            {
+                for (int frameTick = 0;
+                     frameTick < BattleResultTicksPerFrame
+                     && battleController.Battle.Outcome == BattleOutcome.InProgress
+                     && ticks < MaxBattleResultTicks;
+                     frameTick++)
+                {
+                    DriveBattlePlayer(battleController, ticks);
+                    battleController.AdvanceGraybox(BattleResultTickDeltaSeconds);
+                    ticks++;
+                }
+
+                yield return null;
+            }
+
+            if (battleController.Battle.Outcome != BattleOutcome.Victory)
+            {
+                Fail("Egypt first battle expected victory but got "
+                    + battleController.Battle.Outcome
+                    + " after "
+                    + ticks
+                    + " smoke tick(s).");
+                yield break;
+            }
+
+            RunNodeCompletionReport report = P0RunSession.LastCompletionReport;
+            if (report == null
+                || report.CompletedNode == null
+                || report.CompletedNode.Id != P0RouteCatalog.LayerOneDefenseId
+                || report.Result != NodeResult.Success
+                || report.IsRouteCleared
+                || report.NextNode == null)
+            {
+                Fail("Egypt first battle did not produce the expected layer-one success report.");
+                yield break;
+            }
+
+            if (P0RunSession.CurrentRun == null
+                || P0RunSession.CurrentRun.DreamMap.Id != P0DreamMapCatalog.EgyptDreamMapId
+                || P0RunSession.CurrentRoute == null
+                || P0RunSession.CurrentRoute.CompletedCount <= completedBefore)
+            {
+                Fail("Egypt first battle did not advance the active Egypt route.");
+                yield break;
+            }
+
+            P0BattleResultSurface resultSurface = battleController.BuildBattleResultSurfaceForSmoke();
+            if (!P0BattleResultPresenter.HasP0BattleResultSurface(resultSurface))
+            {
+                Fail("Egypt first battle result surface is incomplete before screenshot: "
+                    + P0BattleResultPresenter.BuildCompactSummary(resultSurface)
+                    + ".");
+                yield break;
+            }
+
+            Add("Egypt first battle result verified: "
+                + report.BuildSummary()
+                + "; "
+                + P0BattleResultPresenter.BuildCompactSummary(resultSurface)
+                + ".");
+            yield return Capture(P0PlayModeEgyptEntrySmoke.BattleResultCaptureFileName, "Egypt battle result layer 1");
+            if (failed)
+            {
+                yield break;
+            }
+
+            battleController.ContinueRoute();
+            yield return WaitForScene(P0SceneFlow.RouteMapSceneName);
+            if (failed)
+            {
+                yield break;
+            }
+
+            RouteMapController routeMap = UnityEngine.Object.FindAnyObjectByType<RouteMapController>();
+            if (routeMap == null)
+            {
+                Fail("P0RouteMap is missing RouteMapController after Egypt first battle result.");
+                yield break;
+            }
+
+            P0RouteMapSurface routeMapSurface = routeMap.BuildRouteMapSurfaceForSmoke();
+            if (!HasEgyptRouteMapReturnSurface(routeMapSurface, out string routeReturnFailure))
+            {
+                Fail(routeReturnFailure);
+                yield break;
+            }
+
+            Add("Egypt route-map return verified: " + P0RouteMapPresenter.BuildCompactSummary(routeMapSurface));
+            yield return Capture(P0PlayModeEgyptEntrySmoke.RouteMapReturnCaptureFileName, "Egypt route map after layer 1");
+        }
+
+        private static bool HasEgyptRouteMapReturnSurface(P0RouteMapSurface surface, out string failure)
+        {
+            failure = string.Empty;
+            if (!P0RouteMapPresenter.HasP0RouteMapSurface(surface))
+            {
+                failure = "P0RouteMap after Egypt battle is missing required route map surface: " + P0RouteMapPresenter.BuildCompactSummary(surface);
+                return false;
+            }
+
+            DreamMapDefinition egypt = P0DreamMapCatalog.GetEgyptDreamMap();
+            if (P0RunSession.CurrentRun == null
+                || P0RunSession.CurrentRun.DreamMap.Id != egypt.Id
+                || P0RunSession.CurrentRoute == null
+                || P0RunSession.CurrentRoute.Route.DreamMap.Id != egypt.Id
+                || P0RunSession.CurrentRoute.CompletedCount < 1)
+            {
+                failure = "Route-map return is not bound to an advanced Egypt dream route.";
+                return false;
+            }
+
+            RunNodeCompletionReport report = P0RunSession.LastCompletionReport;
+            if (report == null
+                || report.CompletedNode == null
+                || report.CompletedNode.Id != P0RouteCatalog.LayerOneDefenseId
+                || report.Result != NodeResult.Success)
+            {
+                failure = "Route-map return is missing the Egypt layer-one success report.";
+                return false;
+            }
+
+            if (!HasEgyptSummary(surface, egypt))
+            {
+                failure = "Route-map return summary does not show the Egypt dream-map identity.";
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool HasEgyptBattleHudSurface(GrayboxBattleController battleController, out string failure)
+        {
+            failure = string.Empty;
+            DreamMapDefinition egypt = P0DreamMapCatalog.GetEgyptDreamMap();
+            string contextSummary = battleController.BuildBattleStartContextSummaryForSmoke();
+            if (string.IsNullOrWhiteSpace(contextSummary)
+                || !contextSummary.Contains(egypt.Id)
+                || !contextSummary.Contains(egypt.DefenseTargetLabel)
+                || !contextSummary.Contains("completeRoute True"))
+            {
+                failure = "P0GrayboxBattle did not start with Egypt route battle context: " + contextSummary;
+                return false;
+            }
+
+            IReadOnlyList<P0BattleHudSection> sections = battleController.BuildBattleHudSectionsForSmoke();
+            if (!P0BattleHudSummaryPresenter.HasP0BattleHudSections(sections))
+            {
+                failure = "P0GrayboxBattle is missing required battle HUD sections: " + P0BattleHudSummaryPresenter.BuildCompactSummary(sections);
+                return false;
+            }
+
+            IReadOnlyList<P0CatHudCard> catCards = battleController.BuildCatHudCardsForSmoke();
+            if (!P0CatHudPresenter.HasP0CatHudCards(catCards))
+            {
+                failure = "P0GrayboxBattle is missing required cat HUD cards: " + P0CatHudPresenter.BuildCompactSummary(catCards);
+                return false;
+            }
+
+            if (!battleController.PrimeEnemyHudForSmoke())
+            {
+                failure = "P0GrayboxBattle could not prime required enemy HUD cards.";
+                return false;
+            }
+
+            IReadOnlyList<P0EnemyHudCard> enemyCards = battleController.BuildEnemyHudCardsForSmoke();
+            if (!P0EnemyHudPresenter.HasP0EnemyHudCards(enemyCards))
+            {
+                failure = "P0GrayboxBattle is missing required enemy HUD cards: " + P0EnemyHudPresenter.BuildCompactSummary(enemyCards);
+                return false;
+            }
+
+            Add("Egypt battle start verified: " + contextSummary);
+            Add("Egypt battle HUD verified: "
+                + P0BattleHudSummaryPresenter.BuildCompactSummary(sections)
+                + "; "
+                + P0CatHudPresenter.BuildCompactSummary(catCards)
+                + "; "
+                + P0EnemyHudPresenter.BuildCompactSummary(enemyCards));
+            return true;
+        }
+
+        private static bool HasEgyptSummary(P0RouteMapSurface surface, DreamMapDefinition egypt)
+        {
+            for (int i = 0; i < surface.SummaryRows.Count; i++)
+            {
+                string row = surface.SummaryRows[i] ?? string.Empty;
+                if (row.Contains(egypt.DisplayName)
+                    && row.Contains(egypt.ThemeLabel)
+                    && row.Contains(egypt.DefenseTargetLabel))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static void DriveBattlePlayer(GrayboxBattleController battleController, int tick)
+        {
+            int catIndex = (tick / P0SkillSlotCount) % StarterCatCount;
+            int skillSlot = tick % P0SkillSlotCount;
+            battleController.SelectCat(catIndex);
+            battleController.CastSkillBySlot(skillSlot);
+
+            if (tick % 24 == 0)
+            {
+                battleController.UseBedCare();
+            }
+
+            if (tick % 40 == 0)
+            {
+                battleController.UseLitterBox();
+            }
+
+            if (tick % 48 == 0)
+            {
+                battleController.UseFeeder();
+            }
+        }
+
+        private IEnumerator LoadScene(string sceneName)
+        {
+            SceneManager.LoadScene(sceneName);
+            yield return WaitForScene(sceneName);
+        }
+
+        private IEnumerator WaitForScene(string sceneName)
+        {
+            float start = Time.realtimeSinceStartup;
+            while (SceneManager.GetActiveScene().name != sceneName)
+            {
+                if (Time.realtimeSinceStartup - start > SceneLoadTimeoutSeconds)
+                {
+                    Fail("Timed out waiting for scene " + sceneName + "; active scene is " + SceneManager.GetActiveScene().name + ".");
+                    yield break;
+                }
+
+                yield return null;
+            }
+
+            yield return null;
+            yield return null;
+        }
+
+        private IEnumerator Capture(string fileName, string label)
+        {
+            string path = Path.Combine(outputDirectory, fileName);
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
+
+            yield return null;
+            yield return null;
+
+            if (Application.isBatchMode)
+            {
+                ScreenCapture.CaptureScreenshot(path);
+            }
+            else
+            {
+                yield return new WaitForEndOfFrame();
+                if (!TryCaptureFrameToPng(path, out string captureError))
+                {
+                    Add("ReadPixels capture failed for " + label + ": " + captureError + ". Falling back to ScreenCapture.");
+                    ScreenCapture.CaptureScreenshot(path);
+                }
+            }
+
+            float start = Time.realtimeSinceStartup;
+            while (!File.Exists(path) || new FileInfo(path).Length <= 0)
+            {
+                if (Time.realtimeSinceStartup - start > ScreenshotTimeoutSeconds)
+                {
+                    Fail("Timed out capturing " + label + " screenshot at " + path + ".");
+                    yield break;
+                }
+
+                yield return null;
+            }
+
+            if (!IsCapturedPngUsable(path, out string usabilityError))
+            {
+                Fail("Captured " + label + " screenshot is not usable at " + path + ": " + usabilityError + ".");
+                yield break;
+            }
+
+            screenshots.Add(path);
+            Add("Captured " + label + ": " + path);
+        }
+
+        private void ClearExistingPngEvidence()
+        {
+            string[] files = Directory.GetFiles(outputDirectory, "*.png", SearchOption.TopDirectoryOnly);
+            for (int i = 0; i < files.Length; i++)
+            {
+                File.Delete(files[i]);
+            }
+
+            if (files.Length > 0)
+            {
+                Add("Cleared " + files.Length + " existing screenshot PNG(s).");
+            }
+        }
+
+        private bool TryCaptureFrameToPng(string path, out string error)
+        {
+            try
+            {
+                int width = Mathf.Max(1, Screen.width);
+                int height = Mathf.Max(1, Screen.height);
+                Texture2D texture = new Texture2D(width, height, TextureFormat.RGB24, false);
+                texture.ReadPixels(new Rect(0, 0, width, height), 0, 0, false);
+                texture.Apply(false, false);
+                byte[] bytes = texture.EncodeToPNG();
+                Destroy(texture);
+
+                if (bytes == null || bytes.Length == 0)
+                {
+                    error = "encoded PNG bytes are empty";
+                    return false;
+                }
+
+                File.WriteAllBytes(path, bytes);
+                error = string.Empty;
+                return File.Exists(path) && new FileInfo(path).Length > 0;
+            }
+            catch (Exception exception)
+            {
+                error = exception.GetType().Name + ": " + exception.Message;
+                return false;
+            }
+        }
+
+        private bool IsCapturedPngUsable(string path, out string error)
+        {
+            error = string.Empty;
+            Texture2D texture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+            try
+            {
+                byte[] bytes = File.ReadAllBytes(path);
+                if (!ImageConversion.LoadImage(texture, bytes, false))
+                {
+                    error = "PNG could not be decoded";
+                    return false;
+                }
+
+                int distinctColors = CountDistinctSampleColors(texture);
+                if (distinctColors < MinimumDistinctSampleColors)
+                {
+                    error = "only " + distinctColors + " distinct sampled color(s)";
+                    return false;
+                }
+
+                return true;
+            }
+            catch (Exception exception)
+            {
+                error = exception.GetType().Name + ": " + exception.Message;
+                return false;
+            }
+            finally
+            {
+                Destroy(texture);
+            }
+        }
+
+        private static int CountDistinctSampleColors(Texture2D texture)
+        {
+            HashSet<Color32> colors = new HashSet<Color32>();
+            int stepX = Math.Max(1, texture.width / 32);
+            int stepY = Math.Max(1, texture.height / 32);
+            for (int x = 0; x < texture.width; x += stepX)
+            {
+                for (int y = 0; y < texture.height; y += stepY)
+                {
+                    colors.Add(texture.GetPixel(x, y));
+                    if (colors.Count >= MinimumDistinctSampleColors)
+                    {
+                        return colors.Count;
+                    }
+                }
+            }
+
+            return colors.Count;
+        }
+
+        private void Add(string line)
+        {
+            lines.Add(line);
+        }
+
+        private void Fail(string message)
+        {
+            failed = true;
+            Add("FAILED: " + message);
+            Complete(P0PlayModeEgyptEntrySmokeState.Failed, message);
+        }
+
+        private void Complete(P0PlayModeEgyptEntrySmokeState state, string summary)
+        {
+            P0PlayModeEgyptEntrySmoke.Complete(
+                state,
+                summary,
+                string.Join("\n", lines),
+                outputDirectory,
+                screenshots);
+            Destroy(gameObject);
         }
     }
 
@@ -505,11 +1287,34 @@ namespace TheCat.Tools
                 yield break;
             }
 
-            if (!P0PlayModeRouteFlowSmoke.StartDefaultRouteSmoke())
+            if (!P0PlayModeRouteFlowSmoke.StartDefaultRouteSmokeForSettlementScreenshot())
             {
                 Fail("Could not start full route smoke for settlement screenshot: " + P0PlayModeRouteFlowSmoke.LastSummary);
                 yield break;
             }
+
+            yield return WaitForRouteSettlementScreenshotReady();
+            if (failed)
+            {
+                P0PlayModeRouteFlowSmoke.ContinueAfterSettlementScreenshot();
+                yield break;
+            }
+
+            yield return WaitForScene(P0SceneFlow.RouteMapSceneName);
+            if (failed)
+            {
+                P0PlayModeRouteFlowSmoke.ContinueAfterSettlementScreenshot();
+                yield break;
+            }
+
+            yield return Capture(P0PlayModeScreenshotSmoke.SettlementCaptureFileName, "settlement");
+            if (failed)
+            {
+                P0PlayModeRouteFlowSmoke.ContinueAfterSettlementScreenshot();
+                yield break;
+            }
+
+            P0PlayModeRouteFlowSmoke.ContinueAfterSettlementScreenshot();
 
             yield return WaitForRouteFlowSmoke();
             if (failed)
@@ -519,19 +1324,7 @@ namespace TheCat.Tools
 
             if (P0PlayModeRouteFlowSmoke.State != P0PlayModeRouteFlowSmokeState.Passed)
             {
-                Fail("Full route smoke did not pass before settlement screenshot: " + P0PlayModeRouteFlowSmoke.LastSummary);
-                yield break;
-            }
-
-            yield return WaitForScene(P0SceneFlow.RouteMapSceneName);
-            if (failed)
-            {
-                yield break;
-            }
-
-            yield return Capture(P0PlayModeScreenshotSmoke.SettlementCaptureFileName, "settlement");
-            if (failed)
-            {
+                Fail("Full route smoke did not pass after settlement screenshot: " + P0PlayModeRouteFlowSmoke.LastSummary);
                 yield break;
             }
 
@@ -576,6 +1369,33 @@ namespace TheCat.Tools
                 if (Time.realtimeSinceStartup - start > FullRouteTimeoutSeconds)
                 {
                     Fail("Timed out waiting for full route smoke before settlement screenshot.");
+                    yield break;
+                }
+
+                yield return null;
+            }
+        }
+
+        private IEnumerator WaitForRouteSettlementScreenshotReady()
+        {
+            float start = Time.realtimeSinceStartup;
+            while (!P0PlayModeRouteFlowSmoke.IsSettlementReadyForScreenshot)
+            {
+                if (P0PlayModeRouteFlowSmoke.State == P0PlayModeRouteFlowSmokeState.Failed)
+                {
+                    Fail("Full route smoke failed before settlement screenshot: " + P0PlayModeRouteFlowSmoke.LastSummary);
+                    yield break;
+                }
+
+                if (P0PlayModeRouteFlowSmoke.IsFinished)
+                {
+                    Fail("Full route smoke finished before settlement screenshot point: " + P0PlayModeRouteFlowSmoke.LastSummary);
+                    yield break;
+                }
+
+                if (Time.realtimeSinceStartup - start > FullRouteTimeoutSeconds)
+                {
+                    Fail("Timed out waiting for full route smoke settlement screenshot point: " + P0PlayModeRouteFlowSmoke.LastSummary);
                     yield break;
                 }
 

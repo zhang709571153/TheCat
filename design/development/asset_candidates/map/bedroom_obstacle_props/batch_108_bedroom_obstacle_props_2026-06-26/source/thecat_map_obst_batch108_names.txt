@@ -1,0 +1,9 @@
+pillow_barricade_prop
+blanket_roll_blocker_prop
+toy_block_cluster_prop
+book_stack_obstacle_prop
+slipper_pair_obstacle_prop
+yarn_tangle_slow_prop
+nightstand_corner_prop
+dream_crystal_shard_prop
+moon_dust_patch_prop
